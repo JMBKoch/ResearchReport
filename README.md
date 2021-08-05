@@ -1,6 +1,6 @@
 # One- vs. two-step Approach in Bayesian Regularized Structual Equation Modeling (SEM)
 
-This repository contains the code of my Masters Thesis in Applied Statistics at Utrecht University (September '21 - May '22). 
+This repository contains the code of my Master's Thesis in Applied Statistics at Utrecht University (September '21 - May '22). 
 
 While the concepts of *penalization* or *regularization* have been common place in regression and machine learning for a long time, their usage has only more recently been proposed in the context of structural equation modeling (SEM, Jacobucci, Grimm, McArdle, 2016). For instance, cross-loadings in a factor model can be penalized, such that only large cross-loadings are included in the model, whereas small cross loadings are shrunken to zero. 
 
