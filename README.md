@@ -1,12 +1,12 @@
-# One- vs. two-step Bayesian Regularized Structual Equation Modeling (SEM)
+# One- vs. two-step Approach in Bayesian Regularized Structual Equation Modeling (SEM)
 
 This repository contains the code of my Masters Thesis in Applied Statistics at Utrecht University (September '21 - May '22). 
 
 While the concepts of *Penetalization* or *Regularization* have been common place in regression and machine learning for a long time, their usage has only more recenlty been proposed in the context of Structural Equation Modeling (SEM, Jacobucci, Grimm, McArdle, 2016). For instance, cross-loadings in a factor model can be penatilzed, such that only large cross-loadings are included in the model, whereas small cross loadings are shrunken to zero. 
 
-In a Bayesian context, regularization can be achieved though so-called shrinkeage priors (see van Erp, Oberski, & Mulder, 2019 for an overview). One such shrinkeage prior is the *small-variance normal prior*, which corresponds to the classical ridge penalty (Muthén & Asparouhov, 2012). The issue with this shinkeage prior, however, is that it not only shrinks small coefficients (to zero), but also shrinks large coefficients (to a smaller estimate). Consequently, the estimates of the larger coefficients are biased substantially. This approach therefore requires a second step, where the model is re-estimated without the shrinkeage prior, while fixing those coefficients that were shrunk to zero in the first step to zero. 
+In a Bayesian context, regularization can be achieved through so-called shrinkeage priors (see van Erp, Oberski, & Mulder, 2019 for an overview). One such shrinkeage prior is the *small-variance normal prior*, which corresponds to the classical ridge penalty (Muthén & Asparouhov, 2012). The issue with this shinkeage prior, however, is that it not only shrinks small coefficients (to zero), but also shrinks large coefficients (to a smaller estimate). Consequently, the estimates of the larger coefficients are biased substantially. This approach therefore requires a second step, where the model is re-estimated without the shrinkeage prior, while fixing those coefficients that were shrunk to zero in the first step to zero. 
 
-The aim of this project is to assess through simulation whether other, more sophisticated shrinkeage priors (van Erp, Oberski, & Mulder, 2019) are able to outperform the small-variance normal prior, within a simpler, one-step procedure.
+The aim of this project is to assess through simulation whether other, more sophisticated shrinkeage priors (van Erp, Oberski, & Mulder, 2019) are able to outperform the small-variance normal prior, within a simpler, one-step approach.
 
 ### References
 
