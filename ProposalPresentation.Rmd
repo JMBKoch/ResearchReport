@@ -1,0 +1,86 @@
+---
+title: "One- vs. Two-Step Approach in Regularized Bayesian SEM"
+author: "Michael Koch"
+date: "22-09-2021"
+output: ioslides_presentation
+bibliography      : ["refs.bib"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Bayesian SEM
+
+- Recap normal SEM (CFA): 
+  - Identification constraints
+  - Cross-loadings fixed to zero: $\mathcal{N}(0, 0)$
+  - If bad fit: Adjust model based on modification indices (flawed)
+- Bayesian context [@muthen_bayesian_2012]
+  - Don't just assume that cross-loadings are zero
+  - Instead make a more realistic and flexible assumption:
+    - Small Variance Prior: $\mathcal{N}(0, 0.01)$
+    - allowing for a more continuous model selection (between EFA & CFA)
+    
+## Small variance prior
+
+```{r, echo=F}
+plot(density(rnorm(10000, 0, 0.01)), main="Density Function of the Small Variance (Ridge) Prior", xlab="")
+#abline(v = c(-.02, .02), col = "red")
+```
+$$\mathcal{N}(\mu = 0,   \sigma = 0.01)$$
+
+## Regularization 
+
+- Frequentist context: Penatalization, such as LASSO [@tibshirani_regression_1996] or ridge [@hoerl_ridge_2000]
+
+$$argmin\{ (\bf{Y} - \bf{X} \bf{\beta})^2 + \Sigma_{j = 1}^{p} |\beta_{j}^q|\} $$
+
+- In Bayesian context: Use *shrinkage priors* to achieve the same [@van_erp_shrinkage_2019], e.g. Bayesian lasso, [@park_bayesian_2008] 
+- *Regularized (Bayesian) SEM* [@jacobucci_regularized_2016]: 
+  -  Bayesian SEM by @muthen_bayesian_2012 is simply a form of regularization, where cross-loadings are reguralized 
+  - small variance prior is literally the same as applying the ridge penality to the cross-loadings [@hsiang_bayesian_1975]
+
+## Research Gap & Aim 
+
+- Original approach with the small variance prior requires a 2-step approach [@lu_bayesian_2016]
+  - Not only the parameters close to zero are shrunken to zero (as desired)...
+  - But also the parameters that are far from zero, and should not be shrunken (introducing bias!)
+  - Intermediate solution: fit regularized model in first step and in second step fit unreguralized models where those loadings that were shrunken to zero in previous step are fixed to zero. 
+    - Comes with many disadvantages
+
+- Therefore, more advanced priors need to be identified that can outperform the small-variance prior in a single step
+
+## Regularized Horseshoe Prior [@piironen_sparsity_2017]
+
+- Horseshoe prior [@carvalho_horseshoe_2010]
+- mixture scale of normal priors
+- aims to find the perfect balance in 
+
+$$$$
+```{r}
+
+```
+
+$$ $$
+
+## Methods
+
+- Monte Carlo Simulation
+- Outcomes:
+  - True Positives vs. False Positives (e.g. ROC, )
+  - 95% coverage?
+- Conditions:
+    - N, *N > p* vs. *p < N* 
+- Stan [@carpenter_stan_2017]
+  - Hamilton Monte Carlo [@betancourt_conceptual_2018]
+- Check out my [Github Repository](https://github.com/JMBKoch/1vs2StepBayesianRegularizedSEM)
+
+<style>
+slides > slide { overflow: scroll; }
+slides > slide:not(.nobackground):after {
+  content: '';
+}
+</style>
+
+## References
