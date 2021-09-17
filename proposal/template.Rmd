@@ -1,0 +1,57 @@
+---
+title             : "One- vs. Two-Step Approach in Regularized Bayesian Structural Equation Modeling (SEM)"
+shorttitle        : "One- vs. Two-Step Approach in Regularized Bayesian SEM"
+
+wordcount         : "X"
+
+bibliography      : ["Thesis.bib"]
+
+floatsintext      : no
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : no
+mask              : no
+draft             : no
+
+documentclass     : "apa6"
+output            : papaja::apa6_pdf
+
+---
+
+```{=tex}
+%\begin{center}
+Research Proposal \\
+Michael Koch (6412157)\\
+Methodology and Statistics for the Behavioral, Biomedical, and Social Sciences \\
+Supervisor: Dr. Sara van Erp \\ 
+Email: j.m.b.koch@students.uu.nl \\
+Word Count: 750
+%\end{center}
+```
+
+```{r setup, include = FALSE}
+library("papaja")
+r_refs("Thesis.bib")
+```
+
+```{r analysis-preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+```
+
+
+
+\clearpage
+
+
+
+# References
+
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+<div id="refs" custom-style="Bibliography"></div>
+\endgroup
