@@ -36,7 +36,7 @@ $$\mathcal{N}(\mu = 0,   \sigma = 0.01)$$
 
 ## Regularization 
 
-- In Regression & Machine Learning: Penatalization, such as *LASSO* [@tibshirani_regression_1996] or *Ridge* [@hoerl_ridge_2000]
+- Regression: Penalization, such as *LASSO* [@tibshirani_regression_1996] or *Ridge* [@hoerl_ridge_2000]
 
 $$argmin\{ (\bf{Y} - \bf{X} \bf{\beta})^2 + \Sigma_{j = 1}^{p} |\beta_{j}^q|\} $$
 
@@ -60,11 +60,14 @@ $$argmin\{ (\bf{Y} - \bf{X} \bf{\beta})^2 + \Sigma_{j = 1}^{p} |\beta_{j}^q|\} $
 
 $\beta_j | \hat{\tau}^2, \lambda \sim \mathcal{N}(0,  \hat{\tau}^2 \lambda )$ , where  $\hat{\tau}^2 = \frac{c^2\tau^2}{c^2+\lambda^2\tau_j^2}$
 
-$\lambda | \lambda^2_0 \sim HC(0, \lambda^2_0)$, where $\lambda_0 = \frac{p_0}{p - p_0} \frac{\sigma}{\sqrt{N}}$
+$\lambda | \lambda^2_0 \sim C^+(0, \lambda^2_0)$, where $\lambda_0 = \frac{p_0}{p - p_0} \frac{\sigma}{\sqrt{N}}$
 
-$\tau_j \sim HC(0, 1)$
+$\tau_j \sim C^+(0, 1)$
 
 $c^2 | \nu, s^2 \sim IG(0,1)$
+
+## Regularized Horseshoe Prior
+
 
 ## Methods
 

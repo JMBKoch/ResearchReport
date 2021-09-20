@@ -144,7 +144,7 @@ slide:not(.current) .plotly.html-widget{
 </article></slide><slide class=""><hgroup><h2>Regularization</h2></hgroup><article  id="regularization">
 
 <ul>
-<li>In Regression &amp; Machine Learning: Penatalization, such as <em>LASSO</em> <span class="cite">(Tibshirani 1996)</span> or <em>Ridge</em> <span class="cite">(Hoerl and Kennard 2000)</span></li>
+<li>Regression: Penalization, such as <em>LASSO</em> <span class="cite">(Tibshirani 1996)</span> or <em>Ridge</em> <span class="cite">(Hoerl and Kennard 2000)</span></li>
 </ul>
 
 <p>\[argmin\{ (\bf{Y} - \bf{X} \bf{\beta})^2 + \Sigma_{j = 1}^{p} |\beta_{j}^q|\} \]</p>
@@ -184,11 +184,13 @@ slide:not(.current) .plotly.html-widget{
 
 <p>\(\beta_j | \hat{\tau}^2, \lambda \sim \mathcal{N}(0, \hat{\tau}^2 \lambda )\) , where \(\hat{\tau}^2 = \frac{c^2\tau^2}{c^2+\lambda^2\tau_j^2}\)</p>
 
-<p>\(\lambda | \lambda^2_0 \sim HC(0, \lambda^2_0)\), where \(\lambda_0 = \frac{p_0}{p - p_0} \frac{\sigma}{\sqrt{N}}\)</p>
+<p>\(\lambda | \lambda^2_0 \sim C^+(0, \lambda^2_0)\), where \(\lambda_0 = \frac{p_0}{p - p_0} \frac{\sigma}{\sqrt{N}}\)</p>
 
-<p>\(\tau_j \sim HC(0, 1)\)</p>
+<p>\(\tau_j \sim C^+(0, 1)\)</p>
 
 <p>\(c^2 | \nu, s^2 \sim IG(0,1)\)</p>
+
+</article></slide><slide class=""><hgroup><h2>Regularized Horseshoe Prior</h2></hgroup><article  id="regularized-horseshoe-prior-1">
 
 </article></slide><slide class=""><hgroup><h2>Methods</h2></hgroup><article  id="methods">
 
