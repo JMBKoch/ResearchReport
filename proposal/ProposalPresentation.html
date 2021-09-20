@@ -169,28 +169,26 @@ slide:not(.current) .plotly.html-widget{
 </ul></li>
 </ul>
 
-<p><em>→</em> Therefore, more advanced priors need to be identified that can outperform the small-variance prior <em>in a single step</em></p>
+<p><em>→</em> More advanced priors need to be identified that can outperform the small-variance prior <em>in a single step</em></p>
 
-</article></slide><slide class=""><hgroup><h2>Regularized Horseshoe Prior</h2></hgroup><article  id="regularized-horseshoe-prior">
+</article></slide><slide class=""><hgroup><h2>Horseshoe Prior</h2></hgroup><article  id="horseshoe-prior">
 
 <ul>
 <li>Horseshoe prior <span class="cite">(Carvalho, Polson, and Scott 2010)</span>:
 
 <ul>
 <li>Practically no shrinkage for large coefficients, shrinkage to zero for small coefficients</li>
+<li>&ldquo;Global&rdquo; component \(\lambda\), shrinking all parameters to zero, &ldquo;local&rdquo; component \(\tau_j\) allowing large parameters to escape shrinkage</li>
 </ul></li>
-<li>Regularized Horseshoe prior <span class="cite">(Piironen and Vehtari 2017)</span>: limits shrinkage of small coefficients for the sake of identification</li>
 </ul>
 
-<p>\(\beta_j | \hat{\tau}^2, \lambda \sim \mathcal{N}(0, \hat{\tau}^2 \lambda )\) , where \(\hat{\tau}^2 = \frac{c^2\tau^2}{c^2+\lambda^2\tau_j^2}\)</p>
+<p>\[\beta_j | \tau^2_j, \sim \mathcal{N}(0, \tau^2_j )\]</p>
 
-<p>\(\lambda | \lambda^2_0 \sim C^+(0, \lambda^2_0)\), where \(\lambda_0 = \frac{p_0}{p - p_0} \frac{\sigma}{\sqrt{N}}\)</p>
+<p>\[\tau_j \sim C^+(0, \lambda) \ for \ j = 1, \ ..., \ p\]</p>
 
-<p>\(\tau_j \sim C^+(0, 1)\)</p>
+<p>\[\lambda| \sigma \sim C^+(0, \sigma)\]</p>
 
-<p>\(c^2 | \nu, s^2 \sim IG(0,1)\)</p>
-
-</article></slide><slide class=""><hgroup><h2>Regularized Horseshoe Prior</h2></hgroup><article  id="regularized-horseshoe-prior-1">
+</article></slide><slide class=""><hgroup><h2>Horseshoe Prior</h2></hgroup><article  id="horseshoe-prior-1">
 
 </article></slide><slide class=""><hgroup><h2>Methods</h2></hgroup><article  id="methods">
 
@@ -279,10 +277,6 @@ A</span> More FLexible Representation of Substantive Theory,”</span> 78. <a hr
 “The <span>
 Bayesian</span> <span>
 Lasso</span>.”</span> <em>Journal of the American Statistical Association</em> 103 (482): 681–86. <a href='https://doi.org/10.1198/016214508000000337' title=''>https://doi.org/10.1198/016214508000000337</a>.</p></div>
-
-<div id="ref-piironen_sparsity_2017" class="csl-entry">
-<p>Piironen, Juho, and Aki Vehtari. 2017. <span>
-“Sparsity Information and Regularization in the Horseshoe and Other Shrinkage Priors.”</span> <em>Electronic Journal of Statistics</em> 11 (2): 5018–51. <a href='https://doi.org/10.1214/17-EJS1337SI' title=''>https://doi.org/10.1214/17-EJS1337SI</a>.</p></div>
 
 <div id="ref-tibshirani_regression_1996" class="csl-entry">
 <p>Tibshirani, Robert. 1996. <span>

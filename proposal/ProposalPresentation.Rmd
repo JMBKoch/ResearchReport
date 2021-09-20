@@ -50,23 +50,22 @@ $$argmin\{ (\bf{Y} - \bf{X} \bf{\beta})^2 + \Sigma_{j = 1}^{p} |\beta_{j}^q|\} $
   + Not only the parameters close to zero are shrunken to zero (as desired)...
   + But also the parameters that are far from zero, and should not be shrunken (introducing bias!)
   
-*&#8594;* Therefore, more advanced priors need to be identified that can outperform the small-variance prior *in a single step*
+*&#8594;* More advanced priors need to be identified that can outperform the small-variance prior *in a single step*
 
-## Regularized Horseshoe Prior
+## Horseshoe Prior
 
-- Horseshoe prior [@carvalho_horseshoe_2010]: 
+- *Horseshoe prior* [@carvalho_horseshoe_2010]: 
   - Practically no shrinkage for large coefficients, shrinkage to zero for small coefficients
-- Regularized Horseshoe prior [@piironen_sparsity_2017]: limits shrinkage of small coefficients for the sake of identification
+  - "Global" component $\lambda$, shrinking all parameters to zero, "local" component $\tau_j$ allowing large parameters to escape shrinkage
 
-$\beta_j | \hat{\tau}^2, \lambda \sim \mathcal{N}(0,  \hat{\tau}^2 \lambda )$ , where  $\hat{\tau}^2 = \frac{c^2\tau^2}{c^2+\lambda^2\tau_j^2}$
 
-$\lambda | \lambda^2_0 \sim C^+(0, \lambda^2_0)$, where $\lambda_0 = \frac{p_0}{p - p_0} \frac{\sigma}{\sqrt{N}}$
+$$\beta_j | \tau^2_j, \sim \mathcal{N}(0, \tau^2_j )$$
 
-$\tau_j \sim C^+(0, 1)$
+$$\tau_j \sim C^+(0, \lambda) \ for \ j = 1, \ ..., \ p$$ 
 
-$c^2 | \nu, s^2 \sim IG(0,1)$
+$$\lambda| \sigma \sim C^+(0, \sigma)$$
 
-## Regularized Horseshoe Prior
+## Horseshoe Prior
 
 
 ## Methods
