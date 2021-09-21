@@ -6,6 +6,13 @@ output: ioslides_presentation
 bibliography      : ["refs.bib"]
 ---
 
+
+```{r, echo = F, include = F}
+require(LaplacesDemon) # for horseshoe density 
+require(ggplot2)
+require(magrittr)
+```
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
@@ -19,17 +26,22 @@ knitr::opts_chunk$set(echo = FALSE)
 * Bayesian SEM [@muthen_bayesian_2012]
   + Don't just assume that cross-loadings are zero
   + Instead make a more realistic and flexible assumption:
-    - Small Variance Prior: $\mathcal{N}(0, 0.01)$
-    - allowing for a more continuous model identification and model selection
+    - Small Variance Prior, e.g.: $\mathcal{N}(0, 0.01)$
+    - allowing for a more *continuous* model identification and model selection
     
     
 ## Small variance prior
 
-```{r}
-x <- seq(-.05, .05, length=1000)
-y <- dnorm(x, mean = 0, sd = (0.1)^2)
-plot(x, y, type="l", lwd=1, main = "Density of the small variance (ridge) prior", xlab = "", ylab = "")
-abline(v = c(-.02, .02), col = "red")
+```{r, echo=F, warning = F}
+ndraws <- 1e+05 # 10000 draws
+smallVar <- rnorm(ndraws, mean = 0, sd = 0.01)
+
+data.frame(dens = smallVar) %>% 
+  ggplot(aes(x = dens)) + 
+  geom_density(alpha = .5, fill = "#00BFC4")+
+  xlim(-.3, .3)+
+  labs(x = "Size Cross-Loading", title = "Density of the Small Variance Prior")+
+  guides(fill = "none")
 ```
 
 $$\mathcal{N}(\mu = 0,   \sigma = 0.01)$$
@@ -40,23 +52,45 @@ $$\mathcal{N}(\mu = 0,   \sigma = 0.01)$$
 
 $$argmin\{ (\bf{Y} - \bf{X} \bf{\beta})^2 + \Sigma_{j = 1}^{p} |\beta_{j}^q|\} $$
 
-- In Bayesian context: Use *shrinkage priors* to achieve the same [@van_erp_shrinkage_2019], e.g. Bayesian lasso, [@park_bayesian_2008] 
+- In Bayesian context: Use *shrinkage priors* to achieve the same [@van_erp_shrinkage_2019], e.g. Bayesian lasso [@park_bayesian_2008] 
 -  Bayesian SEM by @muthen_bayesian_2012 is simply a form of regularization, where cross-loadings are reguralized [@lu_bayesian_2016]
-    - Small variance prior is literally the same as applying the ridge penality to the cross-loadings [@hsiang_bayesian_1975]
+    - Small variance prior is literally the same as applying the ridge penalty to the cross-loadings [@hsiang_bayesian_1975]
 
 ## Research Gap & Aim 
 
 - Original approach with the small variance prior requires a 2-step approach [@lu_bayesian_2016]
-  + Not only the parameters close to zero are shrunken to zero (as desired)...
-  + But also the parameters that are far from zero, and should not be shrunken (introducing bias!)
+- Not only the parameters close to zero are shrunken to zero (as desired)...
+- ...but also the parameters that are far from zero, and should not be shrunken (introducing bias!)
   
 *&#8594;* More advanced priors need to be identified that can outperform the small-variance prior *in a single step*
 
 ## Horseshoe Prior
 
+```{r, echo = F, warning = F}
+
+hs <- rep(NA, ndraws) # allocate memory
+
+for(i in 1:ndraws){
+  lambda <- rhalfcauchy(1, scale=1)
+  tau <- rhalfcauchy(1, scale=lambda)
+  hs[i] <- rnorm(1, 0, tau)
+}
+
+data.frame(dens = c(smallVar, hs), 
+          prior = rep(c("Small Variance Prior", "Horseshoe Prior"), each = 1e+05)) %>% 
+  ggplot(aes(x = dens, fill = prior)) + 
+  geom_density(alpha = .5)+
+  xlim(-.3, .3)+
+  labs(x = "Size Cross-Loading", title = "Density of the Small Variance and the Horseshoe Prior")
+
+```
+
+
+## Horseshoe Prior
+
 - *Horseshoe prior* [@carvalho_horseshoe_2010]: 
   - Practically no shrinkage for large coefficients, shrinkage to zero for small coefficients
-  - *Global* component $\lambda$, shrinking all parameters to zero, *local* component $\tau_j$ allowing large parameters to escape shrinkage
+  - *Global* component $\lambda$, shrinking all parameters towards zero, *local* component $\tau_j$ allowing large parameters to escape shrinkage
 
 
 $$\beta_j | \tau^2_j, \sim \mathcal{N}(0, \tau^2_j )$$
@@ -67,25 +101,17 @@ $$\lambda| \sigma \sim C^+(0, \sigma)$$
 
 
 
-## Horseshoe Prior
-
-<center>
-
-![](./horseshoe.png){width=50%}
-
-</center>
-
 
 ## Methods
 
 - Monte Carlo Simulation
+- Stan [@carpenter_stan_2017]
 - Outcome:
   - True Positives vs. False Positives in estimating truly non-zero cross-loadings as non-zero (ROC)
 - Conditions [@lu_bayesian_2016]:
     - 1 cross-loading & several cross-loadings
     - Vary N: 100, 200, 300
-    - Vay magnitude cross-loadings: 0.1, 0.2, 0.3
-- Stan [@carpenter_stan_2017]
+    - Vary magnitude cross-loadings: 0.1, 0.2, 0.3
 - Check out my [Github Repository](https://github.com/JMBKoch/1vs2StepBayesianRegularizedSEM)
 
 <style>
