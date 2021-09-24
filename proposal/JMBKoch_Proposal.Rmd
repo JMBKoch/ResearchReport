@@ -45,7 +45,6 @@ library(LaplacesDemon) # for horseshoe density
 library(ggplot2)
 library(magrittr)
 library(jtools) # for apa ggplot theme
-r_refs("Thesis.bib")
 ```
 
 ```{r analysis-preferences}
@@ -85,14 +84,10 @@ In a Bayesian context, so-called *shrinkage priors* are used to achieve the same
 
 @lu_bayesian_2016 pointed out that ...
 
-
-
 - Original approach with the small variance prior requires a 2-step approach [@lu_bayesian_2016]
 Not only the parameters close to zero are shrunken to zero (as desired)...
 ...but also the parameters that are far from zero, and should not be shrunken (introducing bias!)
  More advanced priors need to be identified that can outperform the small-variance prior *in a single step*
-
-
 
 ## Regularized Horseshoe prior
 
@@ -103,8 +98,10 @@ Practically no shrinkage for large coefficients, shrinkage to zero for small coe
 
 The *Regularized Horseshoe* prior builds on the horseshoe prior, by...
 
-
-
+$$$$
+$$$$
+$$$$
+$$$$
 
 ```{r, echo=F, warning=F, fig.cap="Density Plots of the Regularization Priors of Interest"}
 ndraws <- 1e+05 # 10000 draws
@@ -112,15 +109,17 @@ ndraws <- 1e+05 # 10000 draws
 smallVar <- rnorm(ndraws, mean = 0, sd = 0.01)
 
 # sample horseshoe prior
-hs <- rep(NA, ndraws) # allocate memory
+regHs <- rep(NA, ndraws)
 for(i in 1:ndraws){
+  c2 <- rinvgamma(1, shape=0.5, scale=1)
   lambda <- rhalfcauchy(1, scale=1)
-  tau <- rhalfcauchy(1, scale=lambda)
-  hs[i] <- rnorm(1, 0, tau)
+  tau <- rhalfcauchy(1, scale=1)
+  lambda2_tilde <- c2 * lambda^2/(c2 + tau^2*lambda^2)
+  regHs[i] <- rnorm(1, 0, sqrt(tau^2*lambda2_tilde))
 }
 
 # make plot
-data.frame(dens = c(smallVar, hs), 
+data.frame(dens = c(smallVar, regHs), 
           prior = rep(c("Small Variance Prior", "Regularized Horseshoe Prior"), each = 1e+05)) %>% 
   ggplot(aes(x = dens, fill = prior, linetype = prior)) + 
   geom_density(alpha = .5)+
