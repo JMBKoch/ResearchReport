@@ -19,7 +19,6 @@ output            :
   papaja::apa6_pdf:
     includes:
       in_header: "preamble.tex"
-
 ---
 
 ```{=tex}
@@ -30,7 +29,7 @@ Methodology and Statistics for the Behavioral, Biomedical, and Social Sciences \
 Supervisor: Dr. Sara van Erp \\ 
 Email: j.m.b.koch@students.uu.nl \\
 Word Count: 750 \\
-Intented Journal of Publication: Structual Equation Modeling
+Intented Journal of Publication: Structural Equation Modeling
 
 % make page numbers start from second page 
 \pagenumbering{arabic}
@@ -42,6 +41,10 @@ Intented Journal of Publication: Structual Equation Modeling
 
 ```{r setup, include = FALSE}
 library("papaja")
+library(LaplacesDemon) # for horseshoe density 
+library(ggplot2)
+library(magrittr)
+library(jtools) # for apa ggplot theme
 r_refs("Thesis.bib")
 ```
 
@@ -53,6 +56,86 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 \clearpage
 
+Structural Equation Modeling (SEM, )...
+
+  - Identification constraints
+  - Cross-loadings fixed to zero: $\mathcal{N}(0, 0)$
+  - If bad fit: Adjust model based on modification indices (flawed)
+
+## Bayesian SEM
+
+* Bayesian SEM [@muthen_bayesian_2012]
+  + Don't just assume that cross-loadings are zero
+  + Instead make a more realistic and flexible assumption:
+    - Small Variance Prior, e.g.: $\mathcal{N}(0, 0.01)$
+    - allowing for a more *continuous* model identification and model selection
+    
+
+$$\mathcal{N}(\mu = 0, \  \sigma = 0.01)$$
+
+## Regularization
+
+In Regression and Machine Learning...
+
+The general approach is to apply a penalty the loss-function of a model that... 
+
+$$argmin\{ ( | \bf{Y} - \bf{X}\bf{\beta} |)^2 + \Sigma_{j = 1}^{p} |\beta_{j}^q|\} $$
+
+In a Bayesian context, so-called *shrinkage priors* are used to achieve the same end [see @van_erp_shrinkage_2019 for an overview]. 
+
+@lu_bayesian_2016 pointed out that ...
+
+
+
+- Original approach with the small variance prior requires a 2-step approach [@lu_bayesian_2016]
+Not only the parameters close to zero are shrunken to zero (as desired)...
+...but also the parameters that are far from zero, and should not be shrunken (introducing bias!)
+ More advanced priors need to be identified that can outperform the small-variance prior *in a single step*
+
+
+
+## Regularized Horseshoe prior
+
+*Horseshoe prior* [@carvalho_horseshoe_2010]: 
+Practically no shrinkage for large coefficients, shrinkage to zero for small coefficients
+*Global* component $\lambda$, shrinking all parameters towards zero, *local* component $\tau_j$ allowing large parameters to escape shrinkage
+
+
+The *Regularized Horseshoe* prior builds on the horseshoe prior, by...
+
+
+
+
+```{r, echo=F, warning=F, fig.cap="Density Plots of the Regularization Priors of Interest"}
+ndraws <- 1e+05 # 10000 draws
+# sample small variance prior
+smallVar <- rnorm(ndraws, mean = 0, sd = 0.01)
+
+# sample horseshoe prior
+hs <- rep(NA, ndraws) # allocate memory
+for(i in 1:ndraws){
+  lambda <- rhalfcauchy(1, scale=1)
+  tau <- rhalfcauchy(1, scale=lambda)
+  hs[i] <- rnorm(1, 0, tau)
+}
+
+# make plot
+data.frame(dens = c(smallVar, hs), 
+          prior = rep(c("Small Variance Prior", "Regularized Horseshoe Prior"), each = 1e+05)) %>% 
+  ggplot(aes(x = dens, fill = prior, linetype = prior)) + 
+  geom_density(alpha = .5)+
+  xlim(-.3, .3)+
+  labs(x = "Size Cross-Loading", title = NULL)+
+  theme_apa(legend.pos = "bottom")
+  
+
+```
+
+## Analytic Strategy
+
+A Monte Carlo simulation study is conducted using stan [@carpenter_stan_2017]. 
+True Positives vs. False Positives in estimating truly non-zero cross-loadings as non-zero (ROC).
+Conditions are based on [@lu_bayesian_2016] and will include two factor structus (1 non-zero cross-loading, several non-zero crossloadings), three sample sizes (100, 200, 300), and three magnitudes of the cross-loadings (0.1, 0.2, 0.3).
 
 \clearpage
 

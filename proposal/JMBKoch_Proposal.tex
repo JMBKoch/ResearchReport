@@ -175,7 +175,7 @@ Methodology and Statistics for the Behavioral, Biomedical, and Social Sciences \
 Supervisor: Dr. Sara van Erp \\ 
 Email: j.m.b.koch@students.uu.nl \\
 Word Count: 750 \\
-Intented Journal of Publication: Structual Equation Modeling
+Intented Journal of Publication: Structural Equation Modeling
 
 % make page numbers start from second page 
 \pagenumbering{arabic}
@@ -185,6 +185,89 @@ Intented Journal of Publication: Structual Equation Modeling
 \pagestyle{plain}
 
 \clearpage
+
+Structural Equation Modeling (SEM, )\ldots{}
+
+\begin{itemize}
+\tightlist
+\item
+  Identification constraints
+\item
+  Cross-loadings fixed to zero: \(\mathcal{N}(0, 0)\)
+\item
+  If bad fit: Adjust model based on modification indices (flawed)
+\end{itemize}
+
+\hypertarget{bayesian-sem}{%
+\subsection{Bayesian SEM}\label{bayesian-sem}}
+
+\begin{itemize}
+\tightlist
+\item
+  Bayesian SEM (Muthen \& Asparouhov, 2012)
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Don't just assume that cross-loadings are zero
+  \item
+    Instead make a more realistic and flexible assumption:
+
+    \begin{itemize}
+    \tightlist
+    \item
+      Small Variance Prior, e.g.: \(\mathcal{N}(0, 0.01)\)
+    \item
+      allowing for a more \emph{continuous} model identification and model selection
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\[\mathcal{N}(\mu = 0, \  \sigma = 0.01)\]
+
+\hypertarget{regularization}{%
+\subsection{Regularization}\label{regularization}}
+
+In Regression and Machine Learning\ldots{}
+
+The general approach is to apply a penalty the loss-function of a model that\ldots{}
+
+\[argmin\{ ( | \bf{Y} - \bf{X}\bf{\beta} |)^2 + \Sigma_{j = 1}^{p} |\beta_{j}^q|\} \]
+
+In a Bayesian context, so-called \emph{shrinkage priors} are used to achieve the same end (see Van Erp, Oberski, \& Mulder, 2019 for an overview).
+
+Lu, Chow, and Loken (2016) pointed out that \ldots{}
+
+\begin{itemize}
+\tightlist
+\item
+  Original approach with the small variance prior requires a 2-step approach (Lu et al., 2016)
+  Not only the parameters close to zero are shrunken to zero (as desired)\ldots{}
+  \ldots but also the parameters that are far from zero, and should not be shrunken (introducing bias!)
+  More advanced priors need to be identified that can outperform the small-variance prior \emph{in a single step}
+\end{itemize}
+
+\hypertarget{regularized-horseshoe-prior}{%
+\subsection{Regularized Horseshoe prior}\label{regularized-horseshoe-prior}}
+
+\emph{Horseshoe prior} (Carvalho, Polson, \& Scott, 2010):
+Practically no shrinkage for large coefficients, shrinkage to zero for small coefficients
+\emph{Global} component \(\lambda\), shrinking all parameters towards zero, \emph{local} component \(\tau_j\) allowing large parameters to escape shrinkage
+
+The \emph{Regularized Horseshoe} prior builds on the horseshoe prior, by\ldots{}
+
+\begin{figure}
+\centering
+\includegraphics{JMBKoch_Proposal_files/figure-latex/unnamed-chunk-1-1.pdf}
+\caption{\label{fig:unnamed-chunk-1}Density Plots of the Regularization Priors of Interest}
+\end{figure}
+
+\hypertarget{analytic-strategy}{%
+\subsection{Analytic Strategy}\label{analytic-strategy}}
+
+A Monte Carlo simulation study is conducted using stan (Carpenter et al., 2017).
+True Positives vs.~False Positives in estimating truly non-zero cross-loadings as non-zero (ROC).
+Conditions are based on (Lu et al., 2016) and will include two factor structus (1 non-zero cross-loading, several non-zero crossloadings), three sample sizes (100, 200, 300), and three magnitudes of the cross-loadings (0.1, 0.2, 0.3).
 
 \clearpage
 
@@ -196,7 +279,22 @@ Intented Journal of Publication: Structual Equation Modeling
 \setlength{\leftskip}{0.5in}
 
 \hypertarget{refs}{}
-\begin{CSLReferences}{0}{0}
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-carpenter_stan_2017}{}}%
+Carpenter, B., Gelman, A., Hoffman, M. D., Lee, D., Goodrich, B., Betancourt, M., \ldots{} Riddell, A. (2017). Stan: {A} {Probabilistic} {Programming} {Language}. \emph{Journal of Statistical Software}, \emph{76}(1), 1--32. \url{https://doi.org/10.18637/jss.v076.i01}
+
+\leavevmode\vadjust pre{\hypertarget{ref-carvalho_horseshoe_2010}{}}%
+Carvalho, C. M., Polson, N. G., \& Scott, J. G. (2010). The horseshoe estimator for sparse signals. \emph{Biometrika}, \emph{97}(2), 465--480. \url{https://doi.org/10.1093/biomet/asq017}
+
+\leavevmode\vadjust pre{\hypertarget{ref-lu_bayesian_2016}{}}%
+Lu, Z.-H., Chow, S.-M., \& Loken, E. (2016). Bayesian {Factor} {Analysis} as a {Variable}-{Selection} {Problem}: {Alternative} {Priors} and {Consequences}. \emph{Multivariate Behavioral Research}, \emph{51}(4), 519--539. \url{https://doi.org/10.1080/00273171.2016.1168279}
+
+\leavevmode\vadjust pre{\hypertarget{ref-muthen_bayesian_2012}{}}%
+Muthen, B., \& Asparouhov, T. (2012). Bayesian {SEM}: {A} more ﬂexible representation of substantive theory, 78. \url{https://doi.org/10.1037/a0026802}
+
+\leavevmode\vadjust pre{\hypertarget{ref-van_erp_shrinkage_2019}{}}%
+Van Erp, S., Oberski, D. L., \& Mulder, J. (2019). Shrinkage priors for {Bayesian} penalized regression. \emph{Journal of Mathematical Psychology}, \emph{89}, 31--50. \url{https://doi.org/10.1016/j.jmp.2018.12.004}
+
 \end{CSLReferences}
 
 \endgroup
