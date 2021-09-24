@@ -1,0 +1,3 @@
+% This preamble allows to remove the redundant title page from papaja's output.pdf
+\usepackage{atbegshi}% http://ctan.org/pkg/atbegshi
+\AtBeginDocument{\AtBeginShipoutNext{\AtBeginShipoutDiscard}}

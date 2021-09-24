@@ -95,6 +95,9 @@
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+% This preamble allows to remove the redundant title page from papaja's output.pdf
+\usepackage{atbegshi}% http://ctan.org/pkg/atbegshi
+\AtBeginDocument{\AtBeginShipoutNext{\AtBeginShipoutDiscard}}
 % Manuscript styling
 \usepackage{upgreek}
 \captionsetup{font=singlespacing,justification=justified}
@@ -165,14 +168,23 @@
 \begin{document}
 \maketitle
 
-%\begin{center}
+\vfill
 Research Proposal \\
 Michael Koch (6412157)\\
 Methodology and Statistics for the Behavioral, Biomedical, and Social Sciences \\
 Supervisor: Dr. Sara van Erp \\ 
 Email: j.m.b.koch@students.uu.nl \\
-Word Count: 750
-%\end{center}
+Word Count: 750 \\
+Intented Journal of Publication: Structual Equation Modeling
+
+% make page numbers start from second page 
+\pagenumbering{arabic}
+\setcounter{page}{0}
+\thispagestyle{empty}
+% make page numbers be on from second page 
+\pagestyle{plain}
+
+\clearpage
 
 \clearpage
 

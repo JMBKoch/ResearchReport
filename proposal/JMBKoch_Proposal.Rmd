@@ -4,7 +4,7 @@ shorttitle        : "One- vs. Two-Step Approach in Regularized Bayesian SEM"
 
 wordcount         : "X"
 
-bibliography      : ["Thesis.bib"]
+bibliography      : ["refs.bib"]
 
 floatsintext      : no
 figurelist        : no
@@ -15,19 +15,29 @@ mask              : no
 draft             : no
 
 documentclass     : "apa6"
-output            : papaja::apa6_pdf
+output            : 
+  papaja::apa6_pdf:
+    includes:
+      in_header: "preamble.tex"
 
 ---
 
 ```{=tex}
-%\begin{center}
+\vfill
 Research Proposal \\
 Michael Koch (6412157)\\
 Methodology and Statistics for the Behavioral, Biomedical, and Social Sciences \\
 Supervisor: Dr. Sara van Erp \\ 
 Email: j.m.b.koch@students.uu.nl \\
-Word Count: 750
-%\end{center}
+Word Count: 750 \\
+Intented Journal of Publication: Structual Equation Modeling
+
+% make page numbers start from second page 
+\pagenumbering{arabic}
+\setcounter{page}{0}
+\thispagestyle{empty}
+% make page numbers be on from second page 
+\pagestyle{plain}
 ```
 
 ```{r setup, include = FALSE}
@@ -37,15 +47,14 @@ r_refs("Thesis.bib")
 
 ```{r analysis-preferences}
 # Seed for random number generation
-set.seed(42)
+set.seed(0704)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
-
-
 
 \clearpage
 
 
+\clearpage
 
 # References
 
