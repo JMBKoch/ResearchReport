@@ -98,10 +98,12 @@ Practically no shrinkage for large coefficients, shrinkage to zero for small coe
 
 The *Regularized Horseshoe* prior builds on the horseshoe prior, by...
 
-$$$$
-$$$$
-$$$$
-$$$$
+$$\beta_j | \tau^2_j, \sim \mathcal{N}(0, \tau^2_j )$$
+
+$$\tau_j \sim C^+(0, \lambda) \ for \ j = 1, \ ..., \ p$$ 
+
+$$\lambda| \sigma \sim C^+(0, \sigma)$$
+
 
 ```{r, echo=F, warning=F, fig.cap="Density Plots of the Regularization Priors of Interest"}
 ndraws <- 1e+05 # 10000 draws
@@ -133,8 +135,8 @@ data.frame(dens = c(smallVar, regHs),
 ## Analytic Strategy
 
 A Monte Carlo simulation study is conducted using stan [@carpenter_stan_2017]. 
-True Positives vs. False Positives in estimating truly non-zero cross-loadings as non-zero (ROC).
-Conditions are based on [@lu_bayesian_2016] and will include two factor structus (1 non-zero cross-loading, several non-zero crossloadings), three sample sizes (100, 200, 300), and three magnitudes of the cross-loadings (0.1, 0.2, 0.3).
+True Positives vs. False Positives in estimating truly non-zero cross-loadings as non-zero are considered as main outcome (ROC).
+Conditions are based on [@lu_bayesian_2016] and will include two factor structures (1 non-zero cross-loading, several non-zero cross-loadings), three sample sizes (100, 200, 300), and three magnitudes of the cross-loadings (0.1, 0.2, 0.3).
 
 \clearpage
 

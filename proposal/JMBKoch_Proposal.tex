@@ -256,6 +256,12 @@ Practically no shrinkage for large coefficients, shrinkage to zero for small coe
 
 The \emph{Regularized Horseshoe} prior builds on the horseshoe prior, by\ldots{}
 
+\[\beta_j | \tau^2_j, \sim \mathcal{N}(0, \tau^2_j )\]
+
+\[\tau_j \sim C^+(0, \lambda) \ for \ j = 1, \ ..., \ p\]
+
+\[\lambda| \sigma \sim C^+(0, \sigma)\]
+
 \begin{figure}
 \centering
 \includegraphics{JMBKoch_Proposal_files/figure-latex/unnamed-chunk-1-1.pdf}
@@ -266,8 +272,8 @@ The \emph{Regularized Horseshoe} prior builds on the horseshoe prior, by\ldots{}
 \subsection{Analytic Strategy}\label{analytic-strategy}}
 
 A Monte Carlo simulation study is conducted using stan (Carpenter et al., 2017).
-True Positives vs.~False Positives in estimating truly non-zero cross-loadings as non-zero (ROC).
-Conditions are based on (Lu et al., 2016) and will include two factor structus (1 non-zero cross-loading, several non-zero crossloadings), three sample sizes (100, 200, 300), and three magnitudes of the cross-loadings (0.1, 0.2, 0.3).
+True Positives vs.~False Positives in estimating truly non-zero cross-loadings as non-zero are considered as main outcome (ROC).
+Conditions are based on (Lu et al., 2016) and will include two factor structures (1 non-zero cross-loading, several non-zero cross-loadings), three sample sizes (100, 200, 300), and three magnitudes of the cross-loadings (0.1, 0.2, 0.3).
 
 \clearpage
 
