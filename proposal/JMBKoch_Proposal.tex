@@ -168,6 +168,8 @@
 \begin{document}
 \maketitle
 
+
+% move text to bottom of page
 \vfill
 Research Proposal \\
 Michael Koch (6412157)\\
@@ -181,86 +183,46 @@ Intented Journal of Publication: Structural Equation Modeling
 \pagenumbering{arabic}
 \setcounter{page}{0}
 \thispagestyle{empty}
-% make page numbers be on from second page 
+% make page numbers from second page 
 \pagestyle{plain}
 
 \clearpage
 
-Structural Equation Modeling (SEM, )\ldots{}
+In the context of \emph{Confirmatory Factor Analysis (CFA)} a popular model falling under the broader class of \emph{Structural Equation Modeling (SEM)}, the desire for model simplicity manifest itself in the common practice of fitting models with a simple structure. Here, so-called ``cross-loadings,'' , are fixed to zero, which serves the purpose of both identifying the model, and yielding an end-result that can be interpreted straightforwardly. However, often times, this practice leads to poor model fit. Consequently, researchers commonly free some cross-loadings based on modification indices to improve model fit, a practice that is flawed for a variety of reason, among which risking capitalization on chance {[}REFs, there's plenty{]}.
 
-\begin{itemize}
-\tightlist
-\item
-  Identification constraints
-\item
-  Cross-loadings fixed to zero: \(\mathcal{N}(0, 0)\)
-\item
-  If bad fit: Adjust model based on modification indices (flawed)
-\end{itemize}
+As solution, Muthen and Asparouhov (2012) proposed \emph{Bayesian SEM}. For CFA models, they argued that rather than fixing all cross-loadings to zero, one should make a more realistic and flexible assumption.
+Formally, this is achieved by setting the so called Small Variance Prior for the cross-loadings, which is a normal distribution with mean zero and a very small variance \(\sigma\) (e.g.: \(\sigma = 0.01, \  \sigma = 0.001\))
 
-\hypertarget{bayesian-sem}{%
-\subsection{Bayesian SEM}\label{bayesian-sem}}
+\[\mathcal{N}(0, \sigma)\]
 
-\begin{itemize}
-\tightlist
-\item
-  Bayesian SEM (Muthen \& Asparouhov, 2012)
+By tuning the variance of the prior, one is able to fit a systematically, continuously varying sequence of models. This, in turn, allows for a more continuous process of model identification and model selection.
 
-  \begin{itemize}
-  \tightlist
-  \item
-    Don't just assume that cross-loadings are zero
-  \item
-    Instead make a more realistic and flexible assumption:
+However, a core issue with the approach by Muthen and Asparouhov (2012) is that applying the Small Variance Prior requires a 2-step approach (Lu, Chow, \& Loken, 2016). Not only the cross-loadings close to zero, that can be considered irrelevant, are shrunken to zero, as desired. Also the cross-loadings that are further from zero, and are therefore likely to play a more crucial role in accurately modeling the factor structure of the data are shrunken substantially, which introduces bias. Therefore, more advanced priors need to be identified that can outperform the small-variance prior \emph{in a single step}.
 
-    \begin{itemize}
-    \tightlist
-    \item
-      Small Variance Prior, e.g.: \(\mathcal{N}(0, 0.01)\)
-    \item
-      allowing for a more \emph{continuous} model identification and model selection
-    \end{itemize}
-  \end{itemize}
-\end{itemize}
-
-\[\mathcal{N}(\mu = 0, \  \sigma = 0.01)\]
-
-\hypertarget{regularization}{%
-\subsection{Regularization}\label{regularization}}
-
-In Regression and Machine Learning\ldots{}
-
-The general approach is to apply a penalty the loss-function of a model that\ldots{}
-
-\[argmin\{ ( | \bf{Y} - \bf{X}\bf{\beta} |)^2 + \Sigma_{j = 1}^{p} |\beta_{j}^q|\} \]
-
-In a Bayesian context, so-called \emph{shrinkage priors} are used to achieve the same end (see Van Erp, Oberski, \& Mulder, 2019 for an overview).
-
-Lu, Chow, and Loken (2016) pointed out that \ldots{}
-
-\begin{itemize}
-\tightlist
-\item
-  Original approach with the small variance prior requires a 2-step approach (Lu et al., 2016)
-  Not only the parameters close to zero are shrunken to zero (as desired)\ldots{}
-  \ldots but also the parameters that are far from zero, and should not be shrunken (introducing bias!)
-  More advanced priors need to be identified that can outperform the small-variance prior \emph{in a single step}
-\end{itemize}
-
-\hypertarget{regularized-horseshoe-prior}{%
-\subsection{Regularized Horseshoe prior}\label{regularized-horseshoe-prior}}
+A promising candidate
 
 \emph{Horseshoe prior} (Carvalho, Polson, \& Scott, 2010):
 Practically no shrinkage for large coefficients, shrinkage to zero for small coefficients
 \emph{Global} component \(\lambda\), shrinking all parameters towards zero, \emph{local} component \(\tau_j\) allowing large parameters to escape shrinkage
 
-The \emph{Regularized Horseshoe} prior builds on the horseshoe prior, by\ldots{}
+\begin{equation} 
+  \beta_j | \tau^2_j, \sim \mathcal{N}(0, \tau^2_j )  
+  
+  \tau_j \sim C^+(0, \lambda) \ for \ j = 1, \ ..., \ p  
+  
+  \lambda| \sigma \sim C^+(0, \sigma) 
+\end{equation}
 
-\[\beta_j | \tau^2_j, \sim \mathcal{N}(0, \tau^2_j )\]
+The \emph{Regularized Horseshoe} prior builds on the horseshoe prior, by, which is achieve by \ldots{} (See Equation 4).
 
-\[\tau_j \sim C^+(0, \lambda) \ for \ j = 1, \ ..., \ p\]
+\[\beta_j | \hat{\tau}, \lambda \sim \mathcal{N}(0, \hat{\tau}^2 \lambda), \ with \ \hat{\tau}^2 = \frac{c^2t_j^2}{c^2 + \lambda^2 \tau_j^2} \]
+\[\lambda | \lambda_0^2 \sim \mathcal{N}(0, \lambda_0^2), \ with \  \lambda_0 = \frac{p_0}{p-p_0}\frac{\sigma}{\sqrt{N}}\]
+\[\tau_j \sim \mathcal{C^+}(0, 1)\]
+\[c^2 | \nu, s^2 \sim \mathcal{IG}(\nu/2, \  \nu s^2/2)\]
 
-\[\lambda| \sigma \sim C^+(0, \sigma)\]
+In sum, the Regularized Horseshoe prior is characterized by a unique combination of desired traits. This raises the expectation that it would outperform the Small Variance Prior in selecting the correct loading structure of a CFA model, within a single step. However, while previous research has shown promising results with the Regularized Horseshoe Prior in the selection of the correct predictor structure of Regression models {[}REFs?!{]}, no previous research has validated its performance in the selection of the factor structure in CFA.
+
+To fill this gap, the aim of this study is to compare the Regularized Horseshoe Prior to the Small Variance Prior in their performance in selecting the true factor structure in Confirmatory Factor Analysis (CFA).
 
 \begin{figure}
 \centering
@@ -273,7 +235,7 @@ The \emph{Regularized Horseshoe} prior builds on the horseshoe prior, by\ldots{}
 
 A Monte Carlo simulation study is conducted using stan (Carpenter et al., 2017).
 True Positives vs.~False Positives in estimating truly non-zero cross-loadings as non-zero are considered as main outcome (ROC).
-Conditions are based on (Lu et al., 2016) and will include two factor structures (1 non-zero cross-loading, several non-zero cross-loadings), three sample sizes (100, 200, 300), and three magnitudes of the cross-loadings (0.1, 0.2, 0.3).
+Conditions are based on (Lu et al., 2016) and will include two factor structures (1 non-zero cross-loading, several non-zero cross-loadings), three sample sizes (100, 200, 300), and three magnitudes of the cross-loadings (0.1, 0.2, 0.3). These sizes are \ldots{}
 
 \clearpage
 
@@ -297,9 +259,6 @@ Lu, Z.-H., Chow, S.-M., \& Loken, E. (2016). Bayesian {Factor} {Analysis} as a {
 
 \leavevmode\vadjust pre{\hypertarget{ref-muthen_bayesian_2012}{}}%
 Muthen, B., \& Asparouhov, T. (2012). Bayesian {SEM}: {A} more ﬂexible representation of substantive theory, 78. \url{https://doi.org/10.1037/a0026802}
-
-\leavevmode\vadjust pre{\hypertarget{ref-van_erp_shrinkage_2019}{}}%
-Van Erp, S., Oberski, D. L., \& Mulder, J. (2019). Shrinkage priors for {Bayesian} penalized regression. \emph{Journal of Mathematical Psychology}, \emph{89}, 31--50. \url{https://doi.org/10.1016/j.jmp.2018.12.004}
 
 \end{CSLReferences}
 
