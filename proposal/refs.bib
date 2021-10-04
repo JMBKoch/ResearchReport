@@ -264,3 +264,22 @@
 	year = {2021},
 	file = {stan-users-guide-2_27.pdf:/home/michi/Zotero/storage/CKR2FGXS/stan-users-guide-2_27.pdf:application/pdf},
 }
+
+@article{ghosh_use_2018,
+	title = {On the {Use} of {Cauchy} {Prior} {Distributions} for {Bayesian} {Logistic} {Regression}},
+	volume = {13},
+	issn = {1936-0975, 1931-6690},
+	url = {https://projecteuclid.org/journals/bayesian-analysis/volume-13/issue-2/On-the-Use-of-Cauchy-Prior-Distributions-for-Bayesian-Logistic/10.1214/17-BA1051.full},
+	doi = {10.1214/17-BA1051},
+	abstract = {In logistic regression, separation occurs when a linear combination of the predictors can perfectly classify part or all of the observations in the sample, and as a result, finite maximum likelihood estimates of the regression coefficients do not exist. Gelman et al. (2008) recommended independent Cauchy distributions as default priors for the regression coefficients in logistic regression, even in the case of separation, and reported posterior modes in their analyses. As the mean does not exist for the Cauchy prior, a natural question is whether the posterior means of the regression coefficients exist under separation. We prove theorems that provide necessary and sufficient conditions for the existence of posterior means under independent Cauchy priors for the logit link and a general family of link functions, including the probit link. We also study the existence of posterior means under multivariate Cauchy priors. For full Bayesian inference, we develop a Gibbs sampler based on Pólya-Gamma data augmentation to sample from the posterior distribution under independent Student-t priors including Cauchy priors, and provide a companion R package tglm, available at CRAN. We demonstrate empirically that even when the posterior means of the regression coefficients exist under separation, the magnitude of the posterior samples for Cauchy priors may be unusually large, and the corresponding Gibbs sampler shows extremely slow mixing. While alternative algorithms such as the No-U-Turn Sampler (NUTS) in Stan can greatly improve mixing, in order to resolve the issue of extremely heavy tailed posteriors for Cauchy priors under separation, one would need to consider lighter tailed priors such as normal priors or Student-t priors with degrees of freedom larger than one.},
+	number = {2},
+	urldate = {2021-10-02},
+	journal = {Bayesian Analysis},
+	author = {Ghosh, Joyee and Li, Yingbo and Mitra, Robin},
+	month = jun,
+	year = {2018},
+	note = {Publisher: International Society for Bayesian Analysis},
+	keywords = {binary regression, existence of posterior mean, Markov chain Monte Carlo, probit regression, separation, slow mixing},
+	pages = {359--383},
+	file = {Full Text PDF:/home/michi/Zotero/storage/A9NGHXVS/Ghosh et al. - 2018 - On the Use of Cauchy Prior Distributions for Bayes.pdf:application/pdf;Snapshot:/home/michi/Zotero/storage/EM6XRLTT/17-BA1051.html:text/html},
+}
