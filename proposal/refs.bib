@@ -44,20 +44,6 @@
 	file = {Muthen and Asparouhov - Bayesian SEM A more ﬂexible representation of sub.pdf:/home/michi/Zotero/storage/2YF49DGA/Muthen and Asparouhov - Bayesian SEM A more ﬂexible representation of sub.pdf:application/pdf},
 }
 
-@article{betancourt_conceptual_2018,
-	title = {A {Conceptual} {Introduction} to {Hamiltonian} {Monte} {Carlo}},
-	url = {http://arxiv.org/abs/1701.02434},
-	abstract = {Hamiltonian Monte Carlo has proven a remarkable empirical success, but only recently have we begun to develop a rigorous understanding of why it performs so well on difficult problems and how it is best applied in practice. Unfortunately, that understanding is confined within the mathematics of differential geometry which has limited its dissemination, especially to the applied communities for which it is particularly important. In this review I provide a comprehensive conceptual account of these theoretical foundations, focusing on developing a principled intuition behind the method and its optimal implementations rather of any exhaustive rigor. Whether a practitioner or a statistician, the dedicated reader will acquire a solid grasp of how Hamiltonian Monte Carlo works, when it succeeds, and, perhaps most importantly, when it fails.},
-	urldate = {2021-08-30},
-	journal = {arXiv:1701.02434 [stat]},
-	author = {Betancourt, Michael},
-	month = jul,
-	year = {2018},
-	note = {arXiv: 1701.02434},
-	keywords = {Statistics - Methodology},
-	file = {arXiv.org Snapshot:/home/michi/Zotero/storage/24RF9EWC/1701.html:text/html;arXiv Fulltext PDF:/home/michi/Zotero/storage/Q73W3YHC/Betancourt - 2018 - A Conceptual Introduction to Hamiltonian Monte Car.pdf:application/pdf},
-}
-
 @article{lu_bayesian_2016,
 	title = {Bayesian {Factor} {Analysis} as a {Variable}-{Selection} {Problem}: {Alternative} {Priors} and {Consequences}},
 	volume = {51},
@@ -144,6 +130,7 @@
 	year = {2020},
 	note = {arXiv: 2008.07733},
 	keywords = {Statistics - Computation},
+	annote = {Comment: 21 pages, 5 figures},
 	file = {arXiv Fulltext PDF:/home/michi/Zotero/storage/XVTSVW7E/Merkle et al. - 2020 - Efficient Bayesian Structural Equation Modeling in.pdf:application/pdf;arXiv.org Snapshot:/home/michi/Zotero/storage/5MTICTCA/2008.html:text/html},
 }
 
@@ -282,4 +269,35 @@
 	keywords = {binary regression, existence of posterior mean, Markov chain Monte Carlo, probit regression, separation, slow mixing},
 	pages = {359--383},
 	file = {Full Text PDF:/home/michi/Zotero/storage/A9NGHXVS/Ghosh et al. - 2018 - On the Use of Cauchy Prior Distributions for Bayes.pdf:application/pdf;Snapshot:/home/michi/Zotero/storage/EM6XRLTT/17-BA1051.html:text/html},
+}
+
+@article{betancourt_conceptual_2018,
+	title = {A {Conceptual} {Introduction} to {Hamiltonian} {Monte} {Carlo}},
+	url = {http://arxiv.org/abs/1701.02434},
+	abstract = {Hamiltonian Monte Carlo has proven a remarkable empirical success, but only recently have we begun to develop a rigorous understanding of why it performs so well on difficult problems and how it is best applied in practice. Unfortunately, that understanding is confined within the mathematics of differential geometry which has limited its dissemination, especially to the applied communities for which it is particularly important. In this review I provide a comprehensive conceptual account of these theoretical foundations, focusing on developing a principled intuition behind the method and its optimal implementations rather of any exhaustive rigor. Whether a practitioner or a statistician, the dedicated reader will acquire a solid grasp of how Hamiltonian Monte Carlo works, when it succeeds, and, perhaps most importantly, when it fails.},
+	urldate = {2021-10-05},
+	journal = {arXiv:1701.02434 [stat]},
+	author = {Betancourt, Michael},
+	month = jul,
+	year = {2018},
+	note = {arXiv: 1701.02434},
+	keywords = {Statistics - Methodology},
+	annote = {Comment: 60 pages, 42 figures},
+	file = {arXiv Fulltext PDF:/home/michi/Zotero/storage/P694JZY7/Betancourt - 2018 - A Conceptual Introduction to Hamiltonian Monte Car.pdf:application/pdf;arXiv.org Snapshot:/home/michi/Zotero/storage/88ZVPIH5/1701.html:text/html},
+}
+
+@article{homan_no-u-turn_2014,
+	title = {The {No}-{U}-turn sampler: adaptively setting path lengths in {Hamiltonian} {Monte} {Carlo}},
+	volume = {15},
+	issn = {1532-4435},
+	shorttitle = {The {No}-{U}-turn sampler},
+	abstract = {Hamiltonian Monte Carlo (HMC) is a Markov chain Monte Carlo (MCMC) algorithm that avoids the random walk behavior and sensitivity to correlated parameters that plague many MCMC methods by taking a series of steps informed by first-order gradient information. These features allow it to converge to high-dimensional target distributions much more quickly than simpler methods such as random walk Metropolis or Gibbs sampling. However, HMC's performance is highly sensitive to two user-specified parameters: a step size ε and a desired number of steps L. In particular, if L is too small then the algorithm exhibits undesirable random walk behavior, while if L is too large the algorithm wastes computation. We introduce the No-U-Turn Sampler (NUTS), an extension to HMC that eliminates the need to set a number of steps L. NUTS uses a recursive algorithm to build a set of likely candidate points that spans a wide swath of the target distribution, stopping automatically when it starts to double back and retrace its steps. Empirically, NUTS performs at least as efficiently as (and sometimes more effciently than) a well tuned standard HMC method, without requiring user intervention or costly tuning runs. We also derive a method for adapting the step size parameter ε on the fly based on primal-dual averaging. NUTS can thus be used with no hand-tuning at all, making it suitable for applications such as BUGS-style automatic inference engines that require efficient "turnkey" samplers.},
+	number = {1},
+	journal = {The Journal of Machine Learning Research},
+	author = {Homan, Matthew D. and Gelman, Andrew},
+	month = jan,
+	year = {2014},
+	keywords = {adaptive Monte Carlo, Bayesian inference, dual averaging, Hamiltonian Monte Carlo, Markov chain Monte Carlo},
+	pages = {1593--1623},
+	file = {Full Text PDF:/home/michi/Zotero/storage/D2L7CXTP/Homan and Gelman - 2014 - The No-U-turn sampler adaptively setting path len.pdf:application/pdf},
 }
