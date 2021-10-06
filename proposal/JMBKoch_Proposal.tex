@@ -188,35 +188,31 @@ FETC permission obtained on 27'th September 2021
 
 \clearpage
 
-A common model-constraint in \emph{Confirmatory Factor Analysis (CFA)} is
-fixing all cross-loadings to zero. This is done to identify the model,
-and to achieve an easy-to-interpret factor structure. However, this
-practice often leads to poor model fit. Consequently, researchers
-commonly free some cross-loadings based on modification indices to
-improve model fit. This practice, however, is flawed for a variety of
-reasons, among which risking capitalization on chance
-(Jacobucci, Grimm, \& McArdle, 2016; Muthen \& Asparouhov, 2012).
-
-As solution, Muthen and Asparouhov (2012) proposed that rather than fixing all
+\emph{Confirmatory Factor Analysis (CFA)} is an essential tool for modeling
+measurement structures. Usually, all cross-loadings, factor
+loadings that relate items to factors that they theoretically do not belong to, are fixed to zero to identify the model. This often leads to poor model fit,
+and forces researchers to free some cross-loadings again
+to improve fit, a practice that is flawed for a variety of reasons,
+among which risking capitalization on chance
+(Jacobucci, Grimm, \& McArdle, 2016; Muthen \& Asparouhov, 2012). As solution,
+Muthen and Asparouhov (2012) proposed that rather than fixing \emph{all}
 cross-loadings to zero, one should should assume that \emph{most}
 cross-loadings are zero. Formally, this is achieved by setting the
 so-called \emph{Small Variance Prior} for the cross-loadings, which is a
 normal distribution with mean zero and a very small variance (e.g.:
 \(\sigma = 0.01, \  \sigma = 0.001\)). Such prior gives cross-loadings of
 zero large prior density, but cross-loadings that are far from zero
-almost zero prior density (see Figure 1 for an example with
+almost no prior density (see Figure 1 for an example with
 \(\sigma = 0.01\)). Consequently, all cross-loadings in the model are
-shrunken substantially, those close to zero to zero, and those far from
-zero towards zero. The larger the prior's variance, the more admissive
-the model is in the amount of deviation from zero it allows. Hence, by
-tuning the variance of the prior, one is able to fit a systematically
-and continuously varying sequence of models. This allows for a much more
-continuous process of model identification and model selection than
-classical CFA.
+shrunken. The larger the prior's variance, the more
+admissive the model is in the amount of deviation from zero it allows.
+Hence, by tuning the variance of the prior, one is able to fit a
+systematically and continuously varying sequence of models. This allows
+for a much more continuous process of model identification than classical CFA.
 
-However, an issue with this method is that not only the cross-loadings
+An issue with Muthen and Asparouhov (2012)'s approach is that not only the cross-loadings
 close to zero that are considered irrelevant are shrunken to zero, as
-desired. Also the cross-loadings that are further from zero are shrunken
+desired, but also the ones further from zero are shrunken
 towards zero, which introduces bias. The method thus requires a two-step
 approach. First, the model is estimated with shrinkage. Then the model
 is re-estimated, with cross-loadings that have been shrunken to zero in
@@ -225,28 +221,27 @@ estimated without shrinkage. To overcome this, alternative priors need
 to be identified that can outperform the small-variance prior \emph{in a
 single step}.
 
-Lu, Chow, and Loken (2016) pointed out that the Bayesian CFA approach by
+Lu, Chow, and Loken (2016) pointed out that the approach by
 Muthen and Asparouhov (2012) can be viewed as a form of \emph{Regularization}, where
 rather than selecting variables that are relevant as predictors in a
 regression model, cross-loadings that are relevant in modeling a factor
 structure are selected. The literature on regularization in regression
 (see Van Erp, Oberski, \& Mulder, 2019 for an overview) can thus provide
-alternative priors. Here, the \emph{Regularized Horseshoe Prior}
+alternative priors. The \emph{Regularized Horseshoe Prior}
 (Piironen \& Vehtari, 2017), an extension of the \emph{Horseshoe prior}
 (Carvalho, Polson, \& Scott, 2010), appears as particularly promising. Both
 priors are characterized by a \emph{global} shrinkage component \(\omega\),
-shrinking all parameters towards zero (explaining the steep peak at
-\(\lambda_j = 0\) in Figure 1), and a \emph{local} component \(\tau_j\), which
+shrinking all parameters towards zero (explaining the steep peak at zero
+in Figure 1), and a \emph{local} component \(\tau_j\), which
 gives the prior its heavy tails and thereby allows large parameters to
 escape the shrinkage entirely\footnote{We deviate from the common notation of the global shrinkage
   parameter as \(\lambda\), as that letter is commonly reserved for
   factor loadings in CFA.}. Although being one of the core
 qualities of the original Horseshoe Prior, in practice not shrinking
-large coefficients at all can lead to computational issues in the MCMC
-sampling of the model (Ghosh, Li, \& Mitra, 2018; Piironen \& Vehtari, 2017). To
+large coefficients at all leads estimation issues (Ghosh, Li, \& Mitra, 2018; Piironen \& Vehtari, 2017). To
 avoid this, the \emph{Regularized} Horseshoe Prior\footnote{Following previous research, we set the hyper-parameters \(\nu = 4\)
   and \(s^2 = 2\) (Piironen \& Vehtari, 2017; Van Erp et al., 2019).} is designed to ensure
-that there is always a little shrinkage, even for large parameters
+that even for large parameters there is at least a little shrinkage
 (Piironen \& Vehtari, 2017):
 
 \[\lambda_j | \hat{\tau}, \omega \sim \mathcal{N}(0, \ \hat{\tau}^2 \omega), \ with \ \hat{\tau}^2 = \frac{c^2\tau_j^2}{c^2 + \omega^2 \tau_j^2}\]
@@ -277,13 +272,12 @@ A Monte Carlo simulation study is conducted using stan
 (Stan Development Team, 2021). True Positives vs.~False Positives
 in estimating truly non-zero cross-loadings as non-zero are considered
 as main outcome. Conditions are based on Lu et al. (2016) and will
-include two factor structures (1 non-zero cross-loading, several
+include two factor structures (one non-zero cross-loading, two
 non-zero cross-loadings), three sample sizes (100, 200, 300), and three
 magnitudes of the cross-loadings (0.1, 0.2, 0.3), yielding a total of
 \(2 \times 3 \times 3 = 18\) main conditions. All models will be sampled
-using the No-U-Turn-sampler (Betancourt, 2018; Homan \& Gelman, 2014), where each time
-four chains are sampled for 1000 iterations, following a burn-in period
-of 1000.
+using the No-U-Turn-sampler (Betancourt, 2018; Homan \& Gelman, 2014), where each time four chains are sampled
+for 1000 iterations, following a burn-in period of 1000.
 
 \clearpage
 
