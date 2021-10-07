@@ -103,7 +103,7 @@ in Figure 1), and a *local* component $\tau_j$, which
 gives the prior its heavy tails and thereby allows large parameters to
 escape the shrinkage entirely[^1]. Although being one of the core
 qualities of the original Horseshoe Prior, in practice not shrinking
-large coefficients at all leads estimation issues [@ghosh_use_2018; @piironen_sparsity_2017]. To
+large coefficients at all leads to estimation issues [@ghosh_use_2018; @piironen_sparsity_2017]. To
 avoid this, the *Regularized* Horseshoe Prior[^2] is designed to ensure
 that even for large parameters there is at least a little shrinkage
 [@piironen_sparsity_2017]:
