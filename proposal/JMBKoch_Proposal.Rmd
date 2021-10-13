@@ -1,6 +1,6 @@
 ---
-title             : "One- vs. Two-Step Approach in Regularized Bayesian Confirmatory Factor Analysis (CFA)"
-shorttitle        : "One- vs. Two-Step Approach in Regularized Bayesian CFA"
+title             : "Getting a Step Ahead: Using the Regularized Horseshoe Prior to Regularize Cross-Loadings in Bayesian CFA"
+shorttitle        : "Getting a Step Ahead: Using the Regularized Horseshoe Prior to Regularize Cross-Loadings in Bayesian CFA"
 wordcount         : "X"
 bibliography      : ["refs.bib"]
 floatsintext      : no
@@ -15,6 +15,7 @@ output            :
   papaja::apa6_pdf:
     includes:
       in_header: "preamble.tex"
+    latex_engine: xelatex
 editor_options: 
   markdown: 
     wrap: 72
@@ -28,7 +29,7 @@ Michael Koch (6412157)\\
 Methodology and Statistics for the Behavioral, Biomedical, and Social Sciences \\
 Supervisor: Dr. Sara van Erp \\ 
 Email: j.m.b.koch@students.uu.nl \\
-Word Count: 750 \\
+Word Count: 746 \\
 Intented Journal of Publication: Structural Equation Modeling \\
 FETC permission obtained on 27'th September 2021
 
@@ -45,6 +46,7 @@ library(LaplacesDemon) # for horseshoe density
 library(ggplot2)
 library(magrittr)
 library(jtools) # for apa ggplot theme
+library(latex2exp)
 ```
 
 ```{r analysis-preferences}
@@ -61,21 +63,15 @@ loadings that relate items to factors that they theoretically do not belong to, 
 and forces researchers to free some cross-loadings again
 to improve fit, a practice that is flawed for a variety of reasons,
 among which risking capitalization on chance
-[@jacobucci_regularized_2016; @muthen_bayesian_2012]. As solution,
+[@muthen_bayesian_2012]. As solution,
 @muthen_bayesian_2012 proposed that rather than fixing *all*
 cross-loadings to zero, one should should assume that *most*
 cross-loadings are zero. Formally, this is achieved by setting the
-so-called *Small Variance Prior* for the cross-loadings, which is a
+so-called *Small Variance Normal Prior* for the cross-loadings, which is a
 normal distribution with mean zero and a very small variance (e.g.:
-$\sigma = 0.01, \  \sigma = 0.001$). Such prior gives cross-loadings of
-zero large prior density, but cross-loadings that are far from zero
-almost no prior density (see Figure 1 for an example with
-$\sigma = 0.01$). Consequently, all cross-loadings in the model are
+$\sigma^2 = 0.01, \  \sigma^2 = 0.001$). This prior has a large peak at zero, and very thin tails (see Figure 1). Hence, it attaches large prior mass to cross-loadings of or near zero, while attaching almost no prior mass to cross-loadings further from zero. Consequently, all cross-loadings in the model are
 shrunken. The larger the prior's variance, the more
 admissive the model is in the amount of deviation from zero it allows.
-Hence, by tuning the variance of the prior, one is able to fit a
-systematically and continuously varying sequence of models. This allows
-for a much more continuous process of model identification than classical CFA.
 
 An issue with @muthen_bayesian_2012's approach is that not only the cross-loadings
 close to zero that are considered irrelevant are shrunken to zero, as
@@ -84,47 +80,20 @@ towards zero, which introduces bias. The method thus requires a two-step
 approach. First, the model is estimated with shrinkage. Then the model
 is re-estimated, with cross-loadings that have been shrunken to zero in
 the previous step fixed to zero, and the remaining cross-loadings
-estimated without shrinkage. To overcome this, alternative priors need
-to be identified that can outperform the small-variance prior *in a
-single step*.
+estimated without shrinkage. This process is tedious and computationally expensive. Therefore, alternative priors need
+to be identified that can outperform the Small Variance Normal Prior *in a single step*.
 
 @lu_bayesian_2016 pointed out that the approach by
-@muthen_bayesian_2012 can be viewed as a form of *Regularization*, where
-rather than selecting variables that are relevant as predictors in a
-regression model, cross-loadings that are relevant in modeling a factor
-structure are selected. The literature on regularization in regression
+@muthen_bayesian_2012 can be viewed as a form of *Regularization*, where cross-loadings that are relevant in modeling a factor structure are selected. The literature on regularization in regression
 [see @van_erp_shrinkage_2019 for an overview] can thus provide
 alternative priors. The *Regularized Horseshoe Prior*
-[@piironen_sparsity_2017], an extension of the *Horseshoe prior*
-[@carvalho_horseshoe_2010], appears as particularly promising. Both
-priors are characterized by a *global* shrinkage component $\omega$,
-shrinking all parameters towards zero (explaining the steep peak at zero
-in Figure 1), and a *local* component $\tau_j$, which
-gives the prior its heavy tails and thereby allows large parameters to
-escape the shrinkage entirely[^1]. Although being one of the core
-qualities of the original Horseshoe Prior, in practice not shrinking
-large coefficients at all leads to estimation issues [@ghosh_use_2018; @piironen_sparsity_2017]. To
-avoid this, the *Regularized* Horseshoe Prior[^2] is designed to ensure
-that even for large parameters there is at least a little shrinkage
-[@piironen_sparsity_2017]:
+[@piironen_sparsity_2017], appears as particularly promising. This prior still has a sharp peak at zero resulting in shrinkage to zero of small coefficients (see Figure 1). However, it has much heavier tails, resulting in practically no shrinkage of larger coefficients. This prior is thus the best of both worlds, by only shrinking irrelevant parameters to zero, within one step [@piironen_sparsity_2017].
 
-[^1]: We deviate from the common notation of the global shrinkage
-    parameter as $\lambda$, as that letter is commonly reserved for
-    factor loadings in CFA.
 
-[^2]: Following previous research, we set the hyper-parameters $\nu = 4$
-    and $s^2 = 2$ [@piironen_sparsity_2017; @van_erp_shrinkage_2019].
-
-$$\lambda_j | \hat{\tau}, \omega \sim \mathcal{N}(0, \ \hat{\tau}^2 \omega), \ with \ \hat{\tau}^2 = \frac{c^2\tau_j^2}{c^2 + \omega^2 \tau_j^2}$$
-$$\omega | \omega_0^2 \sim \mathcal{N}(0,\  \omega_0^2), \ with \  \omega_0 = \frac{p_0}{p-p_0}\frac{\sigma}{\sqrt{N}}$$
-$$\tau_j \sim \mathcal{C^+}(0, \ 1)$$
-$$c^2 | \nu, s^2 \sim \mathcal{IG}(\nu/2, \  \nu s^2/2),$$ where $p_0$
-represents a prior guess of the number of relevant cross-loadings.
-
-```{r, echo=F, warning=F, fig.cap="Density Plots of the Regularization Priors of Interest"}
+```{r dev='cairo_pdf', include=T, echo=F, warning=F, fig.cap="Density Plots of the Regularization Priors of Interest"}
 # Make Figure 1 with 
 ndraws <- 5e+05 # 10000 draws
-# sample small variance prior
+# sample Small Variance Normal Prior
 smallVar <- rnorm(ndraws, mean = 0, sd = 0.1)
 
 # sample regularized horseshoe prior
@@ -138,13 +107,18 @@ for(i in 1:ndraws){
 }
 
 # make plot
+plotDat <- 
 data.frame(dens = c(smallVar, regHs), 
-          prior = rep(c("Small Variance Prior", "Regularized Horseshoe Prior"), each = ndraws),
-          asymp = rep(0, ndraws)) %>% 
+          prior = as.factor(rep(c("Small Variance Normal Prior", "Regularized Horseshoe Prior"), each = ndraws)),
+          asymp = rep(0, ndraws)) 
+
+levels(plotDat$prior) <- c("Regularized Horseshoe Prior", "Small Variance Normal Prior (\u03c3\u00B2 = 0.01)") 
+
+plotDat %>% 
   ggplot(aes(x = dens, fill = prior, linetype = prior)) + 
   geom_density(alpha = .5)+
   geom_vline(aes(xintercept = asymp), linetype = "dashed") +
-  xlim(-.3, .3)+
+  xlim(-.5, .5)+
   labs(x = "Size Cross-Loading", title = NULL)+
   theme_apa(legend.pos = "bottom")
 ```
@@ -154,22 +128,20 @@ the selection of relevant predictors in regression
 [@piironen_sparsity_2017; @van_erp_shrinkage_2019], no previous research
 has validated its performance in selecting relevant cross-loadings in
 CFA. To fill this gap, the aim of this study is to compare the
-Regularized Horseshoe Prior to the Small Variance Prior in their
-performance in selecting the true factor structure in Confirmatory
-Factor Analysis (CFA).
+Regularized Horseshoe Prior to the Small Variance Normal Prior in their
+performance in selecting the true factor structure in CFA.
 
 ## Analytic Strategy
 
 A Monte Carlo simulation study is conducted using stan
-[@stan_development_team_stan_2021]. True Positives vs. False Positives
-in estimating truly non-zero cross-loadings as non-zero are considered
-as main outcome. Conditions are based on @lu_bayesian_2016 and will
-include two factor structures (one non-zero cross-loading, two
-non-zero cross-loadings), three sample sizes (100, 200, 300), and three
-magnitudes of the cross-loadings (0.1, 0.2, 0.3). All models will be sampled
-using the No-U-Turn-sampler [@homan_no-u-turn_2014;
-@betancourt_conceptual_2018], where each time four chains are sampled
-for 1000 iterations, following a burn-in period of 1000.
+[@stan_development_team_stan_2021]. As main outcomes, we consider the bias in the estimated cross-loadings, and the trade-off in true positives vs. false positives in correctly identifying non-zero cross-loadings as non-zero (ROC curves). Hereby, the main criterion in selecting cross-loadings as non-zero is whether their 95% HPD interval contains zero [@zhang_criteria_2021]. 
+
+We include two factor structures, one with a single, and one with three non-zero cross-loadings. Each model consists of three factors a three items. Factors are scaled by setting their means to zero and their variances to one. The correlations between all factors is set to 0.5, and the residual variance of all items to 0.3. We vary between three sample sizes (100, 200, 300), and three magnitudes of the cross-loadings (0.1, 0.2, 0.3). 
+
+Following @muthen_bayesian_2012 we consider three values for the hyperparameter of the Small Variance Normal Prior ($\sigma^2$ = 0.001, 0.01, 0.1). The Regularized Horseshoe Prior has five hyperparameters, and varying all of them broadly would lead to an unfeasible number of conditions. We will therefore conduct a pilot study on a single simulated dataset to identify combinations of hyperparameters that are worth to consider in the main study. 
+    
+All models will be sampled using the No-U-Turn-Sampler [@homan_no-u-turn_2014;
+@betancourt_conceptual_2018]. We aim to identify a suitable chain length in the pilot study.
 
 \clearpage
 
