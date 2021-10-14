@@ -5,7 +5,7 @@
 \documentclass[
   english,
   man]{apa6}
-\title{Getting a Step Ahead: Using the Regularized Horseshoe Prior to Regularize Cross-Loadings in Bayesian CFA}
+\title{Getting a Step Ahead: Using the Regularized Horseshoe Prior to Select Cross-Loadings in Bayesian CFA}
 \author{\phantom{0}}
 \date{}
 
@@ -41,7 +41,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  pdftitle={Getting a Step Ahead: Using the Regularized Horseshoe Prior to Regularize Cross-Loadings in Bayesian CFA},
+  pdftitle={Getting a Step Ahead: Using the Regularized Horseshoe Prior to Select Cross-Loadings in Bayesian CFA},
   pdflang={en-EN},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
@@ -139,7 +139,7 @@
   {\section*{\protect\normalfont{\@title}}}
   {}{\typeout{Failed to patch title.}}
 \makeatother
-\shorttitle{Getting a Step Ahead: Using the Regularized Horseshoe Prior to Regularize Cross-Loadings in Bayesian CFA}
+\shorttitle{Getting a Step Ahead: Using the Regularized Horseshoe Prior to Select Cross-Loadings in Bayesian CFA}
 \keywords{\newline\indent Word count: X}
 \DeclareDelayedFloatFlavor{ThreePartTable}{table}
 \DeclareDelayedFloatFlavor{lltable}{table}
@@ -175,7 +175,7 @@ Michael Koch (6412157)\\
 Methodology and Statistics for the Behavioral, Biomedical, and Social Sciences \\
 Supervisor: Dr. Sara van Erp \\ 
 Email: j.m.b.koch@students.uu.nl \\
-Word Count: 746 \\
+Word Count: 695 \\
 Intented Journal of Publication: Structural Equation Modeling \\
 FETC permission obtained on 27'th September 2021
 
@@ -194,7 +194,7 @@ loadings that relate items to factors that they theoretically do not belong to, 
 and forces researchers to free some cross-loadings again
 to improve fit, a practice that is flawed for a variety of reasons,
 among which risking capitalization on chance
-(Muthen \& Asparouhov, 2012). As solution,
+(MacCallum, Roznowski, \& Necowitz, 1992). As solution,
 Muthen and Asparouhov (2012) proposed that rather than fixing \emph{all}
 cross-loadings to zero, one should should assume that \emph{most}
 cross-loadings are zero. Formally, this is achieved by setting the
@@ -208,17 +208,14 @@ An issue with Muthen and Asparouhov (2012)'s approach is that not only the cross
 close to zero that are considered irrelevant are shrunken to zero, as
 desired, but also the ones further from zero are shrunken
 towards zero, which introduces bias. The method thus requires a two-step
-approach. First, the model is estimated with shrinkage. Then the model
+approach. First, the model is estimated with the Small Variance Normal Prior. Then the model
 is re-estimated, with cross-loadings that have been shrunken to zero in
 the previous step fixed to zero, and the remaining cross-loadings
 estimated without shrinkage. This process is tedious and computationally expensive. Therefore, alternative priors need
 to be identified that can outperform the Small Variance Normal Prior \emph{in a single step}.
 
-Lu, Chow, and Loken (2016) pointed out that the approach by
-Muthen and Asparouhov (2012) can be viewed as a form of \emph{Regularization}, where cross-loadings that are relevant in modeling a factor structure are selected. The literature on regularization in regression
-(see Van Erp, Oberski, \& Mulder, 2019 for an overview) can thus provide
-alternative priors. The \emph{Regularized Horseshoe Prior}
-(Piironen \& Vehtari, 2017), appears as particularly promising. This prior still has a sharp peak at zero resulting in shrinkage to zero of small coefficients (see Figure 1). However, it has much heavier tails, resulting in practically no shrinkage of larger coefficients. This prior is thus the best of both worlds, by only shrinking irrelevant parameters to zero, within one step (Piironen \& Vehtari, 2017).
+One prior that appears as particularly promising is the \emph{Regularized Horseshoe Prior}
+(Piironen \& Vehtari, 2017). This prior still has a sharp peak at zero resulting in shrinkage to zero for small coefficients (see Figure 1). However, it has much heavier tails, resulting in practically no shrinkage of larger coefficients. This prior is thus the best of both worlds, by only shrinking irrelevant parameters to zero, within one step (Piironen \& Vehtari, 2017).
 
 \begin{figure}
 \centering
@@ -228,7 +225,7 @@ alternative priors. The \emph{Regularized Horseshoe Prior}
 
 While the Regularized Horseshoe Prior has been shown to perform well in
 the selection of relevant predictors in regression
-(Piironen \& Vehtari, 2017; Van Erp et al., 2019), no previous research
+(Piironen \& Vehtari, 2017; Van Erp, Oberski, \& Mulder, 2019), no previous research
 has validated its performance in selecting relevant cross-loadings in
 CFA. To fill this gap, the aim of this study is to compare the
 Regularized Horseshoe Prior to the Small Variance Normal Prior in their
@@ -244,12 +241,14 @@ We include two factor structures, one with a single, and one with three non-zero
 
 Following Muthen and Asparouhov (2012) we consider three values for the hyperparameter of the Small Variance Normal Prior (\(\sigma^2\) = 0.001, 0.01, 0.1). The Regularized Horseshoe Prior has five hyperparameters, and varying all of them broadly would lead to an unfeasible number of conditions. We will therefore conduct a pilot study on a single simulated dataset to identify combinations of hyperparameters that are worth to consider in the main study.
 
-All models will be sampled using the No-U-Turn-Sampler (Betancourt, 2018; Homan \& Gelman, 2014). We aim to identify a suitable chain length in the pilot study.
+All models will be sampled using the No-U-Turn-Sampler (Homan \& Gelman, 2014). We aim to identify a suitable chain length in the pilot study.
 
 \clearpage
 
 \hypertarget{references}{%
 \section{References}\label{references}}
+
+~
 
 \begingroup
 \setlength{\parindent}{-0.5in}
@@ -257,14 +256,11 @@ All models will be sampled using the No-U-Turn-Sampler (Betancourt, 2018; Homan 
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-betancourt_conceptual_2018}{}}%
-Betancourt, M. (2018). A {Conceptual} {Introduction} to {Hamiltonian} {Monte} {Carlo}. \emph{arXiv:1701.02434 {[}Stat{]}}. Retrieved from \url{http://arxiv.org/abs/1701.02434}
-
 \leavevmode\vadjust pre{\hypertarget{ref-homan_no-u-turn_2014}{}}%
 Homan, M. D., \& Gelman, A. (2014). The {No}-{U}-turn sampler: Adaptively setting path lengths in {Hamiltonian} {Monte} {Carlo}. \emph{The Journal of Machine Learning Research}, \emph{15}(1), 1593--1623.
 
-\leavevmode\vadjust pre{\hypertarget{ref-lu_bayesian_2016}{}}%
-Lu, Z.-H., Chow, S.-M., \& Loken, E. (2016). Bayesian {Factor} {Analysis} as a {Variable}-{Selection} {Problem}: {Alternative} {Priors} and {Consequences}. \emph{Multivariate Behavioral Research}, \emph{51}(4), 519--539. \url{https://doi.org/10.1080/00273171.2016.1168279}
+\leavevmode\vadjust pre{\hypertarget{ref-maccallum_model_1992}{}}%
+MacCallum, R. C., Roznowski, M., \& Necowitz, L. B. (1992). Model modifications in covariance structure analysis: The problem of capitalization on chance. \emph{Psychological Bulletin}, \emph{111}(3), 490--504. \url{https://doi.org/10.1037/0033-2909.111.3.490}
 
 \leavevmode\vadjust pre{\hypertarget{ref-muthen_bayesian_2012}{}}%
 Muthen, B., \& Asparouhov, T. (2012). Bayesian {SEM}: {A} more ﬂexible representation of substantive theory, 78. \url{https://doi.org/10.1037/a0026802}
@@ -284,6 +280,42 @@ Zhang, L., Pan, J., \& Ip, E. H. (2021). Criteria for {Parameter} {Identificatio
 \end{CSLReferences}
 
 \endgroup
+
+\clearpage
+
+\begingroup
+\setlength{\parskip}{0in}
+\setlength{\parindent}{-0.27in}
+\setlength{\leftskip}{0.5in}
+
+\hypertarget{additional-references}{%
+\section{Additional References}\label{additional-references}}
+
+Betancourt, Michael. 2018. ``A Conceptual Introduction to Hamiltonian Monte Carlo.'' ArXiv:1701.02434 {[}Stat{]}.
+
+Carpenter, Bob, Andrew Gelman, Matthew D. Hoffman, Daniel Lee, Ben Goodrich, Michael Betancourt, Marcus Brubaker, Jiqiang Guo, Peter Li, and Allen Riddell. 2017. ``Stan: A Probabilistic Programming Language.'' Journal of Statistical Software 76(1):1--32. doi: 10.18637/jss.v076.i01.
+
+Carvalho, Carlos M., Nicholas G. Polson, and James G. Scott. 2010. ``The Horseshoe Estimator for Sparse Signals.'' Biometrika 97(2):465--80. doi: 10.1093/biomet/asq017.
+
+Ghosh, Joyee, Yingbo Li, and Robin Mitra. 2018. ``On the Use of Cauchy Prior Distributions for Bayesian Logistic Regression.'' Bayesian Analysis 13(2):359--83. doi: 10.1214/17-BA1051.
+
+Hoerl, Arthur E., and Robert W. Kennard. 2000. ``Ridge Regression: Biased Estimation for Nonorthogonal Problems.'' Technometrics 42(1):80--86. doi: 10.2307/1271436.
+
+Hsiang, T. C. 1975. ``A Bayesian View on Ridge Regression.'' Journal of the Royal Statistical Society. Series D (The Statistician) 24(4):267--68. doi: 10.2307/2987923.
+
+Jacobucci, Ross, Kevin J. Grimm, and John J. McArdle. 2016. ``Regularized Structural Equation Modeling.'' Structural Equation Modeling: A Multidisciplinary Journal 23(4):555--66. doi: 10.1080/10705511.2016.1154793.
+
+Lu, Zhao-Hua, Sy-Miin Chow, and Eric Loken. 2016. ``Bayesian Factor Analysis as a Variable-Selection Problem: Alternative Priors and Consequences.'' Multivariate Behavioral Research 51(4):519--39. doi: 10.1080/00273171.2016.1168279.
+
+Merkle, Edgar C., Ellen Fitzsimmons, James Uanhoro, and Ben Goodrich. 2020. ``Efficient Bayesian Structural Equation Modeling in Stan.'' ArXiv:2008.07733 {[}Stat{]}.
+
+Morris, Tim P., Ian R. White, and Michael J. Crowther. 2019. ``Using Simulation Studies to Evaluate Statistical Methods.'' Statistics in Medicine 38(11):2074--2102. doi: 10.1002/sim.8086.
+
+Park, Trevor, and George Casella. 2008. ``The Bayesian Lasso.'' Journal of the American Statistical Association 103(482):681--86. doi: 10.1198/016214508000000337.
+
+Tibshirani, Robert. 1996. ``Regression Shrinkage and Selection Via the Lasso.'' Journal of the Royal Statistical Society: Series B (Methodological) 58(1):267--88. doi: 10.1111/j.2517-6161.1996.tb02080.x.
+
+Tibshirani, Robert. 2011. ``Regression Shrinkage and Selection via the Lasso: A Retrospective.'' Journal of the Royal Statistical Society. Series B (Statistical Methodology) 73(3):273--82.
 
 
 \end{document}

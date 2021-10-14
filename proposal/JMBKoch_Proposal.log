@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/Arch Linux) (preloaded format=xelatex 2021.6.10)  13 OCT 2021 23:59
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/Arch Linux) (preloaded format=xelatex 2021.6.10)  14 OCT 2021 13:14
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1066,10 +1066,14 @@ Underfull \vbox (badness 4752) has occurred while \output is active []
 ]
 \openout4 = `JMBKoch_Proposal.fff'.
 
-(JMBKoch_Proposal.fff) [2] [3] AED endfloat: Processing end Figures and Tables 
-[4
+(JMBKoch_Proposal.fff) [2] [3] [4
 
-] (./JMBKoch_Proposal.fff
+]
+Underfull \vbox (badness 1028) has occurred while \output is active []
+
+[5
+
+] AED endfloat: Processing end Figures and Tables [6] (./JMBKoch_Proposal.fff
 File: JMBKoch_Proposal_files/figure-latex/unnamed-chunk-1-1.pdf Graphic file (t
 ype pdf)
 <use JMBKoch_Proposal_files/figure-latex/unnamed-chunk-1-1.pdf>
@@ -1108,17 +1112,21 @@ braces):
 >  {english/babelname}  =>  {american}
 >  {english/localnumeral}  =>  {polyglossia@C@localnumeral}
 >  {english/Localnumeral}  =>  {polyglossia@C@localnumeral}.
-[5
+[7
 
 
-] (./JMBKoch_Proposal.aux) ) 
+] (./JMBKoch_Proposal.aux) )
+(\end occurred inside a group at level 1)
+
+### semi simple group (level 1) entered at line 286 (\begingroup)
+### bottom level 
 Here is how much of TeX's memory you used:
- 21603 strings out of 476919
- 381984 string characters out of 5827674
- 890652 words of memory out of 5000000
- 41241 multiletter control sequences out of 15000+600000
+ 21605 strings out of 476919
+ 382012 string characters out of 5827674
+ 889664 words of memory out of 5000000
+ 41243 multiletter control sequences out of 15000+600000
  421565 words of font info for 67 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 98i,11n,122p,2255b,486s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 98i,11n,122p,2255b,528s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on JMBKoch_Proposal.pdf (6 pages).
+Output written on JMBKoch_Proposal.pdf (8 pages).
