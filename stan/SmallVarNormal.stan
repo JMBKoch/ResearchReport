@@ -63,7 +63,7 @@ model{
 }
 
 
-// sara's manier v. sign switchting correction: een maker voor en hoofd- en kruisladingen
+// sign switchting correction
 generated quantities{
   
   vector[P] lambdaMainC;
