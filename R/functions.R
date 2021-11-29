@@ -32,7 +32,6 @@ simdat <- function(L, Psi, Theta, N){
 # takes as output the chain-length, warmup, n_chains, n_parallel chains &
 #   all hyperparameters
 
-
 # output() ----------------------------------------------------------------
 # function takes rstan object and computes outcomes, and saves them
 
