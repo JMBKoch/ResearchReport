@@ -1,10 +1,9 @@
 ################################################################################
 # parameters.R
 ################################################################################
-# This file contains the specification of all releveant study parameters
+# This file contains the specification of all relevant study parameters
 
 # data --------------------------------------------------------------------
-
 # Lambda
 main <- c(.5, .75,.25,.1, .5, .25)
 cross <- c(.8, 0, 0, 0,  0, .8)
@@ -21,11 +20,14 @@ Psi[1, 2] <- Psi[2, 1] <- 0.5
 Theta <- diag(rep(0.3, 6))
 
 # Hyper-Parameters: -------------------------------------------------------
-
 # Small Variance Normal Prior ---------------------------------------------
-
+sigma <- c(sqrt(0.1), sqrt(0.01), sqrt(0.001))
 
 # Regularized Horseshoe Prior ---------------------------------------------
 
 
+# Conditions --------------------------------------------------------------
+# Sample Sizes
+n <- c(100, 200)
 
+# 

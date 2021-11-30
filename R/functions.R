@@ -2,24 +2,7 @@
 # functions.R: All functions used in main.R, J.M.B. Koch, 2021
 ################################################################################
 # simDat() ----------------------------------------------------------------
-# function to simulate data under desired model 
-# function takes the four objects below as input; adjust as desired 
-# TBA: Extract the matrix from Hyper-parameters.R instead in final setup
-# 1. Lambda
-L1 <- matrix(c(.5,.75,.25), 3, 1)
-CL1 <- matrix(c(.25, 0, 0), 3, 1)
-L2 <- matrix(c(.1, .5, .25), 3 , 1)
-CL2 <- matrix(c(0, 0, .25), 3, 1)
-L <-  cbind(rbind(L1, CL1), rbind(CL2, L2))
-# 2. Psi
-Psi <- matrix(rep(NA, 4), ncol = 2)
-diag(Psi) <- 1
-Psi[1, 2] <- Psi[2, 1] <- 0.5
-# 3. Theta
-Theta <- diag(rep(0.3, 6))
-# 4. N
-N <- 200
-
+# function to simulate data under desired model sourced from parameters.R
 # function
 simdat <- function(L, Psi, Theta, N, model){
       
@@ -30,7 +13,7 @@ simdat <- function(L, Psi, Theta, N, model){
 
 # prepareDat() ------------------------------------------------------------
 # function to prepare stan data object from simdat() depending on type of
-#   model (SVNP, RHSP)
+#   model (SVNP, RHSP) and sourcing hyperparameters from parameters.R
 prepareDat <- function(Y, model){
                       
     if(model == "SVNP"){
@@ -47,7 +30,7 @@ prepareDat <- function(Y, model){
 
 # sampling() --------------------------------------------------------------
 # takes as output the chain-length, warmup, n_chains, n_parallel chains &
-#   all hyperparameters
+#   all hyperparameters sourced from parameters.R
 
 # output() ----------------------------------------------------------------
 # function takes rstan object and computes outcomes, and saves them
