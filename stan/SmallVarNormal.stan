@@ -18,14 +18,11 @@ parameters{
 transformed parameters{
   matrix[P, Q] LambdaUnc;
   matrix[P, P] Theta;
-  //vector[Q] psi;
   corr_matrix[Q] Psi;
-  // matrix[Q, Q] Psi;
   matrix[P, P] Sigma;
   vector[P] mu;
 
   Theta = diag_matrix(theta);
-  //psi = rep_vector(1, Q);
   mu = rep_vector(0, P);
   
   // make loading matrix manually; todo: automate
@@ -63,7 +60,6 @@ model{
  for(i in 1:N)
    Y[i,] ~ multi_normal(mu, Sigma);
 }
-
 
 // sign switchting correction
 generated quantities{

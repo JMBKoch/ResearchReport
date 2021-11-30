@@ -31,7 +31,7 @@ transformed parameters{
   matrix[P, Q] LambdaUnc;
   matrix[P, P] Theta;
   vector[Q] psi;
-  matrix[Q, Q] Psi;
+  corr_matrix[Q] Psi;
   matrix[P, P] Sigma;
   vector[P] mu;
   
@@ -39,12 +39,10 @@ transformed parameters{
   omegaTilde = sqrt( c^2*square(omega) ./ (c^2 + tau*2*square(omega)) ); 
   
   Theta = diag_matrix(theta);
-  psi = rep_vector(1, Q);
   mu = rep_vector(0, P);
   
   lambdaCross = z .* omegaTilde*tau;
 
-  
   // make loading matrix manually; needs automation
   LambdaUnc[1, 1] = lambdaMain[1];
   LambdaUnc[2, 1] = lambdaMain[2];
@@ -60,7 +58,7 @@ transformed parameters{
   LambdaUnc[5, 1] = lambdaCross[5];
   LambdaUnc[6, 1] = lambdaCross[6];
   
-  // make Psi manually; need automation
+  // make Psi manually; todo: automate
   Psi[1, 1] = 1;
   Psi[2, 2] = 1;
   Psi[1, 2] = factCor;
@@ -75,6 +73,7 @@ model{
  lambdaMain ~ normal(0, 10);
  theta ~ cauchy(0, 5);
  z ~ normal(0, 1); 
+ // default uniform prior on factCor
 
  // hyper-priors 
  omega ~ student_t(dfLocal, 0, omegaSquZero);
@@ -91,7 +90,7 @@ generated quantities{
   vector[P] lambdaMainC;
   vector[P] lambdaCrossC;
   corr_matrix[Q] PsiC; 
-  
+
   PsiC = Psi;
   lambdaMainC = lambdaMain;
   lambdaCrossC = lambdaCross;
