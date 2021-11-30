@@ -1,3 +1,5 @@
+// 2 Factor Model, Cross-Loadings regularized with Small Variance Normal Prior
+
 data{
   int<lower=0> N; // Sample Size
   int<lower=1> P; // Number of Outcomes/ items
@@ -22,7 +24,6 @@ transformed parameters{
   matrix[P, P] Sigma;
   vector[P] mu;
 
-  
   Theta = diag_matrix(theta);
   //psi = rep_vector(1, Q);
   mu = rep_vector(0, P);

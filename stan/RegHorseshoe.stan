@@ -1,4 +1,4 @@
-// Regularized Horseshoeprior
+// 2 Factor Model, Cross-Loadings regularized with Regularized Horseshoe Prior
 
 data{
   int<lower=0> N; // Sample Size
