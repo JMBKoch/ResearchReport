@@ -42,6 +42,9 @@ transformed parameters{
   psi = rep_vector(1, Q);
   mu = rep_vector(0, P);
   
+  lambdaCross = z .* omegaTilde*tau;
+
+  
   // make loading matrix manually; needs automation
   LambdaUnc[1, 1] = lambdaMain[1];
   LambdaUnc[2, 1] = lambdaMain[2];
@@ -64,22 +67,19 @@ transformed parameters{
   Psi[2, 1] = factCor;
 
   Sigma = LambdaUnc*Psi*LambdaUnc' + Theta;
-  lambdaCross = z .* omegaTilde*tau;
 }
 
 model{
   //helper variable
- z ∼ normal (0, 1); 
  //priors
  lambdaMain ~ normal(0, 10);
  theta ~ cauchy(0, 5);
- 
-
+ z ~ normal(0, 1); 
 
  // hyper-priors 
- omega ∼ student_t(dfLocal, 0, omegaSquZero);
- tau ∼ student_t(dfGlobal, 0, 1);
- caux ∼ inv_gamma(0.5*nu, 0.5*nu*s2);
+ omega ~ student_t(dfLocal, 0, omegaSquZero);
+ tau ~ student_t(dfGlobal, 0, 1);
+ caux ~ inv_gamma(0.5*nu, 0.5*nu*s2);
  
  //model
  for(i in 1:N)
@@ -119,4 +119,3 @@ generated quantities{
  
 }
 
-}

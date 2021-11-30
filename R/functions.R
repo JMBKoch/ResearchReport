@@ -1,8 +1,8 @@
 ################################################################################
 # functions.R: All functions used in main.R, J.M.B. Koch, 2021
 ################################################################################
-# simdat() ----------------------------------------------------------------
-# function to simulate data under desired model
+# simDat() ----------------------------------------------------------------
+# function to simulate data under desired model 
 # function takes the four objects below as input; adjust as desired 
 # TBA: Extract the matrix from Hyper-parameters.R instead in final setup
 # 1. Lambda
@@ -21,12 +21,29 @@ Theta <- diag(rep(0.3, 6))
 N <- 200
 
 # function
-simdat <- function(L, Psi, Theta, N){
+simdat <- function(L, Psi, Theta, N, model){
+      
       Sigma <- L%*%Psi%*%t(L) + Theta
       Y <- mvtnorm::rmvnorm(N, rep(0, 6), Sigma)
       return(Y)
 }
 
+# prepareDat() ------------------------------------------------------------
+# function to prepare stan data object from simdat() depending on type of
+#   model (SVNP, RHSP)
+prepareDat <- function(Y, model){
+                      
+    if(model == "SVNP"){
+      
+      out <- list()
+        
+    }else if(model == "RHSP"){
+      
+      out <- list()
+    } 
+  
+    return(out)
+}
 
 # sampling() --------------------------------------------------------------
 # takes as output the chain-length, warmup, n_chains, n_parallel chains &

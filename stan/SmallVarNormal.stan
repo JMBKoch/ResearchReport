@@ -57,6 +57,7 @@ model{
  lambdaMain ~ normal(0, 10);
  lambdaCross ~ normal(0, sigma);
  theta ~ cauchy(0, 5);
+ // default uniform prior on factCor
   
  //model
  for(i in 1:N)
@@ -95,6 +96,5 @@ generated quantities{
        PsiC[2, 1] = -1*Psi[1, 2];
     }
   }
- 
 }
 
