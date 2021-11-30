@@ -30,7 +30,6 @@ transformed parameters{
   vector[P] lambdaCross;
   matrix[P, Q] LambdaUnc;
   matrix[P, P] Theta;
-  vector[Q] psi;
   corr_matrix[Q] Psi;
   matrix[P, P] Sigma;
   vector[P] mu;
