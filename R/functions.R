@@ -1,6 +1,8 @@
 ################################################################################
-# functions.R: All functions used in main.R, J.M.B. Koch, 2021
+# functions.R
 ################################################################################
+# All functions used in main.R
+
 # simDat() ----------------------------------------------------------------
 # function to simulate data under desired model sourced from parameters.R
 # function
@@ -13,8 +15,8 @@ simdat <- function(L, Psi, Theta, N, model){
 
 # prepareDat() ------------------------------------------------------------
 # function to prepare stan data object from simdat() depending on type of
-#   model (SVNP, RHSP) and sourcing hyperparameters from parameters.R
-prepareDat <- function(Y, model){
+#   model (SVNP, RHSP) and sorcing hyperparameters from 
+prepareDat <- function(Y, conditions){
                       
     if(model == "SVNP"){
       
@@ -65,15 +67,22 @@ output <- function(rstanObj, L, Psi, Theta){
   biasTheta <- abs(theta - rep(0.3, 6))
   
   # TBA: MSE
+  
   # TBA: True & False positives in estimating truly non-0 as non-0
   
-  # TBA: save output in list
+  # TBA: save output (in list?)
   
+  # TBA: save output (format?)
 }
 
 
+# plots() -----------------------------------------------------------------
+# makes all required plots and saves them
+
 # convergence() -----------------------------------------------------------
 # takes rstan object as input and computes and returns convergence diagnostics
+
+  #
 
 # main() ------------------------------------------------------------------
 # runs the main simulation, including the setup of parralell computing etc.

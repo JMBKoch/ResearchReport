@@ -67,10 +67,10 @@ transformed parameters{
 }
 
 model{
-  //helper variable
  //priors
  lambdaMain ~ normal(0, 10);
  theta ~ cauchy(0, 5);
+ //helper variable
  z ~ normal(0, 1); 
  // default uniform prior on factCor
 
