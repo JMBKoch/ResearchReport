@@ -6,10 +6,12 @@ data{
   int<lower=1> Q; // Number of Factor
   matrix[N, P] Y; // outcome matrix
   real<lower=1> dfGlobal; // df for half-t prior omega
-  real<lower=0> dfLocal; // df for half-t prior tau_j
+  real<lower=1> dfLocal; // df for half-t prior tau_j
+  real<lower=0> scaleGlobal;
+  real<lower=0> scaleLocal;
   real<lower=0> omegaSquZero; // omega^2_0 
-  real<lower=0> nu; // df IG for c^2
-  real<lower=0> s2; // s^2 IG for c^2
+  real<lower=1> nu; // df IG for c^2
+  real<lower=0> slabScale; // scale of slab (c^2)
 }
 
 parameters{
@@ -20,7 +22,7 @@ parameters{
   
   vector<lower=0>[P] theta;
   vector[P] lambdaMain;
-  real factCor;
+  real<lower=-1,upper=1> factCor;
 }
 
 transformed parameters{
@@ -34,8 +36,8 @@ transformed parameters{
   matrix[P, P] Sigma;
   vector[P] mu;
   
-  c = 1*sqrt(caux);
-  omegaTilde = sqrt( c^2*square(omega) ./ (c^2 + tau*2*square(omega)) ); 
+  c = slabScale * sqrt(caux);
+  omegaTilde = sqrt( c^2*square(omega) ./ (c^2 + tau^2*square(omega)) ); 
   
   Theta = diag_matrix(theta);
   mu = rep_vector(0, P);
@@ -75,9 +77,9 @@ model{
  // default uniform prior on factCor
 
  // hyper-priors 
- omega ~ student_t(dfLocal, 0, omegaSquZero);
- tau ~ student_t(dfGlobal, 0, 1);
- caux ~ inv_gamma(0.5*nu, 0.5*nu*s2);
+ omega  ~ student_t(dfLocal, 0, scaleLocal); // local (lambda)
+ tau ~ student_t(dfGlobal, 0, scaleGlobal); // globale
+ caux ~ inv_gamma(0.5*nu, 0.5*nu);
  
  //model
  for(i in 1:N)

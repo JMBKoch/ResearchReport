@@ -5,14 +5,14 @@ data{
   int<lower=1> P; // Number of Outcomes/ items
   int<lower=1> Q; // Number of Factor
   matrix[N, P] Y; // outcome matrix
-  real<lower=0> sigma; // hypterparameter prior cross-loadings
+  real<lower=0> sigma; // hyperparameter prior cross-loadings
 }
 
 parameters{
   vector<lower=0>[P] theta;
   vector[P] lambdaMain;
   vector[P] lambdaCross;
-  real factCor;
+  real<lower=-1,upper=1> factCor;
 }
 
 transformed parameters{
