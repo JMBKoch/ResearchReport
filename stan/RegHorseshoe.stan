@@ -11,7 +11,7 @@ data{
   real<lower=0> scaleLocal;
   real<lower=0> omegaSquZero; // omega^2_0 
   real<lower=1> nu; // df IG for c^2
-  real<lower=0> slabScale; // scale of slab (c^2)
+  real<lower=0> scaleSlab; // scale of slab (c^2)
 }
 
 parameters{
@@ -36,7 +36,7 @@ transformed parameters{
   matrix[P, P] Sigma;
   vector[P] mu;
   
-  c = slabScale * sqrt(caux);
+  c = scaleSlab * sqrt(caux);
   omegaTilde = sqrt( c^2*square(omega) ./ (c^2 + tau^2*square(omega)) ); 
   
   Theta = diag_matrix(theta);

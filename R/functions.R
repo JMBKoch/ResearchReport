@@ -16,13 +16,16 @@ simdat <- function(L, Psi, Theta, N, model){
 # prepareDat() ------------------------------------------------------------
 # function to prepare stan data object from simdat() depending on type of
 #   model (SVNP, RHSP) and sorcing hyperparameters from 
-prepareDat <- function(Y, conditions){
-                      
-    if(model == "SVNP"){
+prepareDat <- function(Y, conditions, nIter){
+   
+  for                    
+    if(prior == "SVNP"){
       
-      out <- list()
+      # output: list with one stan-ready data object generated based on  
+      #  unique combinations of conditions
+      out <- list() 
         
-    }else if(model == "RHSP"){
+    }else if(prior == "RHSP"){
       
       out <- list()
     } 

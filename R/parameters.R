@@ -2,7 +2,6 @@
 # parameters.R
 ################################################################################
 # This file contains the specification of all relevant study parameters
-
 # model--------------------------------------------------------------------
 # Lambda
 main <- c(.5, .75, .25, .1, .5, .25)
@@ -19,27 +18,41 @@ Psi[1, 2] <- Psi[2, 1] <- 0.5
 # Theta
 Theta <- diag(rep(0.3, 6))
 
-
 # Hyper-Parameters: -------------------------------------------------------
 # Small Variance Normal Prior ---------------------------------------------
 sigma <- c(0.1^2, 0.01^2, 0.001^2)
-hyperSVNP <- list()
-hyperSVNP$sigma <- sigma
 
 # Regularized Horseshoe Prior ---------------------------------------------
-hyperRHSP <- list(
-  dfGlobal = c(1), # df for half-t prior omega
-  dfLocal = c(1), # df for half-t prior tau_j
-  omegaSquZero = c(1), # omega^2_0 
-  nu = c(1), # df IG for c^2
-  s2 = c(1)
-)
-# or as data frame?
+scaleGlobal <- c(0.1, 0.5, 1) # scale for half-t prior omega
+scaleLocal <- c(0.1, 0.5, 1) # scale for half-t prior tau_j
+dfGlobal <- c(1, 2, 3) # df for half-t prior omega
+dfLocal <- c(1, 2, 3) # df for half-t prior tau_j
+omegaSquZero <- c(0.1, 0.5, 1) # omega^2_0 
+nu <- c(1, 2, 3) # df IG for c^2 (slab)
+scaleSlab <- c(0.1, 0.5, 1) # scale of slab
 
-# Other conditions --------------------------------------------------------
-# Sample Sizes
-n <- c(100, 200)
-# 
-prior <- c("S", "SV")
+# Population conditions ----------------------------------------------------
+n <- c(100, 200, 300)
 
-expand.grid(n, prior)
+# specify combinations of population conditions & hyperpars per prior
+condRHSP <- 
+      expand.grid(
+         prior = prior,
+         sigma = sigma, 
+         scaleGlobal = scaleGlobal, 
+         scaleLocal = scaleLocal,
+         dfGlobal = dfGlobal,
+         dfLocal = dfLocal,
+         omegaSquZero = omegaSquZero,
+         nu = nu,
+         scaleSlab = scaleSlab, 
+         n
+         )
+condSVNP <- 
+  expand.grid(
+    simga = sigma,
+    n = n
+  )
+
+
+
