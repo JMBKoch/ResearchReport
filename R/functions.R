@@ -6,36 +6,47 @@
 # simDat() ----------------------------------------------------------------
 # function to simulate data under desired model sourced from parameters.R
 # function
-simdat <- function(L, Psi, Theta, N, model){
-      
+simDat <- function(L, Psi, Theta, N){
       Sigma <- L%*%Psi%*%t(L) + Theta
       Y <- mvtnorm::rmvnorm(N, rep(0, 6), Sigma)
       return(Y)
 }
 
 # prepareDat() ------------------------------------------------------------
-# function to prepare stan data object from simdat() depending on type of
-#   model (SVNP, RHSP) and sorcing hyperparameters from 
-prepareDat <- function(Y, conditions, nIter){
-   
-  for                    
-    if(prior == "SVNP"){
-      
-      # output: list with one stan-ready data object generated based on  
-      #  unique combinations of conditions
-      out <- list() 
-        
-    }else if(prior == "RHSP"){
-      
-      out <- list()
+# function to prepare stan data object from simdat() based on a unique
+#   combination of hyper-pars
+# This functions helps to clearly separate population 
+prepareDat <- function(Y, conditions){ 
+    if(conditions$prior == "SVNP"){
+      out <-  list(
+          N = nrow(Y),
+          P = ncol(Y),
+          Q = 2,
+          Y = Y, 
+          sigma = conditions$sigma
+        )
+    }else if(conditions$prior == "RHSP"){
+      out <- list(
+        N = nrow(Y),
+        P = ncol(Y),
+        Q = 2,
+        Y = Y, 
+        scaleGlobal = conditions$scaleGlobal,
+        scaleLocal = conditions$scaleLocal,
+        dfGlobal = conditions$dfGlobal, # df for half-t prior omega
+        dfLocal = conditions$dfLocal, # df for half-t prior tau_j
+        omegaSquZero = conditions$omegaSquZero, # omega^2_0 
+        nu = conditions$nu, # df IG for c^2
+        scaleSlab = conditions$scaleSlab
+      )
     } 
-  
     return(out)
 }
 
 # sampling() --------------------------------------------------------------
-# takes as output the chain-length, warmup, n_chains, n_parallel chains &
+# takes as input the chain-length, warmup, n_chains, n_parallel chains &
 #   all hyperparameters sourced from parameters.R
+sampling <- function()
 
 # output() ----------------------------------------------------------------
 # function takes rstan object and computes outcomes, and saves them

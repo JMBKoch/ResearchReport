@@ -1,5 +1,5 @@
 ################################################################################
-# parameters.R
+# conditions.R
 ################################################################################
 # This file contains the specification of all relevant study parameters
 # model--------------------------------------------------------------------
@@ -32,27 +32,31 @@ nu <- c(1, 2, 3) # df IG for c^2 (slab)
 scaleSlab <- c(0.1, 0.5, 1) # scale of slab
 
 # Population conditions ----------------------------------------------------
-n <- c(100, 200, 300)
+N <- c(100, 200, 300)
 
 # specify combinations of population conditions & hyperpars per prior
-condRHSP <- 
-      expand.grid(
-         prior = prior,
-         sigma = sigma, 
-         scaleGlobal = scaleGlobal, 
-         scaleLocal = scaleLocal,
-         dfGlobal = dfGlobal,
-         dfLocal = dfLocal,
-         omegaSquZero = omegaSquZero,
-         nu = nu,
-         scaleSlab = scaleSlab, 
-         n
-         )
 condSVNP <- 
   expand.grid(
+    prior = "SVNP",
     simga = sigma,
-    n = n
+    N = N
   )
+
+condRHSP <- 
+  expand.grid(
+    prior = "RHSP",
+    sigma = sigma, 
+    scaleGlobal = scaleGlobal, 
+    scaleLocal = scaleLocal,
+    dfGlobal = dfGlobal,
+    dfLocal = dfLocal,
+    omegaSquZero = omegaSquZero,
+    nu = nu,
+    scaleSlab = scaleSlab, 
+    N = N
+  )
+
+
 
 
 
