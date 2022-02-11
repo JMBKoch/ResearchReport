@@ -35,7 +35,6 @@ prepareDat <- function(Y, conditions){
         scaleLocal = conditions$scaleLocal, # scale lambda
         dfGlobal = conditions$dfGlobal, # df for half-t prior omega
         dfLocal = conditions$dfLocal, # df for half-t prior tau_j
-        omegaSquZero = conditions$omegaSquZero, # omega^2_0 
         nu = conditions$nu, # df IG for c^2
         scaleSlab = conditions$scaleSlab
       )
