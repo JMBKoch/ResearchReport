@@ -31,8 +31,8 @@ prepareDat <- function(Y, conditions){
         P = ncol(Y),
         Q = 2,
         Y = Y, 
-        scaleGlobal = conditions$scaleGlobal,
-        scaleLocal = conditions$scaleLocal,
+        scaleGlobal = conditions$scaleGlobal, # scale omega
+        scaleLocal = conditions$scaleLocal, # scale lambda
         dfGlobal = conditions$dfGlobal, # df for half-t prior omega
         dfLocal = conditions$dfLocal, # df for half-t prior tau_j
         omegaSquZero = conditions$omegaSquZero, # omega^2_0 
@@ -83,10 +83,17 @@ output <- function(rstanObj, L, Psi, Theta){
   # TBA: MSE
   
   # TBA: True & False positives in estimating truly non-0 as non-0
+  #   THINK WELL OF SELECTION CRITERIA
   
   # TBA: save output (in list?)
   
   # TBA: save output (format?)
+  out <- list(
+            biasMain = biasMain,
+            biasCross = biasCross,
+            biasFactCorr= biasFactCorr,
+            biastheta = biasTheta
+              )
 }
 
 
@@ -98,6 +105,5 @@ output <- function(rstanObj, L, Psi, Theta){
 
   #
 
-# main() ------------------------------------------------------------------
-# runs the main simulation, including the setup of parralell computing etc.
+
 

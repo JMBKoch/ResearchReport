@@ -9,7 +9,6 @@ data{
   real<lower=1> dfLocal; // df for half-t prior tau_j
   real<lower=0> scaleGlobal;
   real<lower=0> scaleLocal;
-  real<lower=0> omegaSquZero; // omega^2_0 
   real<lower=1> nu; // df IG for c^2
   real<lower=0> scaleSlab; // scale of slab (c^2)
 }
@@ -27,7 +26,7 @@ parameters{
 
 transformed parameters{
   vector<lower=0>[P] omegaTilde; // truncated local shrinkage parameter
-  real<lower=0> c; // slab scale
+  real<lower=0> c; 
   
   vector[P] lambdaCross;
   matrix[P, Q] LambdaUnc;

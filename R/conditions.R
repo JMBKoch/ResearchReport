@@ -27,12 +27,12 @@ scaleGlobal <- c(0.1, 0.5, 1) # scale for half-t prior omega
 scaleLocal <- c(0.1, 0.5, 1) # scale for half-t prior tau_j
 dfGlobal <- c(1, 2, 3) # df for half-t prior omega
 dfLocal <- c(1, 2, 3) # df for half-t prior tau_j
-omegaSquZero <- c(0.1, 0.5, 1) # omega^2_0 
 nu <- c(1, 2, 3) # df IG for c^2 (slab)
 scaleSlab <- c(0.1, 0.5, 1) # scale of slab
 
 # Population conditions ----------------------------------------------------
-N <- c(100, 200, 300)
+#N <- c(100, 200, 300)
+N <- 200 # nu ff alleen maar dit for MiniMiniSim
 
 # specify combinations of population conditions & hyperpars per prior
 condSVNP <- 
@@ -45,16 +45,16 @@ condSVNP <-
 condRHSP <- 
   expand.grid(
     prior = "RHSP",
-    sigma = sigma, 
     scaleGlobal = scaleGlobal, 
     scaleLocal = scaleLocal,
     dfGlobal = dfGlobal,
     dfLocal = dfLocal,
-    omegaSquZero = omegaSquZero,
     nu = nu,
     scaleSlab = scaleSlab, 
     N = N
   )
+
+
 
 
 
