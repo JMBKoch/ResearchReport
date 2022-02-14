@@ -51,7 +51,7 @@ transformed parameters{
 
 model{
  //priors
- lambdaMain ~ normal(0, 10);
+ lambdaMain ~ normal(0, 5);
  lambdaCross ~ normal(0, sigma);
  theta ~ cauchy(0, 5);
  // default uniform prior on factCor
