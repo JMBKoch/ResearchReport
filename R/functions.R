@@ -50,15 +50,16 @@ sampling <- function()
 # output() ----------------------------------------------------------------
 # function takes rstan object and computes outcomes, and saves them
 
-output <- function(rstanObj, L, Psi, Theta){
+output <- function(rstanObj, mainTrue, crossTrue, PsiTrue, ThetaTure, cond){
   
+
   # estimates Lambda
-  main <- colMeans(as.matrix(FitA, pars = c("lambdaMainC[1]",
-                                    "lambdaMainC[2]",
-                                    "lambdaMainC[3]",
-                                    "lambdaMainC[4]",
-                                    "lambdaMainC[5]",
-                                    "lambdaMainC[6]")))
+  mainEst <- colMeans(as.matrix(FitA, pars = c("lambdaMainC[1]",
+                                               "lambdaMainC[2]",
+                                               "lambdaMainC[3]",
+                                               "lambdaMainC[4]",
+                                               "lambdaMainC[5]",
+                                               "lambdaMainC[6]")))
   
   cross <- colMeans(as.matrix(FitA, pars = c("lambdaCrossC[1]",
                                              "lambdaCrossC[2]",
@@ -72,12 +73,12 @@ output <- function(rstanObj, L, Psi, Theta){
   theta <- colMeans(as.matrix(FitA, pars = "theta"))
   
   # Bias Lambda
-  biasMain <- abs(main-c(L1, L2))
-  biasCross <- abs(cross-c(CL1, CL2))
+  biasMain <- abs(main-mainTrue)
+  biasCross <- abs(cross-crossTrue)
   # Bias Factor Correlation
-  biasFactCorr <-  abs(corr-0.5)
-  # Bias Thetay
-  biasTheta <- abs(theta - rep(0.3, 6))
+  biasFactCorr <-  abs(corr-Psi[1, 2])
+  # Bias Theta
+  biasTheta <- abs(theta - diag(Theta))
   
   # TBA: MSE
   
@@ -86,13 +87,28 @@ output <- function(rstanObj, L, Psi, Theta){
   
   # TBA: save output (in list?)
   
-  # TBA: save output (format?)
-  out <- list(
-            biasMain = biasMain,
-            biasCross = biasCross,
-            biasFactCorr= biasFactCorr,
-            biastheta = biasTheta
+  
+  # Output
+  
+  out <- cbind(cond, # save results
+               biasMain,
+               biasCross,
+               biasFactCorr,
+               biasTheta
+  )
+  
+  
+  # recode output into long format
+  
+  # cbind conditions into output
+  outFinal <-cbind(cond, 
+              biasMain,
+              biasCross,
+              biasFactCorr,
+              biasTheta
               )
+  # return output
+  return(outFinal)
 }
 
 
