@@ -50,35 +50,42 @@ sampling <- function()
 # output() ----------------------------------------------------------------
 # function takes rstan object and computes outcomes, and saves them
 
-output <- function(rstanObj, mainTrue, crossTrue, PsiTrue, ThetaTure, cond){
+output <- function(rstanObj, 
+                   mainTrue = main, 
+                   crossTrue = cross, 
+                   PsiTrue = Psi, 
+                   ThetaTrue = Theta
+                   #, 
+                   #cond = conditions[i, ]
+                   ){
   
 
   # estimates Lambda
-  mainEst <- colMeans(as.matrix(FitA, pars = c("lambdaMainC[1]",
+  mainEst <- colMeans(as.matrix(rstanObj, pars = c("lambdaMainC[1]",
                                                "lambdaMainC[2]",
                                                "lambdaMainC[3]",
                                                "lambdaMainC[4]",
                                                "lambdaMainC[5]",
                                                "lambdaMainC[6]")))
   
-  cross <- colMeans(as.matrix(FitA, pars = c("lambdaCrossC[1]",
+  crossEst <- colMeans(as.matrix(rstanObj, pars = c("lambdaCrossC[1]",
                                              "lambdaCrossC[2]",
                                              "lambdaCrossC[3]",
                                              "lambdaCrossC[4]",
                                              "lambdaCrossC[5]",
                                              "lambdaCrossC[6]")))
   # estimates Factor-Corr
-  corr <- colMeans(as.matrix(FitA, pars = c("Psi[2, 1]")))
+  corrEst <- colMeans(as.matrix(rstanObj, pars = c("Psi[2, 1]")))
   # estimates Theta
-  theta <- colMeans(as.matrix(FitA, pars = "theta"))
+  thetaEst <- colMeans(as.matrix(rstanObj, pars = "theta"))
   
   # Bias Lambda
-  biasMain <- abs(main-mainTrue)
-  biasCross <- abs(cross-crossTrue)
+  biasMain <- abs(mainEst-mainTrue)
+  biasCross <- abs(crossEst-crossTrue)
   # Bias Factor Correlation
-  biasFactCorr <-  abs(corr-Psi[1, 2])
+  biasFactCorr <-  abs(corrEst - PsiTrue[1, 2])
   # Bias Theta
-  biasTheta <- abs(theta - diag(Theta))
+  biasTheta <- abs(thetaEst - diag(ThetaTrue))
   
   # TBA: MSE
   
@@ -90,27 +97,34 @@ output <- function(rstanObj, mainTrue, crossTrue, PsiTrue, ThetaTure, cond){
   
   # Output
   
-  out <- cbind(cond, # save results
+  out <- as.data.frame(cbind(
+    
+    #cond, # save results
                biasMain,
                biasCross,
                biasFactCorr,
                biasTheta
-  )
+
+  ))
   
+  rownames(out) <- NULL
   
-  # recode output into long format
+  # recode output into wide format
   
   # cbind conditions into output
-  outFinal <-cbind(cond, 
-              biasMain,
-              biasCross,
-              biasFactCorr,
-              biasTheta
-              )
+ # outFinal <-cbind(
+ #   #cond, 
+ #             biasMain,
+ #             biasCross,
+ #             biasFactCorr,
+ #             biasTheta
+ #             )
+  
   # return output
-  return(outFinal)
+  #return(outFinal)
+  return(out)
+  
 }
-
 
 # plots() -----------------------------------------------------------------
 # makes all required plots and saves them
