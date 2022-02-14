@@ -75,7 +75,7 @@ generated quantities{
 // factor 1 sign switching correction [p = 1, marker item]  
    if(lambdaMain[1] < 0){
      lambdaMainC[1:3] = -1*lambdaMain[1:3];
-     lambdaCrossC[1:3] = -1*lambdaCross[1:3];
+     lambdaCrossC[4:6] = -1*lambdaCross[4:6];
 
     if(lambdaMainC[4] > 0){ 
         PsiC[1, 2] = -1*Psi[1, 2];
@@ -86,11 +86,11 @@ generated quantities{
 // factor 2
    if(lambdaMain[4] < 0){
      lambdaMainC[4:6] = -1*lambdaMain[4:6];
-    lambdaCrossC[4:6] = -1*lambdaCross[4:6];
+    lambdaCrossC[1:3] = -1*lambdaCross[1:3];
      if(lambdaMain[1] > 0){
        PsiC[1, 2] = -1*Psi[1, 2];
        PsiC[2, 1] = -1*Psi[1, 2];
     }
   }
+ 
 }
-

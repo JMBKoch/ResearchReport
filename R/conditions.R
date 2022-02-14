@@ -23,12 +23,12 @@ Theta <- diag(rep(0.3, 6))
 sigma <- c(0.1^2, 0.01^2, 0.001^2)
 
 # Regularized Horseshoe Prior ---------------------------------------------
-scaleGlobal <- c(0.1, 0.5, 1) # scale for half-t prior omega
-scaleLocal <- c(0.1, 0.5, 1) # scale for half-t prior tau_j
-dfGlobal <- c(1, 2, 3) # df for half-t prior omega
-dfLocal <- c(1, 2, 3) # df for half-t prior tau_j
-nu <- c(1, 2, 3) # df IG for c^2 (slab)
-scaleSlab <- c(0.1, 0.5, 1) # scale of slab
+scaleGlobal <- c(0.1, 1) # scale for half-t prior omega
+scaleLocal <- c(0.1, 1) # scale for half-t prior tau_j
+dfGlobal <- c(1, 3) # df for half-t prior omega
+dfLocal <- c(1, 3) # df for half-t prior tau_j
+nu <- c(1, 3) # df IG for c^2 (slab)
+scaleSlab <- c(0.1, 1, 5) # scale of slab
 
 # Population conditions ----------------------------------------------------
 #N <- c(100, 200, 300)

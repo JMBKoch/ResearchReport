@@ -44,9 +44,7 @@ transformed parameters{
   lambdaCross = z .* omegaTilde*tau;
 
   // make loading matrix manually; needs automation
-  LambdaUnc[1, 1] = lambdaMain[1];
-  LambdaUnc[2, 1] = lambdaMain[2];
-  LambdaUnc[3, 1] = lambdaMain[3];
+  LambdaUnc[1:3, 1] = lambdaMain[1:3];
   LambdaUnc[4, 2] = lambdaMain[4];
   LambdaUnc[5, 2] = lambdaMain[5];
   LambdaUnc[6, 2] = lambdaMain[6];
@@ -69,7 +67,7 @@ transformed parameters{
 
 model{
  //priors
- lambdaMain ~ normal(0, 10);
+ lambdaMain ~ normal(0, 5);
  theta ~ cauchy(0, 5);
  //helper variable
  z ~ normal(0, 1); 
@@ -98,7 +96,7 @@ generated quantities{
 // factor 1 sign switching correction [p = 1, marker item]  
    if(lambdaMain[1] < 0){
      lambdaMainC[1:3] = -1*lambdaMain[1:3];
-     lambdaCrossC[1:3] = -1*lambdaCross[1:3];
+     lambdaCrossC[4:6] = -1*lambdaCross[4:6];
 
     if(lambdaMainC[4] > 0){ 
         PsiC[1, 2] = -1*Psi[1, 2];
@@ -109,7 +107,7 @@ generated quantities{
 // factor 2
    if(lambdaMain[4] < 0){
      lambdaMainC[4:6] = -1*lambdaMain[4:6];
-    lambdaCrossC[4:6] = -1*lambdaCross[4:6];
+    lambdaCrossC[1:3] = -1*lambdaCross[1:3];
      if(lambdaMain[1] > 0){
        PsiC[1, 2] = -1*Psi[1, 2];
        PsiC[2, 1] = -1*Psi[1, 2];
