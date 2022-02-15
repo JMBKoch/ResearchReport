@@ -54,9 +54,8 @@ output <- function(rstanObj,
                    mainTrue = main, 
                    crossTrue = cross, 
                    PsiTrue = Psi, 
-                   ThetaTrue = Theta
-                   #, 
-                   #cond = conditions[i, ]
+                   ThetaTrue = Theta,
+                   cond = conditions
                    ){
   
 
@@ -100,6 +99,7 @@ output <- function(rstanObj,
   out <- as.data.frame(cbind(
     
     #cond, # save results
+               1:6,
                biasMain,
                biasCross,
                biasFactCorr,
@@ -107,21 +107,20 @@ output <- function(rstanObj,
 
   ))
   
+  # make row and colnames proper
   rownames(out) <- NULL
-  
+  colnames(out)[1] <- "item"
   # recode output into wide format
+  out <- tidyr::pivot_wider(out, 
+                            names_from = item, 
+                            values_from = c(biasMain, 
+                                            biasCross, 
+                                            biasFactCorr, 
+                                            biasTheta))
   
   # cbind conditions into output
- # outFinal <-cbind(
- #   #cond, 
- #             biasMain,
- #             biasCross,
- #             biasFactCorr,
- #             biasTheta
- #             )
-  
+  out <- cbind(out, cond)
   # return output
-  #return(outFinal)
   return(out)
   
 }
