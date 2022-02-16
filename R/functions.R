@@ -1,7 +1,8 @@
 ################################################################################
-# functions.R
+# functions.R                                           (c) J.M.B. Koch 2022
 ################################################################################
 # All functions used in main.R
+# Dependencies:: mvtnorm ; tidyr
 
 # simDat() ----------------------------------------------------------------
 # function to simulate data under desired model sourced from parameters.R
@@ -49,14 +50,13 @@ sampling <- function()
 
 # output() ----------------------------------------------------------------
 # function takes rstan object and computes outcomes, and saves them
-
-output <- function(rstanObj, 
-                   mainTrue = main, 
-                   crossTrue = cross, 
-                   PsiTrue = Psi, 
-                   ThetaTrue = Theta,
-                   cond = conditions
-                   ){
+saveOutput <- function(rstanObj, 
+                       mainTrue = main, 
+                       crossTrue = cross, 
+                       PsiTrue = Psi, 
+                       ThetaTrue = Theta,
+                       conditions = conditions
+                      ){
   
 
   # estimates Lambda
@@ -73,7 +73,7 @@ output <- function(rstanObj,
                                              "lambdaCrossC[4]",
                                              "lambdaCrossC[5]",
                                              "lambdaCrossC[6]")))
-  # estimates Factor-Corr
+  # estimate Factor-Corr
   corrEst <- colMeans(as.matrix(rstanObj, pars = c("Psi[2, 1]")))
   # estimates Theta
   thetaEst <- colMeans(as.matrix(rstanObj, pars = "theta"))
@@ -87,29 +87,25 @@ output <- function(rstanObj,
   biasTheta <- abs(thetaEst - diag(ThetaTrue))
   
   # TBA: MSE
-  
   # TBA: True & False positives in estimating truly non-0 as non-0
   #   THINK WELL OF SELECTION CRITERIA
-  
   # TBA: save output (in list?)
-  
-  
   # Output
   
-  out <- as.data.frame(cbind(
-    
-    #cond, # save results
+  out <- as.data.frame(
+          cbind(
                1:6,
                biasMain,
                biasCross,
                biasFactCorr,
                biasTheta
-
-  ))
+               )
+                        )
   
   # make row and colnames proper
   rownames(out) <- NULL
   colnames(out)[1] <- "item"
+  
   # recode output into wide format
   out <- tidyr::pivot_wider(out, 
                             names_from = item, 
@@ -119,10 +115,10 @@ output <- function(rstanObj,
                                             biasTheta))
   
   # cbind conditions into output
-  out <- cbind(out, cond)
+  out <- cbind(out, conditions)
   # return output
   return(out)
-  
+
 }
 
 # plots() -----------------------------------------------------------------

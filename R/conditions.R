@@ -1,5 +1,5 @@
 ################################################################################
-# conditions.R
+# conditions.R                                            (c) J.M.B. Koch 2022
 ################################################################################
 # This file contains the specification of all relevant study parameters
 # model--------------------------------------------------------------------
@@ -38,7 +38,7 @@ N <- 200 # nu ff alleen maar dit for MiniMiniSim
 condSVNP <- 
   expand.grid(
     prior = "SVNP",
-    simga = sigma,
+    sigma = sigma,
     N = N
   )
 
@@ -54,6 +54,16 @@ condRHSP <-
     N = N
   )
 
+
+
+# Sampling parameters -----------------------------------------------------
+nChain <- 2
+nWarmup <- 2000
+nSampling <- 2000
+
+
+# other study parameters --------------------------------------------------
+nInter <- 50
 
 
 
