@@ -63,7 +63,7 @@ nSampling <- 2000
 
 
 # other study parameters --------------------------------------------------
-nInter <- 50
+nIter <- 50
 
 
 

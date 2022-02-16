@@ -2,7 +2,7 @@
 # functions.R                                           (c) J.M.B. Koch 2022
 ################################################################################
 # All functions used in main.R
-# Dependencies:: mvtnorm ; tidyr
+# Dependencies:: mvtnorm ; tidyr ; conditions.R, cmdstanr, rstan
 
 # simDat() ----------------------------------------------------------------
 # function to simulate data under desired model sourced from parameters.R
@@ -43,22 +43,15 @@ prepareDat <- function(Y, conditions){
     return(out)
 }
 
-# sampling() --------------------------------------------------------------
-# takes as input the chain-length, warmup, n_chains, n_parallel chains &
-#   all hyperparameters sourced from parameters.R
-sampling <- function()
-
 # output() ----------------------------------------------------------------
 # function takes rstan object and computes outcomes, and saves them
 saveOutput <- function(rstanObj, 
                        mainTrue = main, 
                        crossTrue = cross, 
                        PsiTrue = Psi, 
-                       ThetaTrue = Theta,
-                       conditions = conditions
-                      ){
+                       ThetaTrue = Theta, 
+                       conditions = conditions){
   
-
   # estimates Lambda
   mainEst <- colMeans(as.matrix(rstanObj, pars = c("lambdaMainC[1]",
                                                "lambdaMainC[2]",
@@ -121,12 +114,85 @@ saveOutput <- function(rstanObj,
 
 }
 
+# sampling() --------------------------------------------------------------
+# takes as input the chain-length, warmup, n_chains, n_parallel chains &
+#   all hyperparameters sourced from parameters.R
+sampling <- function(cond, nChain = nChain, nWarmup = nWarmup, nSampling = nSampling){}
+
+############# Prepare data for sampling ####################
+# allocate memory for final output (nested list)
+datasets <- list()
+# prepare 50 x "# unique combination of conditions" datasets
+for (i in 1:nrow(cond)){
+  # simulate & prepare data 50x per set of conditions (row of conditionsRHSP)
+  dat <- list()
+  for (j in 1:50){
+    Y <- simDat(L, Psi, Theta, cond[i, ]$N)
+    dat[[j]] <-  prepareDat(Y, cond[i, ]) 
+  }
+  # save dat in an element of the datasets output object, per row
+  datasets[[i]] <- dat
+}
+
+############# Do the sampling ####################
+# loop over the simulated datasets and save output object per dataset
+# compile model (if already compiled this will just not be executed)
+if (cond$prior == "SVNP"){
+    model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/SmallVarNormal.stan")
+}else if (cond$prior == "RHSP"){
+    model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/SmallVarNormal.stan")
+}
+
+# Draw the Samples
+# allocate memory for final output
+outputFinal <- data.frame()
+
+# start nested loop (i = conditions config, j = iteration)
+for (i in 1:nrow(cond)){
+  for (j in 1:nIter){
+    # do the sampling
+    samples <- model$sample(data = datasets[[i]][[j]],
+                            chains = nChain,
+                            parallel_chains = nChain,
+                            iter_warmup = nWarmup, # 4000 total iterations
+                            iter_sampling = nSampling)
+    
+    # save as rstan object
+    rstanObj <- read_stan_csv(samples$output_files())
+    
+    # save desired ouput
+    output <- saveOutput(rstanObj, conditions = cond[i, ])
+    # TBAadd converence to output
+    #output <- cbind(output, )
+    # add iteration to output
+    output$iteration <- j
+    # rbind output into final output
+    outputFinal <- rbind(outputFinal, output)
+    
+    ## print progress message 
+    print(paste("**************** THIS IS ITERATION ", 
+                as.character(j), 
+                "OF ROW ", 
+                as.character(i),
+                "****************"))
+    
+  }
+}
+
 # plots() -----------------------------------------------------------------
 # makes all required plots and saves them
 
 # convergence() -----------------------------------------------------------
 # takes rstan object as input and computes and returns convergence diagnostics
-
+convergence <- function(rstanObj) {
+  
+  as.data.frame(
+    summary(rstanObj, pars = c("lambdaMainC", 
+                               "lambdaCrossC", 
+                               "PsiC[1,2]", 
+                               "theta"))$summary[, 9:10]
+              )
+}
   #
 
 
