@@ -2,7 +2,7 @@
 # functions.R                                           (c) J.M.B. Koch 2022
 ################################################################################
 # All functions used in main.R
-# Dependencies:: mvtnorm ; tidyr ; conditions.R, cmdstanr, rstan
+# Dependencies:: mvtnorm ; tidyr; magrittr ; conditions.R, cmdstanr, rstan
 
 # simDat() ----------------------------------------------------------------
 # function to simulate data under desired model sourced from parameters.R
@@ -52,7 +52,7 @@ saveOutput <- function(rstanObj,
                        ThetaTrue = Theta, 
                        conditions = conditions){
   
-  # estimates Lambda
+  # estimates Lambda #####?? Change into output summary(rstanObj)$summary???
   mainEst <- colMeans(as.matrix(rstanObj, pars = c("lambdaMainC[1]",
                                                "lambdaMainC[2]",
                                                "lambdaMainC[3]",
@@ -79,33 +79,48 @@ saveOutput <- function(rstanObj,
   # Bias Theta
   biasTheta <- abs(thetaEst - diag(ThetaTrue))
   
+  
   # TBA: MSE
   # TBA: True & False positives in estimating truly non-0 as non-0
   #   THINK WELL OF SELECTION CRITERIA
   # TBA: save output (in list?)
   # Output
   
+  # Save convergence diagnostics
+  conv <- as.data.frame(summary(rstanObj, 
+                                pars = c("lambdaMainC", 
+                                         "lambdaCrossC", 
+                                         "PsiC[1,2]", 
+                                         "theta"))$summary[, 9:10]
+                        )
+  
+  # save output
   out <- as.data.frame(
           cbind(
                1:6,
                biasMain,
                biasCross,
                biasFactCorr,
-               biasTheta
-               )
+               biasTheta,
+               conv)
                         )
   
   # make row and colnames proper
   rownames(out) <- NULL
   colnames(out)[1] <- "item"
   
-  # recode output into wide format
+  # recode output into wide format and cbind convergence into it
   out <- tidyr::pivot_wider(out, 
                             names_from = item, 
                             values_from = c(biasMain, 
                                             biasCross, 
                                             biasFactCorr, 
-                                            biasTheta))
+                                            biasTheta,
+                                            n_eff,
+                                            Rhat))
+  
+  #|> # base R pipe
+  #       cbind(conv)
   
   # cbind conditions into output
   out <- cbind(out, conditions)
@@ -119,7 +134,8 @@ saveOutput <- function(rstanObj,
 #   all hyperparameters sourced from parameters.R
 sampling <- function(cond, nChain = nChain, nWarmup = nWarmup, nSampling = nSampling){
 
-############# Prepare data for sampling ####################
+############# Prepare data for sampling #################### 
+# TBA: Change this to make more sense, e.g. by 
 # allocate memory for final output (nested list)
 datasets <- list()
 # prepare 50 x "# unique combination of conditions" datasets
@@ -162,7 +178,6 @@ for (i in 1:nrow(cond)){
     
     # save desired ouput
     output <- saveOutput(rstanObj, conditions = cond[i, ])
-    # TBA add converence to output
     #output <- cbind(output, )
     # add iteration to output
     output$iteration <- j
@@ -179,9 +194,9 @@ for (i in 1:nrow(cond)){
   }
  }
 }
-# plots() -----------------------------------------------------------------
-# makes all required plots and saves them
-
+# Plots -----------------------------------------------------------------
+# makes all required plots (generally? for AN outcome?) and saves them
+plotsBias <- ()
 # convergence() -----------------------------------------------------------
 # takes rstan object as input and computes and returns convergence diagnostics
 convergence <- function(rstanObj) {
