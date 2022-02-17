@@ -162,7 +162,7 @@ for (i in 1:nrow(cond)){
     
     # save desired ouput
     output <- saveOutput(rstanObj, conditions = cond[i, ])
-    # TBAadd converence to output
+    # TBA add converence to output
     #output <- cbind(output, )
     # add iteration to output
     output$iteration <- j
