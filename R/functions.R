@@ -1,5 +1,5 @@
 ################################################################################
-# functions.R                                           (c) J.M.B. Koch 2022
+# functions.R                                               (c) J.M.B. Koch 2022
 ################################################################################
 # All functions used in main.R
 # Dependencies:: mvtnorm ; tidyr; magrittr ; conditions.R, cmdstanr, rstan
