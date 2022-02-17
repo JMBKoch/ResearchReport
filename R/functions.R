@@ -1,5 +1,5 @@
 ################################################################################
-# functions.R                                               (c) J.M.B. Koch 2022
+# functions.R                                             (c) J.M.B. Koch 2022
 ################################################################################
 # All functions used in main.R
 # Dependencies:: mvtnorm ; tidyr; magrittr ; conditions.R, cmdstanr, rstan
@@ -115,12 +115,9 @@ saveOutput <- function(rstanObj,
                             values_from = c(biasMain, 
                                             biasCross, 
                                             biasFactCorr, 
-                                            biasTheta,
-                                            n_eff,
-                                            Rhat))
+                                            biasTheta
+                                            ))
   
-  #|> # base R pipe
-  #       cbind(conv)
   
   # cbind conditions into output
   out <- cbind(out, conditions)
@@ -196,7 +193,8 @@ for (i in 1:nrow(cond)){
 }
 # Plots -----------------------------------------------------------------
 # makes all required plots (generally? for AN outcome?) and saves them
-plotsBias <- ()
+# plotsBias <- ()
+
 # convergence() -----------------------------------------------------------
 # takes rstan object as input and computes and returns convergence diagnostics
 convergence <- function(rstanObj) {

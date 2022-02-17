@@ -8,10 +8,8 @@
 # TBA: make such that packages are installed if not present
 library(cmdstanr)
 library(rstan)
-
 # source functions --------------------------------------------------------
 source('~/1vs2StepBayesianRegSEM/R/functions.R')
-
 # source conditions -------------------------------------------------------
 source('~/1vs2StepBayesianRegSEM/R/conditions.R')
 

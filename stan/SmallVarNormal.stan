@@ -25,22 +25,15 @@ transformed parameters{
   Theta = diag_matrix(theta);
   mu = rep_vector(0, P);
   
-  // make loading matrix manually; todo: automate
-  LambdaUnc[1, 1] = lambdaMain[1];
-  LambdaUnc[2, 1] = lambdaMain[2];
-  LambdaUnc[3, 1] = lambdaMain[3];
-  LambdaUnc[4, 2] = lambdaMain[4];
-  LambdaUnc[5, 2] = lambdaMain[5];
-  LambdaUnc[6, 2] = lambdaMain[6];
-
-  LambdaUnc[4, 1] = lambdaCross[1];
-  LambdaUnc[5, 1] = lambdaCross[2];
-  LambdaUnc[6, 1] = lambdaCross[3];
-  LambdaUnc[1, 2] = lambdaCross[4];
-  LambdaUnc[2, 2] = lambdaCross[5];
-  LambdaUnc[3, 2] = lambdaCross[6];
+  // make loading matrix manually; TODO: automate
+  LambdaUnc[1:3, 1] = lambdaMain[1:3];
+  LambdaUnc[4:6, 2] = lambdaMain[4:6];
   
-  // make Psi manually; todo: automate
+  LambdaUnc[4:6, 1] = lambdaCross[1:3];
+  LambdaUnc[1:3, 2] = lambdaCross[4:6];
+
+  
+  // make Psi manually; TODO: automate
   Psi[1, 1] = 1;
   Psi[2, 2] = 1;
   Psi[1, 2] = factCor;
