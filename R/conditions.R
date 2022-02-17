@@ -63,7 +63,7 @@ nSampling <- 2000
 
 
 # other study parameters --------------------------------------------------
-nIter <- 50
+nIter <- 5 # ff dit proberen
 
 
 

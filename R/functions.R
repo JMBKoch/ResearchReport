@@ -4,46 +4,72 @@
 # All functions used in main.R
 # Dependencies:: mvtnorm ; tidyr; magrittr ; conditions.R, cmdstanr, rstan
 
-# simDat() ----------------------------------------------------------------
+# prepareDatasets() -------------------------------------------------------
+
+# helper functions --------------------------------------------------------
+# simY() 
 # function to simulate data under desired model sourced from parameters.R
-# function
-simDat <- function(L, Psi, Theta, N){
-      Sigma <- L%*%Psi%*%t(L) + Theta
-      Y <- mvtnorm::rmvnorm(N, rep(0, 6), Sigma)
-      return(Y)
+simY <- function(L, Psi, Theta, N){
+  Sigma <- L%*%Psi%*%t(L) + Theta
+  Y <- mvtnorm::rmvnorm(N, rep(0, 6), Sigma)
+  return(Y)
 }
 
-# prepareDat() ------------------------------------------------------------
+
+# prepareDat() 
 # function to prepare stan data object from simdat() based on a unique
 #   combination of hyper-pars
-# This functions helps to clearly separate population 
 prepareDat <- function(Y, conditions){ 
-    if(conditions$prior == "SVNP"){
-      out <-  list(
-          N = nrow(Y),
-          P = ncol(Y),
-          Q = 2,
-          Y = Y, 
-          sigma = conditions$sigma
-        )
-    }else if(conditions$prior == "RHSP"){
-      out <- list(
-        N = nrow(Y),
-        P = ncol(Y),
-        Q = 2,
-        Y = Y, 
-        scaleGlobal = conditions$scaleGlobal, # scale omega
-        scaleLocal = conditions$scaleLocal, # scale lambda
-        dfGlobal = conditions$dfGlobal, # df for half-t prior omega
-        dfLocal = conditions$dfLocal, # df for half-t prior tau_j
-        nu = conditions$nu, # df IG for c^2
-        scaleSlab = conditions$scaleSlab
-      )
-    } 
-    return(out)
+  if(conditions$prior == "SVNP"){
+    out <-  list(
+      N = nrow(Y),
+      P = ncol(Y),
+      Q = 2,
+      Y = Y, 
+      sigma = conditions$sigma
+    )
+  }else if(conditions$prior == "RHSP"){
+    out <- list(
+      N = nrow(Y),
+      P = ncol(Y),
+      Q = 2,
+      Y = Y, 
+      scaleGlobal = conditions$scaleGlobal, # scale omega
+      scaleLocal = conditions$scaleLocal, # scale lambda
+      dfGlobal = conditions$dfGlobal, # df for half-t prior omega
+      dfLocal = conditions$dfLocal, # df for half-t prior tau_j
+      nu = conditions$nu, # df IG for c^2
+      scaleSlab = conditions$scaleSlab
+    )
+  } 
+  return(out)
 }
 
-# output() ----------------------------------------------------------------
+# function that prepares a list with (nIter X nrow(cond)) datasets 
+#  has two inner functions, one to simulate Y and one to prepare a single 
+#  dataset (list) ready to be processed by stan 
+prepareDatasets <- function(conditions, nIter = nIter, L = L, Psi = Psi, Theta = Theta){
+  
+    # allocate memory for the final output, a nested list
+    datasets <- list()
+
+    # prepare 50 x "# unique combination of conditions" datasets
+    for (i in 1:nrow(conditions)){
+      # simulate & prepare data 50x per set of conditions (row of conditionsRHSP)
+      dat <- list()
+      for (j in 1:nIter){
+        Y <- simY(L, Psi, Theta, N = conditions[i, ]$N)
+        dat[[j]] <-  prepareDat(Y, conditions = conditions[i, ]) 
+      }
+      # save data in appropriate element of final output
+      datasets[[i]] <- dat
+    }
+    # return datasets
+    return(datasets)
+    
+}
+
+# saveOutput() ------------------------------------------------------------
 # function takes rstan object and computes outcomes, and saves them
 saveOutput <- function(rstanObj, 
                        mainTrue = main, 
@@ -51,7 +77,7 @@ saveOutput <- function(rstanObj,
                        PsiTrue = Psi, 
                        ThetaTrue = Theta, 
                        conditions = conditions){
-  
+
   # estimates Lambda #####?? Change into output summary(rstanObj)$summary???
   mainEst <- colMeans(as.matrix(rstanObj, pars = c("lambdaMainC[1]",
                                                "lambdaMainC[2]",
@@ -79,21 +105,10 @@ saveOutput <- function(rstanObj,
   # Bias Theta
   biasTheta <- abs(thetaEst - diag(ThetaTrue))
   
-  
   # TBA: MSE
   # TBA: True & False positives in estimating truly non-0 as non-0
   #   THINK WELL OF SELECTION CRITERIA
-  # TBA: save output (in list?)
-  # Output
-  
-  # Save convergence diagnostics
-  conv <- as.data.frame(summary(rstanObj, 
-                                pars = c("lambdaMainC", 
-                                         "lambdaCrossC", 
-                                         "PsiC[1,2]", 
-                                         "theta"))$summary[, 9:10]
-                        )
-  
+
   # save output
   out <- as.data.frame(
           cbind(
@@ -101,8 +116,8 @@ saveOutput <- function(rstanObj,
                biasMain,
                biasCross,
                biasFactCorr,
-               biasTheta,
-               conv)
+               biasTheta
+               )
                         )
   
   # make row and colnames proper
@@ -129,25 +144,8 @@ saveOutput <- function(rstanObj,
 # sampling() --------------------------------------------------------------
 # takes as input the conditions chain-length, warmup, n_chains, n_parallel chains &
 #   all hyperparameters sourced from parameters.R
-sampling <- function(cond, nChain = nChain, nWarmup = nWarmup, nSampling = nSampling){
+sampling <- function(datasets, cond, nChain = nChain, nWarmup = nWarmup, nSampling = nSampling){
 
-############# Prepare data for sampling #################### 
-# TBA: Change this to make more sense, e.g. by 
-# allocate memory for final output (nested list)
-datasets <- list()
-# prepare 50 x "# unique combination of conditions" datasets
-for (i in 1:nrow(cond)){
-  # simulate & prepare data 50x per set of conditions (row of conditionsRHSP)
-  dat <- list()
-  for (j in 1:50){
-    Y <- simDat(L, Psi, Theta, cond[i, ]$N)
-    dat[[j]] <-  prepareDat(Y, cond[i, ]) 
-  }
-  # save dat in an element of the datasets output object, per row
-  datasets[[i]] <- dat
-}
-
-############# Do the sampling ####################
 # loop over the simulated datasets and save output object per dataset
 # compile model (if already compiled this will just not be executed)
 if (cond$prior == "SVNP"){
@@ -206,7 +204,7 @@ convergence <- function(rstanObj) {
                                "theta"))$summary[, 9:10]
               )
 }
-  #
+
 
 
 
