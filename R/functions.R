@@ -115,9 +115,9 @@ saveOutput <- function(rstanObj,
 }
 
 # sampling() --------------------------------------------------------------
-# takes as input the chain-length, warmup, n_chains, n_parallel chains &
+# takes as input the conditions chain-length, warmup, n_chains, n_parallel chains &
 #   all hyperparameters sourced from parameters.R
-sampling <- function(cond, nChain = nChain, nWarmup = nWarmup, nSampling = nSampling){}
+sampling <- function(cond, nChain = nChain, nWarmup = nWarmup, nSampling = nSampling){
 
 ############# Prepare data for sampling ####################
 # allocate memory for final output (nested list)
@@ -177,8 +177,8 @@ for (i in 1:nrow(cond)){
                 "****************"))
     
   }
+ }
 }
-
 # plots() -----------------------------------------------------------------
 # makes all required plots and saves them
 
