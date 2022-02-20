@@ -138,6 +138,29 @@ saveResults <- function(rstanObj,
 
 }
 
+
+# convergence() -----------------------------------------------------------
+# takes rstan object as input and computes and returns convergence diagnostics
+convergence <- function(rstanObj, conditions) {
+  
+  # save convergence diagnostics
+  conv <- as.data.frame(
+    t(summary(rstanObj, pars = c("lambdaMainC", 
+                                 "lambdaCrossC", 
+                                 "PsiC[1,2]", 
+                                 "theta"))$summary[, 9:10]))
+  # recode output into a nicer format and including condition config
+  conv$parameter <- rownames(conv)
+  rownames(conv) <- NULL
+  
+  # cbind conditions into output
+  conv <- cbind(conv, conditions)
+  # return output
+  return(conv)
+}
+
+
+
 # sampling() --------------------------------------------------------------
 # takes as input the conditions chain-length, warmup, n_chains, n_parallel chains &
 #   all hyperparameters sourced from parameters.R
@@ -205,25 +228,6 @@ sampling <- function(datasets, cond, nChain, nWarmup, nSampling){
 # makes all required plots (generally? for AN outcome?) and saves them
 # plotsBias <- ()
 
-# convergence() -----------------------------------------------------------
-# takes rstan object as input and computes and returns convergence diagnostics
-convergence <- function(rstanObj, conditions) {
-  
-  # save convergence diagnostics
-  conv <- as.data.frame(
-              t(summary(rstanObj, pars = c("lambdaMainC", 
-                                            "lambdaCrossC", 
-                                            "PsiC[1,2]", 
-                                            "theta"))$summary[, 9:10]))
-  # recode output into a nicer format and including condition config
-  conv$parameter <- rownames(conv)
-  rownames(conv) <- NULL
-  
-  # cbind conditions into output
-  conv <- cbind(conv, conditions)
-  # return output
-  return(conv)
-}
 
 
 

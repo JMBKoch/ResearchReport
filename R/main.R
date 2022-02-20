@@ -37,3 +37,5 @@ write.csv(outputFinalSVNP$convergence,
 #          file = "~/1vs2StepBayesianRegSEM/output/ResultsMiniSimRHSP.csv")
 #write.csv(outputFinalSVNP$convergence, 
 #          file = "~/1vs2StepBayesianRegSEM/output/ConvergenceMiniSimRHSP.csv")
+
+
