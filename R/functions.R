@@ -2,7 +2,7 @@
 # functions.R                                             (c) J.M.B. Koch 2022
 ################################################################################
 # All functions used in main.R
-# Dependencies:: mvtnorm ; tidyr; magrittr ; conditions.R, cmdstanr, rstan
+#  conditions.R, cmdstanr, rstan
 
 # prepareDatasets() -------------------------------------------------------
 # function that prepares a list with (nIter X nrow(cond)) datasets 

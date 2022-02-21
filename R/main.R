@@ -2,12 +2,27 @@
 # main.R                                              (c) J.M.B. Koch 2022
 ################################################################################
 # This is the main script running the simulation study's
-# Dependencies:: cmdstanr; rstan; functions.R; conditions.R; 
+# Dependencies functions.R; conditions.R; 
 
 # load packages -----------------------------------------------------------
-# TBA: make such that packages are installed if not present
-library(cmdstanr)
-library(rstan)
+# specify packages that are required for executing the study
+packages <- c("cmdstanr",
+              "rstan",
+              "tidyverse",
+              "mvtnorm"
+              )
+
+# make sure that packages are installed if not present
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+
 # source functions --------------------------------------------------------
 source('~/1vs2StepBayesianRegSEM/R/functions.R')
 # source conditions -------------------------------------------------------
