@@ -2,7 +2,7 @@
 # main.R                                              (c) J.M.B. Koch 2022
 ################################################################################
 # This is the main script running the simulation study's
-# Dependencies functions.R; conditions.R; 
+# Dependencies functions.R; conditions.R; see packages below
 
 # load packages -----------------------------------------------------------
 # specify packages that are required for executing the study

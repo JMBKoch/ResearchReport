@@ -56,8 +56,8 @@ condRHSP <-
 
 # Sampling parameters -----------------------------------------------------
 nChain <- 2
-nWarmup <- 50
-nSampling <- 50
+nWarmup <- 2000
+nSampling <- 2000
 
 # other study parameters --------------------------------------------------
 nIter <- 5 # ff dit proberen

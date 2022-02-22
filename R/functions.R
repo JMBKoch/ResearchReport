@@ -2,7 +2,7 @@
 # functions.R                                             (c) J.M.B. Koch 2022
 ################################################################################
 # All functions used in main.R
-#  conditions.R, cmdstanr, rstan
+#  dependencies: tidyverse (magrittr, tidyr, dplyr, ggplot2)
 
 # prepareDatasets() -------------------------------------------------------
 # function that prepares a list with (nIter X nrow(cond)) datasets 
@@ -73,7 +73,7 @@ saveResults <- function(rstanObj,
                         crossTrue = cross, 
                         PsiTrue = Psi, 
                         ThetaTrue = Theta, 
-                        conditions = conditions){
+                        conditions){
 
   # estimates Lambda #####?? Change into output summary(rstanObj)$summary???
   mainEst <- colMeans(as.matrix(rstanObj, pars = c("lambdaMainC[1]",
@@ -107,15 +107,12 @@ saveResults <- function(rstanObj,
   #   THINK WELL OF SELECTION CRITERIA
 
   # save output
-  out <- as.data.frame(
-          cbind(
-               1:6,
+  out <- cbind(1:6,
                biasMain,
                biasCross,
-               biasFactCorr,
-               biasTheta
-               )
-                        )
+               biasTheta) %>% 
+         as_tibble()
+            
   
   # make row and colnames proper
   rownames(out) <- NULL
@@ -126,9 +123,10 @@ saveResults <- function(rstanObj,
                             names_from = item, 
                             values_from = c(biasMain, 
                                             biasCross, 
-                                            biasFactCorr, 
                                             biasTheta
-                                            ))
+                                            )) 
+  # add factCorr column
+  out$biasFactCorr <- biasFactCorr
   
   
   # cbind conditions into output
