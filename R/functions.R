@@ -182,8 +182,8 @@ sampling <- function(datasets, cond, nChain, nWarmup, nSampling){
     for (j in 1:nIter){
       # do the sampling
       samples <- model$sample(data = datasets[[i]][[j]],
-                              chains = nChain,
-                              parallel_chains = nChain,
+                              chains = nChain, # 2 chains 
+                              parallel_chains = nChain, # in finale setup wss geen parallele chains meer
                               iter_warmup = nWarmup, # 4000 total iterations
                               iter_sampling = nSampling)
       
@@ -224,10 +224,21 @@ sampling <- function(datasets, cond, nChain, nWarmup, nSampling){
 
 # Plots -----------------------------------------------------------------
 # makes all required plots (generally? for AN outcome?) and saves them
-# plotsBias <- ()
+#### start with bias for now,ff litertuur weer induiken & Sara spreken over wat handig is
 
+plotsMeanBias <- function(output, parameterName, condition){
 
+      name <- paste0("mean", parameterName)
+  
+      out %>% 
+        group_by(condition) %>% 
+        summarise(name = mean(parameterName)) %>% 
+        ggplot(mapping = aes(x = condition, y = name))+
+        geom_point()
 
-
-
-
+}       
+        
+out <- read.csv("~/1vs2StepBayesianRegSEM/output/ResultsMiniSimSVNP.csv", row.names = 1)
+        
+ 
+plotsMeanBias(out, "biasFactCorr", condition= sigma)
