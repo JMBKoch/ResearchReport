@@ -5,14 +5,15 @@
 # Dependencies functions.R; conditions.R; see packages below
 
 # load packages -----------------------------------------------------------
-# specify packages that are required for executing the study
-packages <- c("cmdstanr",
-              "rstan",
-              "tidyverse",
-              "mvtnorm"
+# specify packages that are required for executing the simulation
+packages <- c("cmdstanr", # MCMC sampling using stan
+              "rstan", # postprocessing of samples
+              "tidyverse", # data wrangling, plotting, pipes
+              "mvtnorm", # data simulation
+              "parallel" # parallelization
               )
 
-# make sure that packages are installed if not present
+# make sure that packages are installed if not present & load packages
 package.check <- lapply(
   packages,
   FUN = function(x) {
@@ -35,7 +36,7 @@ datasetsSVNP <- prepareDatasets(condSVNP, nIter, L, Psi, Theta)
 # do the sampling
 outputFinalSVNP <- sampling(datasetsSVNP, condSVNP, nChain, nWarmup, nSampling)
 
-# write output to .csv
+# write output to .csv ### TBA: adjust to be part of sampling function and append output
 write.csv(outputFinalSVNP$results, 
           file = "~/1vs2StepBayesianRegSEM/output/ResultsMiniSimSVNP.csv")
 write.csv(outputFinalSVNP$convergence,
