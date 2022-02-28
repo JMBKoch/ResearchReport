@@ -173,9 +173,9 @@ sampling <- function(datasets, cond, nChain, nWarmup, nSampling){
   # loop over the simulated datasets and save output object per dataset
   # compile model (if already compiled this will just not be executed)
   if (cond$prior == "SVNP"){
-      model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/SmallVarNormal.stan")
+      model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/SVNP.stan")
   }else if (cond$prior == "RHSP"){
-      model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/SmallVarNormal.stan")
+      model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/RHSP.stan")
   }
   
   # Draw the Samples
