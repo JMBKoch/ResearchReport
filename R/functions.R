@@ -102,7 +102,9 @@ saveResults <- function(rstanObj,
   # Bias Theta
   biasTheta <- abs(thetaEst - diag(ThetaTrue))
   
-  # TBA: MSE
+  # MSE
+  mseMain
+  m# Just compute as bias plus variance
   # TBA: True & False positives in estimating truly non-0 as non-0
   #   THINK WELL OF SELECTION CRITERIA
 
@@ -242,3 +244,15 @@ out <- read.csv("~/1vs2StepBayesianRegSEM/output/ResultsMiniSimSVNP.csv", row.na
         
  
 plotsMeanBias(out, "biasFactCorr", condition= sigma)
+
+
+# for paralellisation
+nworkers <- 31 # number of cores to use
+cl <- makePSOCKcluster(nworkers) # create cluster
+clusterCall(cl, function() library(rstan))
+clusterCall(cl, function() library(bayesplot))
+clusterCall(cl, function() library(dplyr))
+clusterCall(cl, function() library(VGAM))
+out <- clusterApplyLB(cl, 1:nrow(conditions), analysis.fun, analyses=conditions, dat = simdat, 
+                      niter = 3000, sampset = list(adapt_delta = 0.9, max_treedepth = 10))
+stopCluster(cl) # shut down the nodes
