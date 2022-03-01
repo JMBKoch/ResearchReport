@@ -90,10 +90,12 @@ saveResults <- function(rstanObj,
                                              "lambdaCrossC[5]",
                                              "lambdaCrossC[6]")))
   # estimate Factor-Corr
-  corrEst <- colMeans(as.matrix(rstanObj, pars = c("Psi[2, 1]")))
+  corrEst <- colMeans(as.matrix(rstanObj, pars = c("Psi[2, 1]"))) # adjust to summary
   # estimates Theta
   thetaEst <- colMeans(as.matrix(rstanObj, pars = "theta"))
   
+  
+  ## Bias 
   # Bias Lambda
   biasMain <- abs(mainEst-mainTrue)
   biasCross <- abs(crossEst-crossTrue)
@@ -103,10 +105,12 @@ saveResults <- function(rstanObj,
   biasTheta <- abs(thetaEst - diag(ThetaTrue))
   
   # MSE
-  mseMain
-  m# Just compute as bias plus variance
-  # TBA: True & False positives in estimating truly non-0 as non-0
-  #   THINK WELL OF SELECTION CRITERIA
+  #mseMain <- biasMain + var()
+  #mseCross <- 
+  #mseFactCorr <- 
+  #mseTheta <- 
+  # Just compute as bias plus variance
+  # TBUse all selection criteria 
 
   # save output
   out <- cbind(1:6,
@@ -164,7 +168,11 @@ convergence <- function(rstanObj, conditions) {
 # sampling() --------------------------------------------------------------
 # takes as input the conditions chain-length, warmup, n_chains, n_parallel chains &
 #   all hyperparameters sourced from parameters.R
-sampling <- function(datasets, cond, nChain, nWarmup, nSampling){
+sampling <- function(pos, conditions, datasets, nIter, nChain, nWarmup, nSampling){
+  
+  
+  # specify condition based on pos 
+  cond <- conditions[pos, ]
   
   # memory allocation final output
   outputFinal <- data.frame()
@@ -179,13 +187,12 @@ sampling <- function(datasets, cond, nChain, nWarmup, nSampling){
   }
   
   # Draw the Samples
-  # start nested loop (i = conditions config, j = iteration)
-  for (i in 1:nrow(cond)){
-    for (j in 1:nIter){
+  # start  loop 
+    for (i in 1:nIter){
       # do the sampling
-      samples <- model$sample(data = datasets[[i]][[j]],
+      samples <- model$sample(data = datasets[[pos]][[i]],
                               chains = nChain, # 2 chains 
-                              parallel_chains = nChain, # in finale setup wss geen parallele chains meer
+                              # parallel_chains = nChain, # in finale setup wss geen parallele chains meer
                               iter_warmup = nWarmup, # 4000 total iterations
                               iter_sampling = nSampling)
       
@@ -193,31 +200,27 @@ sampling <- function(datasets, cond, nChain, nWarmup, nSampling){
       rstanObj <- read_stan_csv(samples$output_files())
       
       # save Results
-      output <- saveResults(rstanObj, conditions = cond[i, ])
+      output <- saveResults(rstanObj, conditions = cond)
       #output <- cbind(output, )
       # add iteration to output
-      output$iteration <- j
+      output$iteration <- i
       # rbind output into final output
       outputFinal <- rbind(outputFinal, output)
       
       # save convergence diagnostics
-      conv <- convergence(rstanObj, conditions = cond[i, ])
+      conv <- convergence(rstanObj, conditions = cond)
       # add iteration
-      conv$iteration <- j
+      conv$iteration <- i
       convFinal <- rbind(convFinal, conv)
       
-      
       ## print progress message 
-      print(paste("**************** THIS IS ITERATION ", 
-                  as.character(j), 
-                  "OF ROW ", 
-                  as.character(i),
-                  "****************"))
-      
+      #print(paste("**************** THIS IS ITERATION ", as.character(i)))
+      # does not work within ClusterApplyLB
       
     }
-  }
   
+  ### TBA: change such that output is written to disk directly (appending per iteration)
+  #### Does this work with clusteraplY
   # return list with results and convergence diags
   return(list(results = outputFinal,
               convergence = convFinal))
@@ -246,13 +249,3 @@ out <- read.csv("~/1vs2StepBayesianRegSEM/output/ResultsMiniSimSVNP.csv", row.na
 plotsMeanBias(out, "biasFactCorr", condition= sigma)
 
 
-# for paralellisation
-nworkers <- 31 # number of cores to use
-cl <- makePSOCKcluster(nworkers) # create cluster
-clusterCall(cl, function() library(rstan))
-clusterCall(cl, function() library(bayesplot))
-clusterCall(cl, function() library(dplyr))
-clusterCall(cl, function() library(VGAM))
-out <- clusterApplyLB(cl, 1:nrow(conditions), analysis.fun, analyses=conditions, dat = simdat, 
-                      niter = 3000, sampset = list(adapt_delta = 0.9, max_treedepth = 10))
-stopCluster(cl) # shut down the nodes

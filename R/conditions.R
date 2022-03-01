@@ -56,12 +56,12 @@ condRHSP <-
 
 # Sampling parameters -----------------------------------------------------
 nChain <- 2
-nWarmup <- 2000
-nSampling <- 2000
+nWarmup <- 50
+nSampling <- 50
 
 
 # parallelization parameters ----------------------------------------------
-nWorkers <- 12 # 16 total virtual coress
+nWorkers <- 3 # 16 total virtual coress
 
 # other study parameters --------------------------------------------------
 nIter <- 5 # ff dit proberen
