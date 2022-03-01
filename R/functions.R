@@ -75,43 +75,35 @@ saveResults <- function(rstanObj,
                         ThetaTrue = Theta, 
                         conditions){
 
-  # estimates Lambda #####?? Change into output summary(rstanObj)$summary???
-  mainEst <- colMeans(as.matrix(rstanObj, pars = c("lambdaMainC[1]",
-                                               "lambdaMainC[2]",
-                                               "lambdaMainC[3]",
-                                               "lambdaMainC[4]",
-                                               "lambdaMainC[5]",
-                                               "lambdaMainC[6]")))
-  
-  crossEst <- colMeans(as.matrix(rstanObj, pars = c("lambdaCrossC[1]",
-                                             "lambdaCrossC[2]",
-                                             "lambdaCrossC[3]",
-                                             "lambdaCrossC[4]",
-                                             "lambdaCrossC[5]",
-                                             "lambdaCrossC[6]")))
+  # estimates Lambda
+  mainEst <- summary(rstanObj,  pars = "lambdaMainC")$summary[, 1]
+  crossEst <-  summary(rstanObj, pars = "lambdaCrossC")$summary[, 1]
   # estimate Factor-Corr
-  corrEst <- colMeans(as.matrix(rstanObj, pars = c("Psi[2, 1]"))) # adjust to summary
+  corrEst <-  summary(rstanObj, pars = "PsiC[2, 1]")$summary[, 1] 
   # estimates Theta
-  thetaEst <- colMeans(as.matrix(rstanObj, pars = "theta"))
-  
+  thetaEst <- summary(rstanObj, pars = "theta")$summary[, 1]
   
   ## Bias 
-  # Bias Lambda
   biasMain <- abs(mainEst-mainTrue)
   biasCross <- abs(crossEst-crossTrue)
-  # Bias Factor Correlation
   biasFactCorr <-  abs(corrEst - PsiTrue[1, 2])
-  # Bias Theta
   biasTheta <- abs(thetaEst - diag(ThetaTrue))
   
   # MSE
-  #mseMain <- biasMain + var()
-  #mseCross <- 
-  #mseFactCorr <- 
-  #mseTheta <- 
-  # Just compute as bias plus variance
-  # TBUse all selection criteria 
+  mseMain <- biasMain + summary(rstanObj, pars =  "lambdaMainC")$summary[, 3]^2
+  mseCross <- biasCross + summary(rstanObj, pars =  "lambdaCrossC")$summary[, 3]^2
+  mseFactCorr <- biasFactCorr + summary(rstanOjb, pars = "PsiC[2, 1]")$summary[, 3]^2
+  mseTheta <- biasTheta + summary(rstanObj, pars = "theta")$summary[, 3]^2
 
+  # isZero, based on different selection criteria
+  # Treshold
+  
+  # Treshold
+  
+  # Credibitilty interval containing zero
+  
+  # HPD interval containging zero
+  
   # save output
   out <- cbind(1:6,
                biasMain,
@@ -129,11 +121,14 @@ saveResults <- function(rstanObj,
                             names_from = item, 
                             values_from = c(biasMain, 
                                             biasCross, 
-                                            biasTheta
+                                            biasTheta,
+                                            mseMain,
+                                            mseCross,
+                                            mseTheta
                                             )) 
-  # add factCorr column
+  # add factCorr columns
   out$biasFactCorr <- biasFactCorr
-  
+  out$mseFactCorr <- mseFactCorr
   
   # cbind conditions into output
   out <- cbind(out, conditions)

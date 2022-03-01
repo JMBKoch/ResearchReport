@@ -32,7 +32,7 @@ scaleSlab <- c(0.1, 1, 5) # scale of slab
 
 # Population conditions ----------------------------------------------------
 #N <- c(100, 200, 300)
-N <- 200 # nu ff alleen maar dit for MiniMiniSim
+N <- c(100, 200) # nu ff alleen maar dit for MiniMiniSim
 
 # specify combinations of population conditions & hyperpars per prior
 condSVNP <- 
@@ -61,7 +61,7 @@ nSampling <- 50
 
 
 # parallelization parameters ----------------------------------------------
-nWorkers <- 3 # 16 total virtual coress
+nWorkers <- nrow(condSVNP) # 16 total virtual coress
 
 # other study parameters --------------------------------------------------
 nIter <- 5 # ff dit proberen
