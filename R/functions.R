@@ -92,7 +92,7 @@ saveResults <- function(rstanObj,
   # MSE
   mseMain <- biasMain + summary(rstanObj, pars =  "lambdaMainC")$summary[, 3]^2
   mseCross <- biasCross + summary(rstanObj, pars =  "lambdaCrossC")$summary[, 3]^2
-  mseFactCorr <- biasFactCorr + summary(rstanOjb, pars = "PsiC[2, 1]")$summary[, 3]^2
+  mseFactCorr <- biasFactCorr + summary(rstanObj, pars = "PsiC[2, 1]")$summary[, 3]^2
   mseTheta <- biasTheta + summary(rstanObj, pars = "theta")$summary[, 3]^2
 
   # isZero, based on different selection criteria
@@ -103,11 +103,11 @@ saveResults <- function(rstanObj,
   # Treshold: 0 if estimate is smaller than
   
   # 95% Credibility interval containing zero
-  credInterval <- summary(rstanOjb, par = "lambdaCrossC")$summary[, c(4, 8)]
+  credInterval <- summary(rstanObj, par = "lambdaCrossC")$summary[, c(4, 8)]
   
-  isZeroCred95 <- sapply(credInterval, 
-                         function(x)ifelse(0 %in% c(x[1], x[2]), 1))
-  
+ #isZeroCred95 <- sapply(credInterval, 
+ #                       function(x)ifelse(0 %in% c(x[1], x[2]), 1))
+ #
   # HPD interval containing zero
   
   # save output
@@ -118,11 +118,11 @@ saveResults <- function(rstanObj,
                mseMain,
                mseCross,
                mseTheta,
-               isZeroTres05) %>% 
+               isZeroTres10) %>% 
          as_tibble()
   # make row and colnames proper
-  #rownames(out) <- NULL
-  #colnames(out)[1] <- "item"
+  rownames(out) <- NULL
+  colnames(out)[1] <- "item"
   # recode output into wide format and cbind convergence into it
   out <- tidyr::pivot_wider(out, 
                             names_from = item, 
@@ -132,7 +132,7 @@ saveResults <- function(rstanObj,
                                             mseMain,
                                             mseCross,
                                             mseTheta,
-                                            isZeroTres05
+                                            isZeroTres10
                                             )) 
   # add factCorr columns
   out$biasFactCorr <- biasFactCorr
