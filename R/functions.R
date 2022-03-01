@@ -96,13 +96,13 @@ saveResults <- function(rstanObj,
   mseTheta <- biasTheta + summary(rstanObj, pars = "theta")$summary[, 3]^2
 
   # isZero, based on different selection criteria
+  # Treshold: 0 if estimate smaller than 0.05
+  isZeroTres05 <- sapply(crossEst, function(x)ifelse(x < 0.05, 0, 1))
   # Treshold
   
-  # Treshold
+  # 95% Credibility interval containing zero
   
-  # Credibitilty interval containing zero
-  
-  # HPD interval containging zero
+  # HPD interval containing zero
   
   # save output
   out <- cbind(1:6,
@@ -110,12 +110,9 @@ saveResults <- function(rstanObj,
                biasCross,
                biasTheta) %>% 
          as_tibble()
-            
-  
   # make row and colnames proper
   rownames(out) <- NULL
   colnames(out)[1] <- "item"
-  
   # recode output into wide format and cbind convergence into it
   out <- tidyr::pivot_wider(out, 
                             names_from = item, 
