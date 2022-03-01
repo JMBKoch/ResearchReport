@@ -2,7 +2,7 @@
 # functions.R                                             (c) J.M.B. Koch 2022
 ################################################################################
 # All functions used in main.R
-#  dependencies: tidyverse (magrittr, tidyr, dplyr, ggplot2)
+#  dependencies: tidyverse (magrittr, tidyr, dplyr, ggplot2), mvnorm
 
 # prepareDatasets() -------------------------------------------------------
 # function that prepares a list with (nIter X nrow(cond)) datasets 
@@ -96,11 +96,17 @@ saveResults <- function(rstanObj,
   mseTheta <- biasTheta + summary(rstanObj, pars = "theta")$summary[, 3]^2
 
   # isZero, based on different selection criteria
-  # Treshold: 0 if estimate smaller than 0.05
-  isZeroTres05 <- sapply(crossEst, function(x)ifelse(x < 0.05, 0, 1))
-  # Treshold
+  #### TBA: The final outcomes, i.e. Power (p 6 Zhang et al., 2021), type-I error rates, 
+  #### Ratio correct identification to total number identified pars, no established metric
+  # Treshold: 0 if estimate smaller than 0.10
+  isZeroTres10 <- sapply(crossEst, function(x)ifelse(x < 0.10, 0, 1))
+  # Treshold: 0 if estimate is smaller than
   
   # 95% Credibility interval containing zero
+  credInterval <- summary(rstanOjb, par = "lambdaCrossC")$summary[, c(4, 8)]
+  
+  isZeroCred95 <- sapply(credInterval, 
+                         function(x)ifelse(0 %in% c(x[1], x[2]), 1))
   
   # HPD interval containing zero
   
@@ -108,11 +114,15 @@ saveResults <- function(rstanObj,
   out <- cbind(1:6,
                biasMain,
                biasCross,
-               biasTheta) %>% 
+               biasTheta,
+               mseMain,
+               mseCross,
+               mseTheta,
+               isZeroTres05) %>% 
          as_tibble()
   # make row and colnames proper
-  rownames(out) <- NULL
-  colnames(out)[1] <- "item"
+  #rownames(out) <- NULL
+  #colnames(out)[1] <- "item"
   # recode output into wide format and cbind convergence into it
   out <- tidyr::pivot_wider(out, 
                             names_from = item, 
@@ -121,7 +131,8 @@ saveResults <- function(rstanObj,
                                             biasTheta,
                                             mseMain,
                                             mseCross,
-                                            mseTheta
+                                            mseTheta,
+                                            isZeroTres05
                                             )) 
   # add factCorr columns
   out$biasFactCorr <- biasFactCorr
@@ -140,6 +151,7 @@ saveResults <- function(rstanObj,
 convergence <- function(rstanObj, conditions) {
   
   # save convergence diagnostics
+	### TBA: max treedepth, # divergent transitions
   conv <- as.data.frame(
     t(summary(rstanObj, pars = c("lambdaMainC", 
                                  "lambdaCrossC", 
@@ -207,7 +219,7 @@ sampling <- function(pos, conditions, datasets, nIter, nChain, nWarmup, nSamplin
       
       ## print progress message 
       #print(paste("**************** THIS IS ITERATION ", as.character(i)))
-      # does not work within ClusterApplyLB
+      # does not work within ClusterApplyLB()
       
     }
   

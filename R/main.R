@@ -52,14 +52,14 @@ clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'
 clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/conditions.R'))
 # run functon in clustered way where every set of condition gets it's own core
 outputFinalSVNP <- clusterApplyLB(clusters, 
-                                   1:nrow(condSVNP), 
-                                   sampling,
-                                   conditions = condSVNP,
-                                   datasets = datasetsSVNP,
-                                   nIter = nIter,
-                                   nChain = nChain,
-                                   nWarmup = nWarmup,
-                                   nSampling = nSampling)
+                                  1:nrow(condSVNP), 
+                                  sampling,
+                                  conditions = condSVNP,
+                                  datasets = datasetsSVNP,
+                                  nIter = nIter,
+                                  nChain = nChain,
+                                  nWarmup = nWarmup,
+                                  nSampling = nSampling)
 
 
 # close clusters
@@ -91,19 +91,19 @@ clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'
 clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/conditions.R'))
 
 # run functio in clustered way where every set of condition gets it's own core
-outputFinalRHSP <- clusterApplyLB(clusters, 
-                                  1:nrow(condRHSP), 
-                                  sampling,
-                                  conditions = condRHSP,
-                                  datasets = condRHSP,
-                                  nIter = nIter,
-                                  nChain = nChain,
-                                  nWarmup = nWarmup,
-                                  nSampling = nSampling)
-
-
-# close clusters
-stopCluster(clusters) 
+#outputFinalRHSP <- clusterApplyLB(clusters, 
+#                                  1:nrow(condRHSP), 
+#                                  sampling,
+#                                  conditions = condRHSP,
+#                                  datasets = condRHSP,
+#                                  nIter = nIter,
+#                                  nChain = nChain,
+#                                  nWarmup = nWarmup,
+#                                  nSampling = nSampling)
+#
+#
+## close clusters
+#stopCluster(clusters) 
 
 
 ## write output to .csv
