@@ -3,7 +3,6 @@
 ################################################################################
 # This is the main script running the simulation study's
 # Dependencies functions.R; conditions.R; see packages below
-
 # set.seed(0704)
 
 # source functions --------------------------------------------------------
@@ -18,7 +17,8 @@ packages <- c("cmdstanr", # MCMC sampling using stan
               "rstan", # postprocessing of samples
               "tidyverse", # data wrangling, plotting, pipes
               "mvtnorm", # data simulation
-              "parallel" # parallelization
+              "parallel", # parallelization
+              "bayesplot" # convergence diagnostics 
               )
 
 # make sure that packages are installed if not present & load packages
@@ -31,7 +31,6 @@ package.check <- lapply(
     }
   }
 )
-
 
 # Execute simulation for SVNP ---------------------------------------------
 # simulate datasets
@@ -47,6 +46,8 @@ clusterCall(clusters, function() library(rstan))
 clusterCall(clusters, function() library(cmdstanr))
 clusterCall(clusters, function() library(mvtnorm))
 clusterCall(clusters, function() library(parallel))
+clusterCall(clusters, function() library(bayesplot))
+
 # source functions & conditions within clusters
 clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
 clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/conditions.R'))
@@ -77,18 +78,19 @@ stopCluster(clusters)
 #datasetsRHSP <- prepareDatasets(condRHSP, nIter, L, Psi, Theta)
 ## do the sampling
 # do the sampling
-clusters <- makePSOCKcluster(nWorkers) # create cluster
-
-# make sure packages are loaded per cluster
-clusterCall(clusters, function() library(tidyverse))
-clusterCall(clusters, function() library(rstan))
-clusterCall(clusters, function() library(cmdstanr))
-clusterCall(clusters, function() library(mvtnorm))
-clusterCall(clusters, function() library(parallel))
-
-# source functions & conditions within clusters
-clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
-clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/conditions.R'))
+#clusters <- makePSOCKcluster(nWorkers) # create cluster
+#
+## make sure packages are loaded per cluster
+#clusterCall(clusters, function() library(tidyverse))
+#clusterCall(clusters, function() library(rstan))
+#clusterCall(clusters, function() library(cmdstanr))
+#clusterCall(clusters, function() library(mvtnorm))
+#clusterCall(clusters, function() library(parallel))
+#clusterCall(clusters, function() library(bayesplot))
+#
+## source functions & conditions within clusters
+#clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
+#clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/conditions.R'))
 
 # run functio in clustered way where every set of condition gets it's own core
 #outputFinalRHSP <- clusterApplyLB(clusters, 

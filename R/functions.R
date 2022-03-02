@@ -2,7 +2,7 @@
 # functions.R                                             (c) J.M.B. Koch 2022
 ################################################################################
 # All functions used in main.R
-#  dependencies: tidyverse (magrittr, tidyr, dplyr, ggplot2), mvnorm
+# dependencies: tidyverse (magrittr, tidyr, dplyr, ggplot2), mvtnorm, bayesplot
 
 # prepareDatasets() -------------------------------------------------------
 # function that prepares a list with (nIter X nrow(cond)) datasets 
@@ -105,8 +105,7 @@ saveResults <- function(rstanObj,
   # 95% Credibility interval containing zero
   credInterval <- summary(rstanObj, par = "lambdaCrossC")$summary[, c(4, 8)]
   
- #isZeroCred95 <- sapply(credInterval, 
- #                       function(x)ifelse(0 %in% c(x[1], x[2]), 1))
+ #isZeroCred95 <- apply(credInterval, 1, function(x) ifelse(0 %in% x, 1, 0))
  #
   # HPD interval containing zero
   
@@ -145,18 +144,25 @@ saveResults <- function(rstanObj,
 
 }
 
-
 # convergence() -----------------------------------------------------------
 # takes rstan object as input and computes and returns convergence diagnostics
 convergence <- function(rstanObj, conditions) {
   
   # save convergence diagnostics
-	### TBA: max treedepth, # divergent transitions
+	
+  # start with Rhat and n_eff
   conv <- as.data.frame(
     t(summary(rstanObj, pars = c("lambdaMainC", 
                                  "lambdaCrossC", 
                                  "PsiC[1,2]", 
                                  "theta"))$summary[, 9:10]))
+  # add max treedepth and sum divergent transitions
+  tree <- subset(bayesplot::nuts_params(rstanObj), Parameter == "treedepth__")
+  conv$maxTree <- max(tree$Value)
+  div <- subset(bayesplot::nuts_params(rstanObj), Parameter == "divergent__")
+  conv$sumDiv  <- sum(div$Value)
+  
+  
   # recode output into a nicer format and including condition config
   conv$parameter <- rownames(conv)
   rownames(conv) <- NULL
@@ -167,13 +173,11 @@ convergence <- function(rstanObj, conditions) {
   return(conv)
 }
 
-
-
 # sampling() --------------------------------------------------------------
 # takes as input the conditions chain-length, warmup, n_chains, n_parallel chains &
 #   all hyperparameters sourced from parameters.R
+##### VGM kan pos argument gwn weg
 sampling <- function(pos, conditions, datasets, nIter, nChain, nWarmup, nSampling){
-  
   
   # specify condition based on pos 
   cond <- conditions[pos, ]
@@ -191,9 +195,7 @@ sampling <- function(pos, conditions, datasets, nIter, nChain, nWarmup, nSamplin
   }
   
   # Draw the Samples
-  # start  loop 
     for (i in 1:nIter){
-      # do the sampling
       samples <- model$sample(data = datasets[[pos]][[i]],
                               chains = nChain, # 2 chains 
                               # parallel_chains = nChain, # in finale setup wss geen parallele chains meer
@@ -205,7 +207,6 @@ sampling <- function(pos, conditions, datasets, nIter, nChain, nWarmup, nSamplin
       
       # save Results
       output <- saveResults(rstanObj, conditions = cond)
-      #output <- cbind(output, )
       # add iteration to output
       output$iteration <- i
       # rbind output into final output
@@ -224,7 +225,7 @@ sampling <- function(pos, conditions, datasets, nIter, nChain, nWarmup, nSamplin
     }
   
   ### TBA: change such that output is written to disk directly (appending per iteration)
-  #### Does this work with clusteraplY
+  #### Does this work with clusteraplY?
   # return list with results and convergence diags
   return(list(results = outputFinal,
               convergence = convFinal))
@@ -249,7 +250,6 @@ plotsMeanBias <- function(output, parameterName, condition){
         
 out <- read.csv("~/1vs2StepBayesianRegSEM/output/ResultsMiniSimSVNP.csv", row.names = 1)
         
- 
 plotsMeanBias(out, "biasFactCorr", condition= sigma)
 
 
