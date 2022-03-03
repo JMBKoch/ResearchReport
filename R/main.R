@@ -19,6 +19,7 @@ packages <- c("cmdstanr", # MCMC sampling using stan
               "tidyverse", # data wrangling, plotting, pipes
               "mvtnorm", # data simulation
               "parallel", # parallelization
+              "posterior", # median of posterios
               "bayesplot" # convergence diagnostics 
               )
 
@@ -48,6 +49,7 @@ clusterCall(clusters, function() library(cmdstanr))
 clusterCall(clusters, function() library(mvtnorm))
 clusterCall(clusters, function() library(parallel))
 clusterCall(clusters, function() library(bayesplot))
+clusterCall(clusters, function() library(posterior))
 #clusterCall(clusters, function() lapply(c("cmdstanr", # MCMC sampling using stan
 #                                          "rstan", # postprocessing of samples
 #                                          "tidyverse", # data wrangling, plotting, pipes
@@ -63,14 +65,14 @@ clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/conditions.R
 # run functon in clustered way where every set of condition gets it's own core
 #outputFinalSVNP <- 
   clusterApplyLB(clusters, 
-                                  1:nrow(condSVNP), 
-                                  sampling,
-                                  conditions = condSVNP,
-                                  datasets = datasetsSVNP,
-                                  nIter = nIter,
-                                  nChain = nChain,
-                                  nWarmup = nWarmup,
-                                  nSampling = nSampling)
+                 1:nrow(condSVNP), 
+                 sampling,
+                 conditions = condSVNP,
+                 datasets = datasetsSVNP,
+                 nIter = nIter,
+                 nChain = nChain,
+                 nWarmup = nWarmup,
+                 nSampling = nSampling)
 
 
 ### TBA: change such that output is written to disk directly (appending per iteration)
@@ -99,6 +101,7 @@ stopCluster(clusters)
 #clusterCall(clusters, function() library(mvtnorm))
 #clusterCall(clusters, function() library(parallel))
 #clusterCall(clusters, function() library(bayesplot))
+#clusterCall(clusters, function() library(posterior))
 #
 ## source functions & conditions within clusters
 #clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))

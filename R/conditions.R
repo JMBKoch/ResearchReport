@@ -5,13 +5,9 @@
 # model--------------------------------------------------------------------
 # Lambda
 main <- c(.5, .75, .25, .1, .5, .25)
-cross1 <- c(.2, 0, 0, 0,  0, .2)
-cross2 <- c(.5, 0, 0, 0, 0, .5)
-L <- matrix(NA, nrow = 6, ncol = 2)
-L[1:3,1] <- main[1:3]
-L[4:6,2] <- main[4:6]
-L[4:6,1] <- cross[1:3]
-L[1:3,2] <- cross[4:6]
+cross2 <- c(.2, 0, 0, 0, 0, .2)
+cross5 <- c(.5, 0, 0, 0, 0, .5)
+
 # Psi
 Psi <- matrix(rep(NA, 4), ncol = 2)
 diag(Psi) <- 1
@@ -36,13 +32,15 @@ scaleSlab <- c(0.1, 1, 5) # scale of slab
 # Population conditions ----------------------------------------------------
 #N <- c(100, 200, 300)
 N <- c(100, 200) # nu ff alleen maar dit for MiniMiniSim
+cross <- c(0.2, 0.5)
 
 # specify combinations of population conditions & hyperpars per prior
 condSVNP <- 
   expand.grid(
     prior = "SVNP",
     sigma = sigma,
-    N = N
+    N = N,
+    cross = cross
   )
 
 condRHSP <- 
@@ -54,7 +52,8 @@ condRHSP <-
     dfLocal = dfLocal,
     nu = nu,
     scaleSlab = scaleSlab, 
-    N = N
+    N = N,
+    cross = cross
   )
 
 # Sampling parameters -----------------------------------------------------
