@@ -10,6 +10,7 @@ source('~/1vs2StepBayesianRegSEM/R/functions.R')
 # source conditions -------------------------------------------------------
 source('~/1vs2StepBayesianRegSEM/R/conditions.R')
 ### TBA: Think of how to avoid calling them twice
+#### ===> This should work once data-sim takes place within sampling()
 
 # load packages -----------------------------------------------------------
 # specify packages that are required for executing the simulation
@@ -21,13 +22,13 @@ packages <- c("cmdstanr", # MCMC sampling using stan
               "bayesplot" # convergence diagnostics 
               )
 
-# make sure that packages are installed if not present & load packages
+# make sure that packages are installed if not present
 package.check <- lapply(
   packages,
   FUN = function(x) {
     if (!require(x, character.only = TRUE)) {
       install.packages(x, dependencies = TRUE)
-      library(x, character.only = TRUE)
+      #library(x, character.only = TRUE)
     }
   }
 )
@@ -41,18 +42,27 @@ datasetsSVNP <- prepareDatasets(condSVNP, nIter, L, Psi, Theta)
 #    one unique combination of conditions
 clusters <- makePSOCKcluster(nWorkers) # create cluster
 # make sure packages are loaded per cluster
-clusterCall(clusters, function() library(tidyverse))
+clusterCall(clusters, function() library(tidyverse)) ### TBA make nicer
 clusterCall(clusters, function() library(rstan))
 clusterCall(clusters, function() library(cmdstanr))
 clusterCall(clusters, function() library(mvtnorm))
 clusterCall(clusters, function() library(parallel))
 clusterCall(clusters, function() library(bayesplot))
+#clusterCall(clusters, function() lapply(c("cmdstanr", # MCMC sampling using stan
+#                                          "rstan", # postprocessing of samples
+#                                          "tidyverse", # data wrangling, plotting, pipes
+#                                          "mvtnorm", # data simulation
+#                                          "parallel", # parallelization
+#                                          "bayesplot" # convergence diagnostics 
+#                                          ), require, character.only = TRUE))
+#
 
 # source functions & conditions within clusters
 clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
 clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/conditions.R'))
 # run functon in clustered way where every set of condition gets it's own core
-outputFinalSVNP <- clusterApplyLB(clusters, 
+#outputFinalSVNP <- 
+  clusterApplyLB(clusters, 
                                   1:nrow(condSVNP), 
                                   sampling,
                                   conditions = condSVNP,
@@ -62,6 +72,8 @@ outputFinalSVNP <- clusterApplyLB(clusters,
                                   nWarmup = nWarmup,
                                   nSampling = nSampling)
 
+
+### TBA: change such that output is written to disk directly (appending per iteration)
 
 # close clusters
 stopCluster(clusters) 

@@ -104,10 +104,12 @@ saveResults <- function(rstanObj,
   
   # 95% Credibility interval containing zero
   credInterval <- summary(rstanObj, par = "lambdaCrossC")$summary[, c(4, 8)]
+  isZeroCred95 <- apply(credInterval, 1, function(x) dplyr::between(0, x[1], x[2]))
+  #cred95Power <- 
+  #cred95TypeI <- 
   
- #isZeroCred95 <- apply(credInterval, 1, function(x) ifelse(0 %in% x, 1, 0))
- #
   # HPD interval containing zero
+  
   
   # save output
   out <- cbind(1:6,
@@ -119,6 +121,7 @@ saveResults <- function(rstanObj,
                mseTheta,
                isZeroTres10) %>% 
          as_tibble()
+  
   # make row and colnames proper
   rownames(out) <- NULL
   colnames(out)[1] <- "item"
@@ -148,24 +151,23 @@ saveResults <- function(rstanObj,
 # takes rstan object as input and computes and returns convergence diagnostics
 convergence <- function(rstanObj, conditions) {
   
-  # save convergence diagnostics
-	
   # start with Rhat and n_eff
   conv <- as.data.frame(
     t(summary(rstanObj, pars = c("lambdaMainC", 
                                  "lambdaCrossC", 
                                  "PsiC[1,2]", 
                                  "theta"))$summary[, 9:10]))
+  
+  # recode output into a nicer format and including condition config
+  conv$parameter <- rownames(conv)
+  rownames(conv) <- NULL
+  
   # add max treedepth and sum divergent transitions
   tree <- subset(bayesplot::nuts_params(rstanObj), Parameter == "treedepth__")
   conv$maxTree <- max(tree$Value)
   div <- subset(bayesplot::nuts_params(rstanObj), Parameter == "divergent__")
   conv$sumDiv  <- sum(div$Value)
-  
-  
-  # recode output into a nicer format and including condition config
-  conv$parameter <- rownames(conv)
-  rownames(conv) <- NULL
+  ### CAN I USE THIS LIKE THIS?! (It should be clear based on iteration and cond info)
   
   # cbind conditions into output
   conv <- cbind(conv, conditions)
@@ -180,7 +182,7 @@ convergence <- function(rstanObj, conditions) {
 sampling <- function(pos, conditions, datasets, nIter, nChain, nWarmup, nSampling){
   
   
-  ### TBA: Adjust such that data is sampled within this function
+  ### TBA: Adjust such that data is simulated within this function
   
   # specify condition based on pos 
   cond <- conditions[pos, ]
@@ -228,6 +230,16 @@ sampling <- function(pos, conditions, datasets, nIter, nChain, nWarmup, nSamplin
     }
   
   ### TBA: change such that output is written to disk directly (appending per iteration)
+  write.table(outputFinal, 
+              file = "~/1vs2StepBayesianRegSEM/output/TestAppendResults.csv",
+              append = TRUE,
+              row.names = FALSE,
+              col.names=!file.exists("~/1vs2StepBayesianRegSEM/output/TestAppendResults.csv"))
+  write.table(convFinal,
+              file = "~/1vs2StepBayesianRegSEM/output/TestAppendConv.csv",
+              append = TRUE,
+              row.names = FALSE,
+              col.names=!file.exists("~/1vs2StepBayesianRegSEM/output/TestAppendConv.csv"))
   
   # return list with results and convergence diags
   return(list(results = outputFinal,
