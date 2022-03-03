@@ -2,11 +2,11 @@
 # main.R                                              (c) J.M.B. Koch 2022
 ################################################################################
 # This is the main script running the simulation study's
-# Dependencies functions.R; conditions.R; 
+# Dependencies functions.R; parameters.R; 
 # set.seed(0704)
 # source functions and conditions outside clusters ------------------------
 source('~/1vs2StepBayesianRegSEM/R/functions.R')
-source('~/1vs2StepBayesianRegSEM/R/conditions.R')
+source('~/1vs2StepBayesianRegSEM/R/parameters.R')
 
 # Execute simulation for SVNP ---------------------------------------------
 # do the sampling where every available core (nWorkers in condtions.R) does 
@@ -17,7 +17,7 @@ clusters <- makePSOCKcluster(nWorkers)
 clusterCall(clusters, 
             function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
 clusterCall(clusters, 
-            function() source('~/1vs2StepBayesianRegSEM/R/conditions.R'))
+            function() source('~/1vs2StepBayesianRegSEM/R/parameters.R'))
 # make sure packages are loaded per cluster
 clusterCall(clusters, 
             function() lapply(packages, library, character.only = TRUE))
@@ -37,7 +37,7 @@ stopCluster(clusters)
 #clusters <- makePSOCKcluster(nWorkers) # create cluster
 ## source functions & conditions within clusters
 #clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
-#clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/conditions.R'))
+#clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/parameters.R'))
 # make sure packages are loaded per cluster
 # clusterCall(clusters, function() lapply(packages, library, character.only = TRUE))
 # run function in clustered way where every set of condition gets it's own core

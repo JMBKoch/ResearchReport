@@ -1,5 +1,5 @@
 ################################################################################
-# conditions.R                                            (c) J.M.B. Koch 2022
+# parameters.R                                            (c) J.M.B. Koch 2022
 ################################################################################
 # This file contains the specification of all relevant study parameters
 # Packages ----------------------------------------------------------------
@@ -92,7 +92,7 @@ samplePars <- list(
                 nSampling = 50
                 )
 
-# Parallelization Parapmeter ----------------------------------------------
+# Parallelization Parameter -----------------------------------------------
 nWorkers <- nrow(condSVNP) # voor nu gwn 12, het aantal condities
 
 # other study parameters --------------------------------------------------
