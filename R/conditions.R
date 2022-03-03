@@ -2,6 +2,27 @@
 # conditions.R                                            (c) J.M.B. Koch 2022
 ################################################################################
 # This file contains the specification of all relevant study parameters
+# Packages ----------------------------------------------------------------
+# specify packages that are required for executing the simulation
+packages <- c("cmdstanr", # MCMC sampling using stan
+              "rstan", # postprocessing of samples
+              "tidyverse", # data wrangling, plotting, pipes
+              "mvtnorm", # data simulation
+              "parallel", # parallelization
+              "posterior", # median of posterios
+              "bayesplot" # convergence diagnostics 
+              )
+
+# make sure that packages are installed if not present
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+    }
+  }
+)
+
 # model--------------------------------------------------------------------
 # Lambda
 main <- c(.5, .75, .25, .1, .5, .25)
@@ -71,11 +92,8 @@ samplePars <- list(
                 nSampling = 50
                 )
 
+# Parallelization Parapmeter ----------------------------------------------
+nWorkers <- nrow(condSVNP) # voor nu gwn 12, het aantal condities
+
 # other study parameters --------------------------------------------------
 nIter <- 5 # ff dit proberen
-
-
-
-
-
-

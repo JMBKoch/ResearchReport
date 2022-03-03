@@ -218,21 +218,25 @@ sampling <- function(pos,
   ### THIS ONLY WORKS WHEN files dont already exist, so maybe delete them before?, e.g. at
   ### beginning of this function or so?!?!
   write.table(outputFinal, 
-              file = "~/1vs2StepBayesianRegSEM/output/TestAppendResults.csv",
+              file = "~/1vs2StepBayesianRegSEM/output/Results.csv",
               append = TRUE,
               row.names = FALSE,
-              col.names=!file.exists("~/1vs2StepBayesianRegSEM/output/TestAppendResults.csv"))
+              col.names=!file.exists("~/1vs2StepBayesianRegSEM/output/Results.csv"))
   write.table(convFinal,
-              file = "~/1vs2StepBayesianRegSEM/output/TestAppendConv.csv",
+              file = "~/1vs2StepBayesianRegSEM/output/Conv.csv",
               append = TRUE,
               row.names = FALSE,
-              col.names=!file.exists("~/1vs2StepBayesianRegSEM/output/TestAppendConv.csv"))
+              col.names=!file.exists("~/1vs2StepBayesianRegSEM/output/Conv.csv"))
   
   # return list with results and convergence diags
   return(list(results = outputFinal,
               convergence = convFinal))
   
 }
+
+# runSim() ----------------------------------------------------------------
+# function 
+#runSim() <- function()
 
 ################################################################################################
 # Part 2: Postprocessing Output of Simulation
