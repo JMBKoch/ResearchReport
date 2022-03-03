@@ -6,10 +6,10 @@
 ################################################################################
 # Part 1: functions for executing simulation study
 ################################################################################
-# prepareDatasets() -------------------------------------------------------
+# prepareDataset() -------------------------------------------------------
 # function that prepares a list with (nIter X nrow(cond)) datasets 
-prepareDatasets <- function(cond, nIter, main, cross, Psi, Theta){
-
+prepareDataset <- function(conditions, main, Psi, Theta){
+  
   # (inner) helper functions ------------------------------------------------
   # simY() 
   # function to simulate data under desired model sourced from parameters.R
@@ -17,10 +17,10 @@ prepareDatasets <- function(cond, nIter, main, cross, Psi, Theta){
   ### TBA: work with different levels of cross-loadings!!!
   simY <- function(main, cross, Psi, Theta, N){
     L <- matrix(NA, nrow = 6, ncol = 2)
-    L[1:3,1] <- main[1:3]
-    L[4:6,2] <- main[4:6]
-    L[4:6,1] <- cross[1:3]
-    L[1:3,2] <- cross[4:6]
+    L[1:3, 1] <- main[1:3]
+    L[4:6, 2] <- main[4:6]
+    L[4:6, 1] <- cross[1:3]
+    L[1:3, 2] <- cross[4:6]
     Sigma <- L%*%Psi%*%t(L) + Theta
     Y <- mvtnorm::rmvnorm(N, rep(0, 6), Sigma)
     return(Y)
@@ -55,32 +55,25 @@ prepareDatasets <- function(cond, nIter, main, cross, Psi, Theta){
     return(out)
   }
   
-    # allocate memory for the final output, a nested list
-    datasets <- list()
-
-    # prepare 50 x "# unique combination of conditions" datasets
-    for (i in 1:nrow(cond)){
-      # simulate & prepare data 50x per set of conditions (row of conditionsRHSP)
-      dat <- list()
-      for (j in 1:nIter){
-        
-        if(cond[i, ]$cross == 0.2){
-          cross <- 0.2
-        } else{
-          cross <- 0.5
-        }
-        
-        N <- cond[i, ]$N
-        Y <- simY(main, cross, L, Psi, Theta, N)
-        conditions <- cond[i, ]
-        dat[[j]] <-  prepareDat(Y, conditions) 
-      }
-      # save data in appropriate element of final output
-      datasets[[i]] <- dat
+    # allocate memory for output
+    dat <- list()
+      
+    # specify crossloadings & N based on conditions
+    if(cond$cross == 0.2){
+      cross <- cross02
+    } else{
+      cross <- crossO5
     }
-    # return datasets
-    return(datasets)
+    N <- cond$N
+    
+    # simulate the data
+    Y <- simY(main, cross, L, Psi, Theta, N)
+    dat <-  prepareDat(Y, conditions) 
+
+  # return dataset
+  return(dat)
 }
+
 
 # saveResults() ------------------------------------------------------------
 # function takes rstan object and saves the estimes 
@@ -108,8 +101,8 @@ saveResults <- function(rstanObj,
   thetaEstMed <- 
   
   # Parameters for Selection part of CrossLoadins
-  credInterval50
-  credInterval90
+  credInterval50 <- summary(rstanObj, par = "lambdaCrossC")$summary[, c(5, 7)]
+  credInterval90 <- posterior::summarisedraws(rstanObj, par = "lambdaCrossC")$summary[, c()]
   credInterval95 <- summary(rstanObj, par = "lambdaCrossC")$summary[, c(4, 8)]
   
   # 
@@ -153,14 +146,18 @@ convergence <- function(rstanObj, conditions) {
 # takes as input the conditions chain-length, warmup, n_chains, n_parallel chains &
 #   all hyperparameters sourced from parameters.R
 ##### VGM kan pos argument gwn weg
-sampling <- function(pos, conditions, datasets, nIter, nChain, nWarmup, nSampling){
-
-  # specify condition based on pos 
-  cond <- conditions[pos, ]
+sampling <- function(pos, 
+                     conditions, 
+                     modelPars,
+                     nIter,
+                     samplePars){
   
   # memory allocation final output
   outputFinal <- data.frame()
   convFinal <- data.frame()
+
+  # specify condition based on pos 
+  cond <- conditions[pos, ]
 
   # loop over the simulated datasets and save output object per dataset
   # compile model (if already compiled this will just not be executed)
@@ -170,11 +167,19 @@ sampling <- function(pos, conditions, datasets, nIter, nChain, nWarmup, nSamplin
       model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/RHSP.stan")
   }
   
+  
+  
   # Draw the Samples
     for (i in 1:nIter){
       
+      # simulate data based on current conditions
+      dataset <- prepareDataset(conditions = cond,
+                                main = modelPars$main, 
+                                Psi = modelPars$Psi, 
+                                Theta = modelPars$Theta)
+      
       # draw samples
-      samples <- model$sample(data = datasets[[pos]][[i]],
+      samples <- model$sample(data = dataset,
                               chains = nChain, # 2 chains 
                               # parallel_chains = nChain, # in finale setup wss geen parallele chains meer
                               iter_warmup = nWarmup, # 4000 total iterations

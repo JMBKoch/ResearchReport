@@ -15,6 +15,15 @@ Psi[1, 2] <- Psi[2, 1] <- 0.5
 # Theta
 Theta <- diag(rep(0.3, 6))
 
+# save all in one object for easier passing to functions
+modelPars <- list(
+                main = main,
+                cross2 = cross2,
+                cross5 = cross5,
+                Psi = Psi,
+                Theta = Theta
+                  )
+
 # Hyper-Parameters: -------------------------------------------------------
 # Small Variance Normal Prior ---------------------------------------------
 sigma <- c(sqrt(0.1), # specified such that sigma^2 > sigma
@@ -57,10 +66,12 @@ condRHSP <-
   )
 
 # Sampling parameters -----------------------------------------------------
-nChain <- 2
-nWarmup <- 50
-nSampling <- 50
-
+# save in one list for easier passing to functions
+samplePars <- list(
+                nChain = 2,
+                nWarmup = 50,
+                nSampling = 50
+                )
 
 # parallelization parameters ----------------------------------------------
 nWorkers <- nrow(condSVNP) # 16 total virtual coress
