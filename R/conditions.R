@@ -20,7 +20,9 @@ Theta <- diag(rep(0.3, 6))
 
 # Hyper-Parameters: -------------------------------------------------------
 # Small Variance Normal Prior ---------------------------------------------
-sigma <- c(0.1, 0.01, 0.001)
+sigma <- c(sqrt(0.1), # specified such that sigma^2 > sigma
+           sqrt(0.01), 
+           sqrt(0.001))
 
 # Regularized Horseshoe Prior ---------------------------------------------
 scaleGlobal <- c(0.1, 1) # scale for half-t prior omega

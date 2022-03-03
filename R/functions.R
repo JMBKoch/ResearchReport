@@ -179,6 +179,9 @@ convergence <- function(rstanObj, conditions) {
 ##### VGM kan pos argument gwn weg
 sampling <- function(pos, conditions, datasets, nIter, nChain, nWarmup, nSampling){
   
+  
+  ### TBA: Adjust such that data is sampled within this function
+  
   # specify condition based on pos 
   cond <- conditions[pos, ]
   
@@ -225,7 +228,7 @@ sampling <- function(pos, conditions, datasets, nIter, nChain, nWarmup, nSamplin
     }
   
   ### TBA: change such that output is written to disk directly (appending per iteration)
-  #### Does this work with clusteraplY?
+  
   # return list with results and convergence diags
   return(list(results = outputFinal,
               convergence = convFinal))
