@@ -5,13 +5,6 @@
 # Dependencies functions.R; conditions.R; see packages below
 # set.seed(0704)
 
-# source functions --------------------------------------------------------
-source('~/1vs2StepBayesianRegSEM/R/functions.R')
-# source conditions -------------------------------------------------------
-source('~/1vs2StepBayesianRegSEM/R/conditions.R')
-### TBA: Think of how to avoid calling them twice
-#### ===> This should work once data-sim takes place within sampling()
-
 # load packages -----------------------------------------------------------
 # specify packages that are required for executing the simulation
 packages <- c("cmdstanr", # MCMC sampling using stan
@@ -34,14 +27,14 @@ package.check <- lapply(
   }
 )
 
-# Execute simulation for SVNP ---------------------------------------------
-# simulate datasets
-datasetsSVNP <- prepareDatasets(condSVNP, nIter, L, Psi, Theta)
-#### Think about putting this into sampling()
+# source functions and conditions outside clusters ------------------------
+source('~/1vs2StepBayesianRegSEM/R/functions.R')
+source('~/1vs2StepBayesianRegSEM/R/conditions.R')
 
+# Execute simulation for SVNP ---------------------------------------------
 # do the sampling where every available core (nWorkers in condtions.R) does 
 #    one unique combination of conditions
-clusters <- makePSOCKcluster(nWorkers) # create cluster
+clusters <- makePSOCKcluster(6) # create cluster
 # make sure packages are loaded per cluster
 clusterCall(clusters, function() library(tidyverse)) ### TBA make nicer
 clusterCall(clusters, function() library(rstan))
@@ -63,35 +56,19 @@ clusterCall(clusters, function() library(posterior))
 clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
 clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/conditions.R'))
 # run functon in clustered way where every set of condition gets it's own core
-#outputFinalSVNP <- 
-  clusterApplyLB(clusters, 
-                 1:nrow(condSVNP), 
-                 sampling,
-                 conditions = condSVNP,
-                 datasets = datasetsSVNP,
-                 nIter = nIter,
-                 nChain = nChain,
-                 nWarmup = nWarmup,
-                 nSampling = nSampling)
-
-
-### TBA: change such that output is written to disk directly (appending per iteration)
+outputFinalSVNP <- clusterApplyLB(clusters, 
+                                  1:nrow(condSVNP), 
+                                  sampling,
+                                  conditions = condSVNP,
+                                  modelPars = modelPars,
+                                  nIter = nIter,
+                                  samplePars = samplePars)
 
 # close clusters
 stopCluster(clusters) 
 
-# write output to .csv ### TBA: adjust to be part of sampling function and append output
-#write.csv(outputFinalSVNP$results, 
-#          file = "~/1vs2StepBayesianRegSEM/output/ResultsMiniSimSVNP.csv")
-#write.csv(outputFinalSVNP$convergence,
-#          file = "~/1vs2StepBayesianRegSEM/output/ConvergenceMiniSimSVNP.csv")
-#
-
 # Execute simulation for RHSP ---------------------------------------------
-# simulate datasets
-#datasetsRHSP <- prepareDatasets(condRHSP, nIter, L, Psi, Theta)
 ## do the sampling
-# do the sampling
 #clusters <- makePSOCKcluster(nWorkers) # create cluster
 #
 ## make sure packages are loaded per cluster
@@ -123,10 +100,5 @@ stopCluster(clusters)
 #stopCluster(clusters) 
 
 
-## write output to .csv
-#write.csv(outputFinalSVNP$results, 
-#          file = "~/1vs2StepBayesianRegSEM/output/ResultsMiniSimRHSP.csv")
-#write.csv(outputFinalSVNP$convergence, 
-#          file = "~/1vs2StepBayesianRegSEM/output/ConvergenceMiniSimRHSP.csv")
 
 

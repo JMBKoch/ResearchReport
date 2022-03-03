@@ -7,7 +7,6 @@
 main <- c(.5, .75, .25, .1, .5, .25)
 cross2 <- c(.2, 0, 0, 0, 0, .2)
 cross5 <- c(.5, 0, 0, 0, 0, .5)
-
 # Psi
 Psi <- matrix(rep(NA, 4), ncol = 2)
 diag(Psi) <- 1
@@ -39,8 +38,7 @@ nu <- c(1, 3) # df IG for c^2 (slab)
 scaleSlab <- c(0.1, 1, 5) # scale of slab
 
 # Population conditions ----------------------------------------------------
-#N <- c(100, 200, 300)
-N <- c(100, 200) # nu ff alleen maar dit for MiniMiniSim
+N <- c(100, 200) 
 cross <- c(0.2, 0.5)
 
 # specify combinations of population conditions & hyperpars per prior
@@ -72,9 +70,6 @@ samplePars <- list(
                 nWarmup = 50,
                 nSampling = 50
                 )
-
-# parallelization parameters ----------------------------------------------
-nWorkers <- nrow(condSVNP) # 16 total virtual coress
 
 # other study parameters --------------------------------------------------
 nIter <- 5 # ff dit proberen

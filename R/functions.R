@@ -3,11 +3,12 @@
 ################################################################################
 # All functions used in main.R
 # dependencies: tidyverse (magrittr, tidyr, dplyr, ggplot2), mvtnorm, bayesplot
+
 ################################################################################
 # Part 1: functions for executing simulation study
 ################################################################################
 # prepareDataset() -------------------------------------------------------
-# function that prepares a list with (nIter X nrow(cond)) datasets 
+# function that prepares a stan ready dataset
 prepareDataset <- function(conditions, main, Psi, Theta){
   
   # (inner) helper functions ------------------------------------------------
@@ -59,15 +60,15 @@ prepareDataset <- function(conditions, main, Psi, Theta){
     dat <- list()
       
     # specify crossloadings & N based on conditions
-    if(cond$cross == 0.2){
-      cross <- cross02
+    if(conditions$cross == 0.2){
+      cross <- cross2
     } else{
-      cross <- crossO5
+      cross <- cross5
     }
-    N <- cond$N
+    N <- conditions$N
     
     # simulate the data
-    Y <- simY(main, cross, L, Psi, Theta, N)
+    Y <- simY(main, cross, Psi, Theta, N)
     dat <-  prepareDat(Y, conditions) 
 
   # return dataset
@@ -77,40 +78,52 @@ prepareDataset <- function(conditions, main, Psi, Theta){
 
 # saveResults() ------------------------------------------------------------
 # function takes rstan object and saves the estimes 
-saveResults <- function(rstanObj, 
-                        mainTrue = main, 
-                        crossTrue = cross, 
-                        PsiTrue = Psi, 
-                        ThetaTrue = Theta, 
-                        conditions){
+saveResults <- function(rstanObj,  conditions){
 
   # estimates Lambda
   mainEstMean <- summary(rstanObj,  pars = "lambdaMainC")$summary[, 1]
-  mainEstMed <- 
-  mainEstSD <- 
+  #mainEstMed <- 
+  #mainEstSD <- 
   crossEstMean <-  summary(rstanObj, pars = "lambdaCrossC")$summary[, 1]
-  crossEstMed <-  summary(rstanObj, pars = "lambdaCrossC")$summary[, 1]
-  crossEstSD <- 
+  #crossEstMed <-  summary(rstanObj, pars = "lambdaCrossC")$summary[, 1]
+  #crossEstSD <- 
   
   # estimate Factor-Corr
   corrEstMean <-  summary(rstanObj, pars = "PsiC[2, 1]")$summary[, 1]
-  corrEstMed <- 
-  corrEstSD <- 
+  #corrEstMed <- 
+  #corrEstSD <- 
   # estimates Theta
-  thetaEst <- summary(rstanObj, pars = "theta")$summary[, 1]
-  thetaEstMed <- 
+  thetaEstMean <- summary(rstanObj, pars = "theta")$summary[, 1]
+  #thetaEstMed <- 
   
   # Parameters for Selection part of CrossLoadins
   credInterval50 <- summary(rstanObj, par = "lambdaCrossC")$summary[, c(5, 7)]
-  credInterval90 <- posterior::summarisedraws(rstanObj, par = "lambdaCrossC")$summary[, c()]
+  #credInterval90 <- posterior::summarisedraws(rstanObj, par = "lambdaCrossC")$summary[, c()]
   credInterval95 <- summary(rstanObj, par = "lambdaCrossC")$summary[, c(4, 8)]
   
-  # 
-  out <- cbind()
+  # cbind and return output
+  out <- cbind(1:6,
+               mainEstMean, 
+               crossEstMean,
+               thetaEstMean,
+               credInterval50,
+               credInterval95) %>% 
+        as_tibble()
   
+  # make row and colnames proper
+  rownames(out) <- NULL
+  colnames(out)[1] <- "item"
+  # recode output into wide format and cbind convergence into it
+  out <- tidyr::pivot_wider(out, 
+                            names_from = item, 
+                            values_from = colnames(out[-1])) 
   
+  # cbind estimate of corr (only 1 per six items) into output
+  out <- cbind(out, corrEstMean)
+  # cbind conditions into output
+  out <- cbind(out, conditions)
   
-  
+  # return output
   return(out)
   
 }
@@ -156,58 +169,54 @@ sampling <- function(pos,
   outputFinal <- data.frame()
   convFinal <- data.frame()
 
-  # specify condition based on pos 
-  cond <- conditions[pos, ]
+  # specify current set of condition based on pos 
+  condCurrent <- conditions[pos, ]
 
   # loop over the simulated datasets and save output object per dataset
   # compile model (if already compiled this will just not be executed)
-  if (cond$prior == "SVNP"){
+  if (condCurrent$prior == "SVNP"){
       model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/SVNP.stan")
-  }else if (cond$prior == "RHSP"){
+  }else if (condCurrent$prior == "RHSP"){
       model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/RHSP.stan")
   }
-  
   
   
   # Draw the Samples
     for (i in 1:nIter){
       
       # simulate data based on current conditions
-      dataset <- prepareDataset(conditions = cond,
+      dataset <- prepareDataset(conditions = condCurrent,
                                 main = modelPars$main, 
                                 Psi = modelPars$Psi, 
                                 Theta = modelPars$Theta)
       
       # draw samples
       samples <- model$sample(data = dataset,
-                              chains = nChain, # 2 chains 
-                              # parallel_chains = nChain, # in finale setup wss geen parallele chains meer
-                              iter_warmup = nWarmup, # 4000 total iterations
-                              iter_sampling = nSampling)
+                              chains = samplePars$nChain, # 2 chains 
+                              iter_warmup = samplePars$nWarmup, # 4000 total iterations
+                              iter_sampling = samplePars$nSampling)
       
       # save as rstan object
       rstanObj <- read_stan_csv(samples$output_files())
       
       # save Results
-      output <- saveResults(rstanObj, conditions = cond)
+      output <- saveResults(rstanObj, conditions = condCurrent)
       # add iteration to output
       output$iteration <- i
       # rbind output into final output
       outputFinal <- rbind(outputFinal, output)
       
       # save convergence diagnostics
-      conv <- convergence(rstanObj, conditions = cond)
+      conv <- convergence(rstanObj, conditions = condCurrent)
       # add iteration
       conv$iteration <- i
       convFinal <- rbind(convFinal, conv)
       
-      ## print progress message 
-      #print(paste("**************** THIS IS ITERATION ", as.character(i)))
-      # does not work within ClusterApplyLB()
-      
     }
   
-  ### TBA: change such that output is written to disk directly (appending per iteration)
+  # Write output to disk (per set of conditions in an appending fashion)
+  ### THIS ONLY WORKS WHEN files dont already exist, so maybe delete them before?, e.g. at
+  ### beginning of this function or so?!?!
   write.table(outputFinal, 
               file = "~/1vs2StepBayesianRegSEM/output/TestAppendResults.csv",
               append = TRUE,
@@ -233,93 +242,93 @@ sampling <- function(pos,
 
 # ComputeOutcomes ---------------------------------------------------------
 # Takes as input the results of a study (minus non converged) and computes all main outcomes
-ComputeOutcomes(resultsTrimmed){
-  
-  ## Bias 
-  biasMain <- abs(mainEst-mainTrue)
-  biasCross <- abs(crossEst-crossTrue)
-  biasFactCorr <-  abs(corrEst - PsiTrue[1, 2])
-  biasTheta <- abs(thetaEst - diag(ThetaTrue))
-  
-  # MSE
-  mseMain <- biasMain + summary(rstanObj, pars =  "lambdaMainC")$summary[, 3]^2
-  mseCross <- biasCross + summary(rstanObj, pars =  "lambdaCrossC")$summary[, 3]^2
-  mseFactCorr <- biasFactCorr + summary(rstanObj, pars = "PsiC[2, 1]")$summary[, 3]^2
-  mseTheta <- biasTheta + summary(rstanObj, pars = "theta")$summary[, 3]^2
-  
-  # isZero, based on different selection criteria
-  #### TBA: The final outcomes, i.e. Power (p 6 Zhang et al., 2021), type-I error rates, 
-  #### Ratio correct identification to total number identified pars, no established metric
-  # Treshold: 0 if estimate smaller than 0.10
-  isZeroTres10 <- sapply(crossEst, function(x)ifelse(x < 0.10, 0, 1))
-  # Treshold: 0 if estimate is smaller than
-  
-  # 95% Credibility interval containing zero
-  isZeroCred95 <- apply(resultsTrimmed$credInterval, 
-                        1, 
-                        function(x) dplyr::between(0, x[1], x[2]))
-  #cred95Power <- 
-  #cred95TypeI <- 
-  
-  # HPD interval containing zero
-  
-  
-  # save output
-  out <- cbind(1:6,
-               biasMain,
-               biasCross,
-               biasTheta,
-               mseMain,
-               mseCross,
-               mseTheta,
-               isZeroTres10) %>% 
-    as_tibble()
-  
-  # make row and colnames proper
-  rownames(out) <- NULL
-  colnames(out)[1] <- "item"
-  # recode output into wide format and cbind convergence into it
-  out <- tidyr::pivot_wider(out, 
-                            names_from = item, 
-                            values_from = c(biasMain, 
-                                            biasCross, 
-                                            biasTheta,
-                                            mseMain,
-                                            mseCross,
-                                            mseTheta,
-                                            isZeroTres10
-                            )) 
-  # add factCorr columns
-  out$biasFactCorr <- biasFactCorr
-  out$mseFactCorr <- mseFactCorr
-  
-  # cbind conditions into output
-  out <- cbind(out, conditions)
-  # return output
-  return(out)
-  
-
-  
-}
+#ComputeOutcomes(resultsTrimmed){
+#  
+#  ## Bias 
+#  biasMain <- abs(mainEst-mainTrue)
+#  biasCross <- abs(crossEst-crossTrue)
+#  biasFactCorr <-  abs(corrEst - PsiTrue[1, 2])
+#  biasTheta <- abs(thetaEst - diag(ThetaTrue))
+#  
+#  # MSE
+#  mseMain <- biasMain + summary(rstanObj, pars =  "lambdaMainC")$summary[, 3]^2
+#  mseCross <- biasCross + summary(rstanObj, pars =  "lambdaCrossC")$summary[, 3]^2
+#  mseFactCorr <- biasFactCorr + summary(rstanObj, pars = "PsiC[2, 1]")$summary[, 3]^2
+#  mseTheta <- biasTheta + summary(rstanObj, pars = "theta")$summary[, 3]^2
+#  
+#  # isZero, based on different selection criteria
+#  #### TBA: The final outcomes, i.e. Power (p 6 Zhang et al., 2021), type-I error rates, 
+#  #### Ratio correct identification to total number identified pars, no established metric
+#  # Treshold: 0 if estimate smaller than 0.10
+#  isZeroTres10 <- sapply(crossEst, function(x)ifelse(x < 0.10, 0, 1))
+#  # Treshold: 0 if estimate is smaller than
+#  
+#  # 95% Credibility interval containing zero
+#  isZeroCred95 <- apply(resultsTrimmed$credInterval, 
+#                        1, 
+#                        function(x) dplyr::between(0, x[1], x[2]))
+#  #cred95Power <- 
+#  #cred95TypeI <- 
+#  
+#  # HPD interval containing zero
+#  
+#  
+#  # save output
+#  out <- cbind(1:6,
+#               biasMain,
+#               biasCross,
+#               biasTheta,
+#               mseMain,
+#               mseCross,
+#               mseTheta,
+#               isZeroTres10) %>% 
+#    as_tibble()
+#  
+#  # make row and colnames proper
+#  rownames(out) <- NULL
+#  colnames(out)[1] <- "item"
+#  # recode output into wide format and cbind convergence into it
+#  out <- tidyr::pivot_wider(out, 
+#                            names_from = item, 
+#                            values_from = c(biasMain, 
+#                                            biasCross, 
+#                                            biasTheta,
+#                                            mseMain,
+#                                            mseCross,
+#                                            mseTheta,
+#                                            isZeroTres10
+#                            )) 
+#  # add factCorr columns
+#  out$biasFactCorr <- biasFactCorr
+#  out$mseFactCorr <- mseFactCorr
+#  
+#  # cbind conditions into output
+#  out <- cbind(out, conditions)
+#  # return output
+#  return(out)
+#  
+#
+#  
+#}
 
 # Plots -----------------------------------------------------------------
 # makes all required plots (generally? for AN outcome?) and saves them
 #### start with bias for now,ff litertuur weer induiken & Sara spreken over wat handig is
-
-plotsMeanBias <- function(output, parameterName, condition){
-
-      name <- paste0("mean", parameterName)
-  
-      out %>% 
-        group_by(condition) %>% 
-        summarise(name = mean(parameterName)) %>% 
-        ggplot(mapping = aes(x = condition, y = name))+
-        geom_point()
-
-}       
-        
-out <- read.csv("~/1vs2StepBayesianRegSEM/output/ResultsMiniSimSVNP.csv", row.names = 1)
-        
-plotsMeanBias(out, "biasFactCorr", condition= sigma)
+#
+#plotsMeanBias <- function(output, parameterName, condition){
+#
+#      name <- paste0("mean", parameterName)
+#  
+#      out %>% 
+#        group_by(condition) %>% 
+#        summarise(name = mean(parameterName)) %>% 
+#        ggplot(mapping = aes(x = condition, y = name))+
+#        geom_point()
+#
+#}       
+#        
+#out <- read.csv("~/1vs2StepBayesianRegSEM/output/ResultsMiniSimSVNP.csv", row.names = 1)
+#        
+#plotsMeanBias(out, "biasFactCorr", condition= sigma)
 
 
