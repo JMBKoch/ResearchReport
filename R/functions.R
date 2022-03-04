@@ -217,16 +217,25 @@ sampling <- function(pos,
   # Write output to disk (per set of conditions in an appending fashion)
   ### THIS ONLY WORKS WHEN files dont already exist, so maybe delete them before?, e.g. at
   ### beginning of this function or so?!?!
+  resultsName <- ifelse(condCurrent$prior == "SVNP",
+                        "~/1vs2StepBayesianRegSEM/output/ResultsSVNP.csv",
+                        "~/1vs2StepBayesianRegSEM/output/ResultsRHSP.csv")
+                        
+  convName <- ifelse(condCurrent$prior == "SVNP",
+                     "~/1vs2StepBayesianRegSEM/output/ConvSVNP.csv",
+                     "~/1vs2StepBayesianRegSEM/output/ConvRHSP.csv")
+  
+  # write output to disk in an appending fashion
   write.table(outputFinal, 
-              file = "~/1vs2StepBayesianRegSEM/output/Results.csv",
+              file = resultsName,
               append = TRUE,
               row.names = FALSE,
-              col.names=!file.exists("~/1vs2StepBayesianRegSEM/output/Results.csv"))
+              col.names=!file.exists(resultsName))
   write.table(convFinal,
-              file = "~/1vs2StepBayesianRegSEM/output/Conv.csv",
+              file = convName,
               append = TRUE,
               row.names = FALSE,
-              col.names=!file.exists("~/1vs2StepBayesianRegSEM/output/Conv.csv"))
+              col.names=!file.exists(convName))
   
   # return list with results and convergence diags
   return(list(results = outputFinal,
