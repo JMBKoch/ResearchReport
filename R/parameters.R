@@ -9,7 +9,6 @@ packages <- c("cmdstanr", # MCMC sampling using stan
               "tidyverse", # data wrangling, plotting, pipes
               "mvtnorm", # data simulation
               "parallel", # parallelization
-              "posterior", # median of posterior draws
               "bayesplot" # convergence diagnostics 
               )
 # make sure that packages are installed if not present

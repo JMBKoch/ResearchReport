@@ -85,9 +85,10 @@ saveResults <- function(rstanObj,  conditions){
   mainEstMean <- apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, mean)
   mainEstMed <-  apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, median)
   mainEstVar <-  apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, var)
-  crossEstMean <- apply(as.matrix(rstanObj, pars = "lambdaCrossC"), 2, mean)
-  crossEstMed <-  apply(as.matrix(rstanObj, pars = "lambdaCrossC"), 2, median)
-  crossEstVar <-  apply(as.matrix(rstanObj, pars = "lambdaCrossC"), 2, var)
+  crossMatrix <- as.matrix(rstanObj, pars = "lambdaCrossC") # save because handy for quantiles
+  crossEstMean <- apply(crossMatrix, 2, mean)
+  crossEstMed <-  apply(crossMatrix, 2, median)
+  crossEstVar <-  apply(crossMatrix, 2, var)
   
   # estimates Theta
   thetaEstMean <- apply(as.matrix(rstanObj, pars = "theta"), 2, mean)
@@ -100,32 +101,33 @@ saveResults <- function(rstanObj,  conditions){
   corrEstVar <-   apply(as.matrix(rstanObj, pars = "PsiC[2, 1]"), 2, var)
 
   
-  # Parameters for Selection part of CrossLoadins
-  credInterval50 <- summary(rstanObj, par = "lambdaCrossC")$summary[, c(5, 7)]
-  #credInterval90 <- posterior::summarisedraws(rstanObj, par = "lambdaCrossC")$summary[, c()]
-  credInterval95 <- summary(rstanObj, par = "lambdaCrossC")$summary[, c(4, 8)]
+  # Parameters for Selection part of CrossLoadins, i.e. different configs of credible intervals
+  crossQuantiles <- t(apply(matrixCross, 2, quantile, seq(0, 1, 0.025)))
   
   # cbind and return output
   out <- cbind(1:6,
                mainEstMean, 
+               mainEstMed,
+               mainEstVar,
                crossEstMean,
+               crossEstMed,
+               crossEstVar,
                thetaEstMean,
-               credInterval50,
-               credInterval95) %>% 
+               thetaEstMed,
+               crossQuantiles) %>% 
         as_tibble()
-  
-  # make row and colnames proper
-  rownames(out) <- NULL
   colnames(out)[1] <- "item"
   # recode output into wide format and cbind convergence into it
   out <- tidyr::pivot_wider(out, 
                             names_from = item, 
                             values_from = colnames(out[-1])) 
   
-  # cbind estimate of corr (only 1 per six items) into output
-  out <- cbind(out, corrEstMean)
+  # cbind estimates of corr (only 1 per six items) into output
+  out <- cbind(out, corrEstMean, corrEstMed, corrEstVar)
   # cbind conditions into output
   out <- cbind(out, conditions)
+  rownames(out) <- NULL
+  
   
   # return output
   return(out)
@@ -162,12 +164,7 @@ convergence <- function(rstanObj, conditions) {
 # sampling() --------------------------------------------------------------
 # takes as input the conditions chain-length, warmup, n_chains, n_parallel chains &
 #   all hyperparameters sourced from parameters.R
-##### VGM kan pos argument gwn weg
-sampling <- function(pos, 
-                     conditions, 
-                     modelPars,
-                     nIter,
-                     samplePars){
+sampling <- function(pos, conditions, modelPars, nIter, samplePars){
   
   # memory allocation final output
   outputFinal <- data.frame()
@@ -217,8 +214,7 @@ sampling <- function(pos,
     }
   
   # Write output to disk (per set of conditions in an appending fashion)
-  ### THIS ONLY WORKS WHEN files dont already exist, so maybe delete them before?, e.g. at
-  ### beginning of this function or so?!?!
+  ### THIS ONLY WORKS WHEN files dont already exist, so maybe delete them before?, e.g. in main.R
   resultsName <- ifelse(condCurrent$prior == "SVNP",
                         "~/1vs2StepBayesianRegSEM/output/ResultsSVNP.csv",
                         "~/1vs2StepBayesianRegSEM/output/ResultsRHSP.csv")
@@ -226,8 +222,6 @@ sampling <- function(pos,
   convName <- ifelse(condCurrent$prior == "SVNP",
                      "~/1vs2StepBayesianRegSEM/output/ConvSVNP.csv",
                      "~/1vs2StepBayesianRegSEM/output/ConvRHSP.csv")
-  
-  # write output to disk in an appending fashion
   write.table(outputFinal, 
               file = resultsName,
               append = TRUE,
