@@ -34,7 +34,7 @@ stopCluster(clusters)
 
 # Execute simulation for RHSP ---------------------------------------------
 # do the sampling
-#clusters <- makePSOCKcluster(nClusters) # create cluster
+clusters <- makePSOCKcluster(nClusters) # create cluster
 # source functions & conditions within clusters
 clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
 clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/parameters.R'))
@@ -42,9 +42,9 @@ clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/parameters.R
 clusterCall(clusters, function() lapply(packages, library, character.only = TRUE))
 #run function in clustered way where every set of condition gets it's own core
 outputFinalRHSP <- clusterApplyLB(clusters, 
-                                  1:nrow(condRHSP), 
+                                  1:nrow(condRHSP[1:10, ]), 
                                   sampling,
-                                  conditions = condRHSP,
+                                  conditions = condRHSP[1:10, ],
                                   modelPars = modelPars,
                                   nIter = nIter,
                                   samplePars = samplePars)

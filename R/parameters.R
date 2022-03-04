@@ -57,10 +57,10 @@ nu <- c(1, 3) # df IG for c^2 (slab)
 scaleSlab <- c(0.1, 1, 5) # scale of slab
 
 # Population conditions ----------------------------------------------------
-#N <- c(100, 200)
-N <- 100
-#cross <- c(0.2, 0.5)
-cross <- 0.2
+N <- c(100, 200)
+#N <- 100
+cross <- c(0.2, 0.5)
+#cross <- 0.2
 
 # Combine conditions ------------------------------------------------------
 # specify combinations of population conditions & hyperpars per prior
@@ -94,7 +94,7 @@ samplePars <- list(
                 )
 
 # Parallelization Parameter -----------------------------------------------
-nClusters <- 14 # voor nu gwn 12, het aantal condities
+nClusters <- 6 # voor nu gwn 12, het aantal condities
 
 # other study parameters --------------------------------------------------
-nIter <- 2 # ff dit proberen
+nIter <- 1 # ff dit proberen
