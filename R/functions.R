@@ -37,7 +37,8 @@ prepareDataset <- function(conditions, main, Psi, Theta){
         P = ncol(Y),
         Q = 2,
         Y = Y, 
-        sigma = conditions$sigma
+        sigma = conditions$sigma,
+        cross = conditions$cross
       )
     }else if(conditions$prior == "RHSP"){
       out <- list(
@@ -50,7 +51,8 @@ prepareDataset <- function(conditions, main, Psi, Theta){
         dfGlobal = conditions$dfGlobal, # df for half-t prior omega
         dfLocal = conditions$dfLocal, # df for half-t prior tau_j
         nu = conditions$nu, # df IG for c^2
-        scaleSlab = conditions$scaleSlab # scale of slab
+        scaleSlab = conditions$scaleSlab, # scale of slab
+        cross = conditions$cross
       )
     } 
     return(out)
@@ -74,7 +76,6 @@ prepareDataset <- function(conditions, main, Psi, Theta){
   # return dataset
   return(dat)
 }
-
 
 # saveResults() ------------------------------------------------------------
 # function takes rstan object and saves the estimes 
@@ -172,14 +173,12 @@ sampling <- function(pos,
   # specify current set of condition based on pos 
   condCurrent <- conditions[pos, ]
 
-  # loop over the simulated datasets and save output object per dataset
   # compile model (if already compiled this will just not be executed)
   if (condCurrent$prior == "SVNP"){
       model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/SVNP.stan")
   }else if (condCurrent$prior == "RHSP"){
       model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/RHSP.stan")
   }
-  
   
   # Draw the Samples
     for (i in 1:nIter){
@@ -192,8 +191,8 @@ sampling <- function(pos,
       
       # draw samples
       samples <- model$sample(data = dataset,
-                              chains = samplePars$nChain, # 2 chains 
-                              iter_warmup = samplePars$nWarmup, # 4000 total iterations
+                              chains = samplePars$nChain, 
+                              iter_warmup = samplePars$nWarmup,
                               iter_sampling = samplePars$nSampling)
       
       # save as rstan object
@@ -284,7 +283,6 @@ sampling <- function(pos,
 #  #cred95TypeI <- 
 #  
 #  # HPD interval containing zero
-#  
 #  
 #  # save output
 #  out <- cbind(1:6,

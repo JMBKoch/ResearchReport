@@ -12,29 +12,29 @@ source('~/1vs2StepBayesianRegSEM/R/parameters.R')
 # do the sampling where every available core (nWorkers in condtions.R) does 
 #    one unique combination of conditions
 # create clusters
-#clusters <- makePSOCKcluster(nClusters) 
-## source functions & conditions within clusters
-#clusterCall(clusters, 
-#            function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
-#clusterCall(clusters, 
-#            function() source('~/1vs2StepBayesianRegSEM/R/parameters.R'))
-## Load packages per cluster
-#clusterCall(clusters, 
-#            function() lapply(packages, library, character.only = TRUE))
-## run functon in clustered way where every set of condition gets it's own core
-#outputFinalSVNP <- clusterApplyLB(clusters, 
-#                                  1:nrow(condSVNP), 
-#                                  sampling,
-#                                  conditions = condSVNP,
-#                                  modelPars = modelPars,
-#                                  nIter = nIter,
-#                                  samplePars = samplePars)
-## close clusters
-#stopCluster(clusters) 
+clusters <- makePSOCKcluster(nClusters) 
+# source functions & conditions within clusters
+clusterCall(clusters, 
+            function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
+clusterCall(clusters, 
+            function() source('~/1vs2StepBayesianRegSEM/R/parameters.R'))
+# Load packages per cluster
+clusterCall(clusters, 
+            function() lapply(packages, library, character.only = TRUE))
+# run functon in clustered way where every set of condition gets it's own core
+outputFinalSVNP <- clusterApplyLB(clusters, 
+                                  1:nrow(condSVNP), 
+                                  sampling,
+                                  conditions = condSVNP,
+                                  modelPars = modelPars,
+                                  nIter = nIter,
+                                  samplePars = samplePars)
+# close clusters
+stopCluster(clusters) 
 
 # Execute simulation for RHSP ---------------------------------------------
 # do the sampling
-clusters <- makePSOCKcluster(nClusters) # create cluster
+#clusters <- makePSOCKcluster(nClusters) # create cluster
 # source functions & conditions within clusters
 clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
 clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/parameters.R'))
@@ -48,5 +48,5 @@ outputFinalRHSP <- clusterApplyLB(clusters,
                                   modelPars = modelPars,
                                   nIter = nIter,
                                   samplePars = samplePars)
-# close clusters
+#close clusters
 stopCluster(clusters) 

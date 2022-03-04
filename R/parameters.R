@@ -89,12 +89,12 @@ condRHSP <-
 # save in one list for easier passing to functions
 samplePars <- list(
                 nChain = 2,
-                nWarmup = 2000,
-                nSampling = 2000
+                nWarmup = 50,
+                nSampling = 50
                 )
 
 # Parallelization Parameter -----------------------------------------------
 nClusters <- 14 # voor nu gwn 12, het aantal condities
 
 # other study parameters --------------------------------------------------
-nIter <- 1 # ff dit proberen
+nIter <- 2 # ff dit proberen
