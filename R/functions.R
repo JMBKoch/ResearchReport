@@ -102,7 +102,7 @@ saveResults <- function(rstanObj,  conditions){
 
   
   # Parameters for Selection part of CrossLoadins, i.e. different configs of credible intervals
-  crossQuantiles <- t(apply(matrixCross, 2, quantile, seq(0, 1, 0.025)))
+  crossQuantiles <- t(apply(crossMatrix, 2, quantile, seq(0, 1, 0.025)))
   
   # cbind and return output
   out <- cbind(1:6,
@@ -216,12 +216,12 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
   # Write output to disk (per set of conditions in an appending fashion)
   ### THIS ONLY WORKS WHEN files dont already exist, so maybe delete them before?, e.g. in main.R
   resultsName <- ifelse(condCurrent$prior == "SVNP",
-                        "~/1vs2StepBayesianRegSEM/output/ResultsSVNP.csv",
-                        "~/1vs2StepBayesianRegSEM/output/ResultsRHSP.csv")
+                        "~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv",
+                        "~/1vs2StepBayesianRegSEM/output/resultsRHSP.csv")
                         
   convName <- ifelse(condCurrent$prior == "SVNP",
-                     "~/1vs2StepBayesianRegSEM/output/ConvSVNP.csv",
-                     "~/1vs2StepBayesianRegSEM/output/ConvRHSP.csv")
+                     "~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
+                     "~/1vs2StepBayesianRegSEM/output/convRHSP.csv")
   write.table(outputFinal, 
               file = resultsName,
               append = TRUE,

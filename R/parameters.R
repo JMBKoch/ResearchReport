@@ -96,4 +96,4 @@ samplePars <- list(
 nClusters <- 6 # voor nu gwn 12, het aantal condities
 
 # other study parameters --------------------------------------------------
-nIter <- 1 # ff dit proberen
+nIter <- 5 # ff dit proberen

@@ -9,6 +9,9 @@ source('~/1vs2StepBayesianRegSEM/R/functions.R')
 source('~/1vs2StepBayesianRegSEM/R/parameters.R')
 
 # Execute simulation for SVNP ---------------------------------------------
+## Make sure output is deleted such that no appendation takes place (BE CAREFUL!)
+file.remove(c("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv",
+              "~/1vs2StepBayesianRegSEM/output/convSVNP.csv"))
 # do the sampling where every available core (nWorkers in condtions.R) does 
 #    one unique combination of conditions
 # create clusters
@@ -34,6 +37,9 @@ stopCluster(clusters)
 
 ## Execute simulation for RHSP ---------------------------------------------
 ## do the sampling
+## Make sure output is deleted such that no appendation takes place (BE CAREFUL!)
+#file.remove(c("~/1vs2StepBayesianRegSEM/output/resultsRHSP.csv",
+#              "~/1vs2StepBayesianRegSEM/output/convRHSP.csv"))
 #clusters <- makePSOCKcluster(nClusters) # create cluster
 ## source functions & conditions within clusters
 #clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
