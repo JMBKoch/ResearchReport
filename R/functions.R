@@ -81,21 +81,24 @@ prepareDataset <- function(conditions, main, Psi, Theta){
 # function takes rstan object and saves the estimes 
 saveResults <- function(rstanObj,  conditions){
 
-  # estimates Lambda
-  mainEstMean <- summary(rstanObj,  pars = "lambdaMainC")$summary[, 1]
-  #mainEstMed <- 
-  #mainEstSD <- 
-  crossEstMean <-  summary(rstanObj, pars = "lambdaCrossC")$summary[, 1]
-  #crossEstMed <-  summary(rstanObj, pars = "lambdaCrossC")$summary[, 1]
-  #crossEstSD <- 
+  # estimates Lambda ### median straks wss alleen maar belangrijk voor kruisladingen
+  mainEstMean <- apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, mean)
+  mainEstMed <-  apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, median)
+  mainEstVar <-  apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, var)
+  crossEstMean <- apply(as.matrix(rstanObj, pars = "lambdaCrossC"), 2, mean)
+  crossEstMed <-  apply(as.matrix(rstanObj, pars = "lambdaCrossC"), 2, median)
+  crossEstVar <-  apply(as.matrix(rstanObj, pars = "lambdaCrossC"), 2, var)
+  
+  # estimates Theta
+  thetaEstMean <- apply(as.matrix(rstanObj, pars = "theta"), 2, mean)
+  thetaEstMed <- apply(as.matrix(rstanObj, pars = "theta"), 2, median)
+  thetaEstVar <- apply(as.matrix(rstanObj, pars = "theta"), 2, var)
   
   # estimate Factor-Corr
-  corrEstMean <-  summary(rstanObj, pars = "PsiC[2, 1]")$summary[, 1]
-  #corrEstMed <- 
-  #corrEstSD <- 
-  # estimates Theta
-  thetaEstMean <- summary(rstanObj, pars = "theta")$summary[, 1]
-  #thetaEstMed <- 
+  corrEstMean <-  apply(as.matrix(rstanObj, pars = "PsiC[2, 1]"), 2, mean)
+  corrEstMed <-   apply(as.matrix(rstanObj, pars = "PsiC[2, 1]"), 2, median)
+  corrEstVar <-   apply(as.matrix(rstanObj, pars = "PsiC[2, 1]"), 2, var)
+
   
   # Parameters for Selection part of CrossLoadins
   credInterval50 <- summary(rstanObj, par = "lambdaCrossC")$summary[, c(5, 7)]
