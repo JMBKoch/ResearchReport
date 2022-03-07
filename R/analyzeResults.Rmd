@@ -25,7 +25,7 @@ convSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
                      header = TRUE)
 ```
 
-```{r}
+```{r, chache=T}
 # inspect both a bit
 head(resultsSVNP)
 head(convSVNP)
@@ -35,5 +35,11 @@ head(convSVNP)
 
 ```{r}
 resultsTrimmed <- selectConv(resultsSVNP)
+```
+
+## Compute output object based on the converged results
+
+```{r}
+output <- computeOutcomes(resultsTrimmed)
 ```
 
