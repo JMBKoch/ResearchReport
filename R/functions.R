@@ -154,7 +154,12 @@ convergence <- function(rstanObj, conditions) {
   conv$maxTree <- max(tree$Value)
   div <- subset(bayesplot::nuts_params(rstanObj), Parameter == "divergent__")
   conv$sumDiv  <- sum(div$Value)
-
+  # save runtime
+  time = get_elapsed_time(rstanObj)
+  conv$warmupT1 = time["chain:1", "warmup"]
+  conv$warmupT2 = time["chain:2", "warmup"]
+  conv$sampleT1 = time["chain:1", "sample"]
+  conv$sampleT2 = time["chain:2", "sample"]
   # cbind conditions into output
   conv <- cbind(conv, conditions)
   # return output
