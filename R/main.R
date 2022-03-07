@@ -35,6 +35,7 @@ outputFinalSVNP <- clusterApplyLB(clusters,
 # close clusters
 stopCluster(clusters) 
 
+
 ## Execute simulation for RHSP ---------------------------------------------
 ## do the sampling
 ## Make sure output is deleted such that no appendation takes place (BE CAREFUL!)

@@ -246,78 +246,99 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
 ################################################################################################
 # Part 2: Postprocessing Output of Simulation
 ################################################################################################
-# checkIfConv -------------------------------------------------------------
+# selectConv -------------------------------------------------------------
 # function takes whole output and trims dataset such that only converged iterations are included
+#selectConv <- function(results){}
 
-# ComputeOutcomes ---------------------------------------------------------
+
+# computeOutcomes ---------------------------------------------------------
 # Takes as input the results of a study (minus non converged) and computes all main outcomes
-#ComputeOutcomes(resultsTrimmed){
-#  
-#  ## Bias 
-#  biasMain <- abs(mainEst-mainTrue)
-#  biasCross <- abs(crossEst-crossTrue)
-#  biasFactCorr <-  abs(corrEst - PsiTrue[1, 2])
-#  biasTheta <- abs(thetaEst - diag(ThetaTrue))
-#  
-#  # MSE
-#  mseMain <- biasMain + summary(rstanObj, pars =  "lambdaMainC")$summary[, 3]^2
-#  mseCross <- biasCross + summary(rstanObj, pars =  "lambdaCrossC")$summary[, 3]^2
-#  mseFactCorr <- biasFactCorr + summary(rstanObj, pars = "PsiC[2, 1]")$summary[, 3]^2
-#  mseTheta <- biasTheta + summary(rstanObj, pars = "theta")$summary[, 3]^2
-#  
-#  # isZero, based on different selection criteria
-#  #### TBA: The final outcomes, i.e. Power (p 6 Zhang et al., 2021), type-I error rates, 
-#  #### Ratio correct identification to total number identified pars, no established metric
-#  # Treshold: 0 if estimate smaller than 0.10
-#  isZeroTres10 <- sapply(crossEst, function(x)ifelse(x < 0.10, 0, 1))
-#  # Treshold: 0 if estimate is smaller than
-#  
-#  # 95% Credibility interval containing zero
-#  isZeroCred95 <- apply(resultsTrimmed$credInterval, 
-#                        1, 
-#                        function(x) dplyr::between(0, x[1], x[2]))
-#  #cred95Power <- 
-#  #cred95TypeI <- 
-#  
-#  # HPD interval containing zero
-#  
-#  # save output
-#  out <- cbind(1:6,
-#               biasMain,
-#               biasCross,
-#               biasTheta,
-#               mseMain,
-#               mseCross,
-#               mseTheta,
-#               isZeroTres10) %>% 
-#    as_tibble()
-#  
-#  # make row and colnames proper
-#  rownames(out) <- NULL
-#  colnames(out)[1] <- "item"
-#  # recode output into wide format and cbind convergence into it
-#  out <- tidyr::pivot_wider(out, 
-#                            names_from = item, 
-#                            values_from = c(biasMain, 
-#                                            biasCross, 
-#                                            biasTheta,
-#                                            mseMain,
-#                                            mseCross,
-#                                            mseTheta,
-#                                            isZeroTres10
-#                            )) 
-#  # add factCorr columns
-#  out$biasFactCorr <- biasFactCorr
-#  out$mseFactCorr <- mseFactCorr
-#  
-#  # cbind conditions into output
-#  out <- cbind(out, conditions)
-#  # return output
-#  return(out)
-#  
-#
-#  
-#}
+computeOutcomes <- function(resultsTrimmed, modelPars){
+  
+  # helper function computeBias()
+  computeBias <- function(est, true){
+    
+    bias <- main-true
+    return(bias)
+    
+  }
+  
+  
+  ## Bias Mean estimates
+  # subset mean estimates of parameters
+  mainMean <- resultsTrimmed[, 1:6]
+  crossMean <- resultsTrimmed[, 19:24]
+  thetaMean <-  resultsTrimmed[, 37:42]
+  
+  
+  biasMainMean <- 
+  biasCrossMean <- abs(crossEst-crossTrue)
+  biasThetaMean <- abs(thetaEst - diag(ThetaTrue))
+  
+  biasFactCorrMean <-  abs(corrEst - PsiTrue[1, 2])
+
+  ## Bias Median estimates
+  #
+  
+  # MSE Mean estimates
+  mseMain <- biasMain + 
+  mseCross <- biasCross + summary(rstanObj, pars =  "lambdaCrossC")$summary[, 3]^2
+  mseFactCorr <- biasFactCorr + summary(rstanObj, pars = "PsiC[2, 1]")$summary[, 3]^2
+  mseTheta <- biasTheta + summary(rstanObj, pars = "theta")$summary[, 3]^2
+  
+  # MSE Median estimates?
+  
+  ## isZero, based on different selection criteria
+  ##### TBA: The final outcomes, i.e. Power (p 6 Zhang et al., 2021), type-I error rates, 
+  ##### Ratio correct identification to total number identified pars, no established metric
+  ## Treshold: 0 if estimate smaller than 0.10
+  #isZeroTres10 <- sapply(crossEst, function(x)ifelse(x < 0.10, 0, 1))
+  ## Treshold: 0 if estimate is smaller than
+  #
+  ## 95% Credibility interval containing zero
+  #isZeroCred95 <- apply(resultsTrimmed$credInterval, 
+  #                      1, 
+  #                      function(x) dplyr::between(0, x[1], x[2]))
+  ##cred95Power <- 
+  ##cred95TypeI <- 
+  #
+  ## HPD interval containing zero
+  
+  # save output
+  out <- cbind(1:6,
+               biasMain,
+               biasCross,
+               biasTheta,
+               mseMain,
+               mseCross,
+               mseTheta,
+               isZeroTres10) %>% 
+    as_tibble()
+  
+  # make row and colnames proper
+  rownames(out) <- NULL
+  colnames(out)[1] <- "item"
+  # recode output into wide format and cbind convergence into it
+  out <- tidyr::pivot_wider(out, 
+                            names_from = item, 
+                            values_from = c(biasMain, 
+                                            biasCross, 
+                                            biasTheta,
+                                            mseMain,
+                                            mseCross,
+                                            mseTheta,
+                                            isZeroTres10
+                            )) 
+  # add factCorr columns
+  out$biasFactCorr <- biasFactCorr
+  out$mseFactCorr <- mseFactCorr
+  
+  # cbind conditions into output
+  out <- cbind(out, conditions)
+  # return output
+  return(out)
+  
+}
 
 # Plots -----------------------------------------------------------------
 # makes all required plots (generally? for AN outcome?) and saves them

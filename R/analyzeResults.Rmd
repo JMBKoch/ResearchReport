@@ -1,0 +1,39 @@
+---
+title: "Analyzing the results" 
+author: "Michael Koch"
+date: "07-03-2022"
+output: html_document
+---
+
+# Working through the results of the Mini- (/ Pilot-) simulation for the SVNP
+
+## Step1: Prepearations
+
+```{r, warning = F}
+#source required functions & parameters
+source('~/1vs2StepBayesianRegSEM/R/functions.R')
+source('~/1vs2StepBayesianRegSEM/R/parameters.R')
+```
+
+```{r}
+# load results
+resultsSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv", 
+                        sep = " ", 
+                        header = TRUE)
+convSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
+                     sep = " ",
+                     header = TRUE)
+```
+
+```{r}
+# inspect both a bit
+head(resultsSVNP)
+head(convSVNP)
+```
+
+## Select only converged rows of the results
+
+```{r}
+resultsTrimmed <- selectConv(resultsSVNP)
+```
+
