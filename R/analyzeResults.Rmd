@@ -21,7 +21,6 @@ resultsSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv",
                         sep = " ", 
                         header = TRUE)
 convSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
-                     sep = " ",
                      header = TRUE)
 ```
 
@@ -34,7 +33,8 @@ head(convSVNP)
 ## Select only converged rows of the results
 
 ```{r}
-resultsTrimmed <- selectConv(resultsSVNP)
+#resultsTrimmed <- selectConv(resultsSVNP)
+resultsTrimmed <- resultsSVNP # voor nu ff convergence negeren, wordt belangrijk met RHSP
 ```
 
 ## Compute output object based on the converged results

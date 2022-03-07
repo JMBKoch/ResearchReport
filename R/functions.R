@@ -260,13 +260,13 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
 # Takes as input the results of a study (minus non converged) and computes all main outcomes
 computeOutcomes <- function(resultsTrimmed, modelPars){
   
-  # helper function computeBias()
-  computeBias <- function(est, true){
-    
-    bias <- main-true
-    return(bias)
-    
-  }
+ ## helper function computeBias()
+ #computeBias <- function(est, true){
+ #  
+ #  bias <- main-true
+ #  return(bias)
+ #  
+ #}
   
   
   ## Bias Mean estimates
@@ -274,13 +274,18 @@ computeOutcomes <- function(resultsTrimmed, modelPars){
   mainMean <- resultsTrimmed[, 1:6]
   crossMean <- resultsTrimmed[, 19:24]
   thetaMean <-  resultsTrimmed[, 37:42]
+  corrMean <- resultsTrimmed[, ncol(resultsTrimmed)-7, drop = FALSE]
   
+  # compute the biases (let op de speciale syntax voor kruisladingen)
+  biasMainMean <- abs(mainMean - modelPars$main)
+for (i in 1:nrow(resultsTrimmed))
+  if(resultsTrimmed[i , "cross"] == 0.5){
+    biasCrossMean[i] <- abs(crossMean[i] - 0.5)} else{
+    biasCrossMean[i] <- abs(crossMean[i] - 0.2)
+    }
+  biasThetaMean <- abs(thetaMean - modelPars$Theta)
   
-  biasMainMean <- 
-  biasCrossMean <- abs(crossEst-crossTrue)
-  biasThetaMean <- abs(thetaEst - diag(ThetaTrue))
-  
-  biasFactCorrMean <-  abs(corrEst - PsiTrue[1, 2])
+  biasFactCorrMean <-  abs(corrMean - PsiTrue[1, 2])
 
   ## Bias Median estimates
   #
