@@ -381,11 +381,15 @@ computeOutcomes <- function(resultsTrimmed, modelPars){
   #isZeroCred95 <- apply(resultsTrimmed$credInterval, 
   #                      1, 
   #                      function(x) dplyr::between(0, x[1], x[2]))
-  ##cred95Power <- 
-  ##cred95TypeI <- 
-  #
-  ## HPD interval containing zero
-  
+  #tres10Power <- 
+  #tres10TypeI <- 
+  #cred95Power <- 
+  #cred95TypeI <- 
+  #cred90Power <- 
+  #cred90TypeI <- 
+  #cred80Power <- 
+  #cred80TypeI <- 
+
   # cbind everything into a single dataframe
   out <- cbind(biasMainMean, 
                biasMainMed,
@@ -403,6 +407,15 @@ computeOutcomes <- function(resultsTrimmed, modelPars){
                biasFactCorrMed,
                mseFactCorrMean,
                mseFactCorrMed
+               #, 
+               #tres10Power,
+               #tres10TypeI,
+               #cred95Power,
+               #cred95TypeI,
+               #cred90Power,
+               #cred90TypeI,
+               #cred80Power,
+               #cred80TypeI
                )
   
   
