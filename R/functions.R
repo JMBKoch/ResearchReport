@@ -102,7 +102,7 @@ saveResults <- function(rstanObj,  conditions){
 
   
   # Parameters for Selection part of CrossLoadins, i.e. different configs of credible intervals
-  crossQuantiles <- t(apply(crossMatrix, 2, quantile, seq(0, 1, 0.025)))
+  crossQuantiles <- t(apply(crossMatrix, 2, quantile, c(0.025, 0.975, 0.05, 0.95, 0.10, 0.90)))
   
   # cbind and return output
   out <- cbind(1:6,
@@ -208,6 +208,8 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
       output <- saveResults(rstanObj, conditions = condCurrent)
       # add iteration to output
       output$iteration <- i
+      # add pos (for easy matching based on unique codition config)
+      output$pos <- pos
       # rbind output into final output
       outputFinal <- rbind(outputFinal, output)
       
@@ -215,6 +217,8 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
       conv <- convergence(rstanObj, conditions = condCurrent)
       # add iteration
       conv$iteration <- i
+      # add pos (for easy matching based on unique codition config)
+      conv$pos <- pos
       convFinal <- rbind(convFinal, conv)
       
     }
