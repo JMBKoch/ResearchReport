@@ -114,6 +114,7 @@ saveResults <- function(rstanObj,  conditions){
                crossEstVar,
                thetaEstMean,
                thetaEstMed,
+               thetaEstVar,
                crossQuantiles) %>% 
         as_tibble()
   colnames(out)[1] <- "item"
@@ -261,43 +262,110 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
 computeOutcomes <- function(resultsTrimmed, modelPars){
   
  ## helper function computeBias()
- #computeBias <- function(est, true){
- #  
- #  bias <- main-true
- #  return(bias)
- #  
- #}
-  
-  
-  ## Bias Mean estimates
+ computeBias <- function(est, true){
+   
+   bias <- abs(est-true)
+   return(bias)
+   
+ }
+ 
+  ### subset estimates for more concise code below:
   # subset mean estimates of parameters
-  mainMean <- resultsTrimmed[, 1:6]
-  crossMean <- resultsTrimmed[, 19:24]
-  thetaMean <-  resultsTrimmed[, 37:42]
-  corrMean <- resultsTrimmed[, ncol(resultsTrimmed)-7, drop = FALSE]
-  
-  # compute the biases (let op de speciale syntax voor kruisladingen)
-  biasMainMean <- abs(mainMean - modelPars$main)
-for (i in 1:nrow(resultsTrimmed))
-  if(resultsTrimmed[i , "cross"] == 0.5){
-    biasCrossMean[i] <- abs(crossMean[i] - 0.5)} else{
-    biasCrossMean[i] <- abs(crossMean[i] - 0.2)
+  mainMean <- select(resultsTrimmed, mainEstMean_1:mainEstMean_6) 
+  crossMean <- select(resultsTrimmed, crossEstMean_1:crossEstMean_6)
+  thetaMean <-  select(resultsTrimmed, thetaEstMean_1:thetaEstMean_6)
+  corrMean <- select(resultsTrimmed, corrEstMean)
+  # subset median estimates of parameters
+  mainMed <- select(resultsTrimmed, mainEstMed_1:mainEstMed_6)
+  crossMed <- select(resultsTrimmed, crossEstMed_1:crossEstMed_6)
+  thetaMed <- select(resultsTrimmed, thetaEstMed_1:thetaEstMed_6)
+  corrMed <- select(resultsTrimmed, corrEstMed)
+  # subset variances of parameters
+  mainVar <- select(resultsTrimmed, mainEstVar_1:mainEstVar_6)
+  crossVar <- select(resultsTrimmed, crossEstVar_1:crossEstVar_6)
+  #thetaVar <- select(resultsTrimmed, thetaEstVar_1:thetaEstVar_6) ## TBA again later!!!!
+  corrVar <- select(resultsTrimmed, corrEstVar)
+
+  ### Bias Mean estimates
+  # compute the biases main loadings
+  biasMainMean <- t(apply(mainMean, 1, computeBias, true = modelPars$main))
+  for(i in 1:6){
+    colnames(biasMainMean)[i] <- paste0("biasMainMean", "_", as.character(i))
+  }
+  # compute biases mean estimates cross-loadings
+  crossTrue <- as.data.frame(matrix(NA, nrow = nrow(resultsTrimmed), ncol = 6))
+  biasCrossMean <- as.data.frame(matrix(NA, nrow = nrow(resultsTrimmed), ncol = 6))
+  for(i in 1:nrow(resultsTrimmed)){
+    if(resultsTrimmed[i, ]$cross == 0.5){
+      crossTrue[i, ] <- rep(0.5, 6)
+    }else{
+      crossTrue[i, ] <- rep(0.2, 6)
     }
-  biasThetaMean <- abs(thetaMean - modelPars$Theta)
-  
-  biasFactCorrMean <-  abs(corrMean - PsiTrue[1, 2])
+    biasCrossMean[i, ] <- abs(crossMean[i, ] - crossTrue[i, ])
+  }  
+  for(i in 1:6){
+    colnames(biasCrossMean)[i] <- paste0("biasCrossMean", "_", as.character(i))
+  }
+  # compute biases mean estimates theta
+  biasThetaMean <- t(apply(thetaMean, 1, computeBias, true = diag(modelPars$Theta)))
+  for(i in 1:6){
+    colnames(biasThetaMean)[i] <- paste0("biasThetaMean", "_", as.character(i))
+  }
+  # compute biases mean estimate factor Correlation
+  biasFactCorrMean <-  abs(corrMean - modelPars$Psi[1, 2])
+  names(biasFactCorrMean) <- "biasFactCorrMean"
 
   ## Bias Median estimates
-  #
+  # compute the biases main loadings
+  biasMainMed <- t(apply(mainMed, 1, computeBias, true = modelPars$main))
+  # fix colnames of biases mean estimates main loadings
+  for(i in 1:6){
+    colnames(biasMainMed)[i] <- paste0("biasMainMed", "_", as.character(i))
+  }
+  # compute biases median estimates cross-loadings
+  biasCrossMed <- as.data.frame(matrix(NA, nrow = nrow(resultsTrimmed), ncol = 6))
+  for(i in 1:nrow(resultsTrimmed)){
+    biasCrossMed[i, ] <- abs(crossMed[i, ] - crossTrue[i, ])
+  }  
+  for(i in 1:6){
+    colnames(biasCrossMed)[i] <- paste0("biasCrossMed", "_", as.character(i))
+  }
+  # compute biases median estimates theta
+  biasThetaMed <- t(apply(thetaMed, 1, computeBias, true = diag(modelPars$Theta)))
+  for(i in 1:6){
+    colnames(biasThetaMed)[i] <- paste0("biasThetaMed", "_", as.character(i))
+  }
+  # compute biases median estimate factor Correlation
+  biasFactCorrMed <-  abs(corrMed - modelPars$Psi[1, 2])
+  names(biasFactCorrMed) <- "biasFactCorrMed"
   
-  # MSE Mean estimates
-  mseMain <- biasMain + 
-  mseCross <- biasCross + summary(rstanObj, pars =  "lambdaCrossC")$summary[, 3]^2
-  mseFactCorr <- biasFactCorr + summary(rstanObj, pars = "PsiC[2, 1]")$summary[, 3]^2
-  mseTheta <- biasTheta + summary(rstanObj, pars = "theta")$summary[, 3]^2
+  ### MSE Mean estimates
+  mseMainMean <- biasMainMean + mainVar
+  for(i in 1:6){
+    colnames(mseMainMean)[i] <- paste0("mseMainMean", "_", as.character(i))
+  }
+  mseCrossMean <- biasCrossMean + crossVar
+  for(i in 1:6){
+    colnames(mseCrossMean)[i] <- paste0("mseCrossMean", "_", as.character(i))
+  }
+  mseFactCorrMean <- biasFactCorrMean + corrVar
+  colnames(mseFactCorrMean) <- "mseFactCorrMean"
+  #mseThetaMean <- biasThetaMean + thetaVar ### TBA later
   
-  # MSE Median estimates?
-  
+  ### MSE Median estimates
+  mseMainMed <- biasMainMed + mainVar
+  for(i in 1:6){
+    colnames(mseMainMed)[i] <- paste0("mseMainMed", "_", as.character(i))
+  }
+  mseCrossMed <- biasCrossMed + crossVar
+  for(i in 1:6){
+    colnames(mseCrossMed)[i] <- paste0("mseCrossMed", "_", as.character(i))
+  }
+  mseFactCorrMed <- biasFactCorrMed + corrVar
+  colnames(mseFactCorrMed) <- "mseFactCorrMed"
+  #mseThetaMed <- biasThetaMean + thetaVar ### TBA later
+    
+
   ## isZero, based on different selection criteria
   ##### TBA: The final outcomes, i.e. Power (p 6 Zhang et al., 2021), type-I error rates, 
   ##### Ratio correct identification to total number identified pars, no established metric
@@ -314,37 +382,28 @@ for (i in 1:nrow(resultsTrimmed))
   #
   ## HPD interval containing zero
   
-  # save output
-  out <- cbind(1:6,
-               biasMain,
-               biasCross,
-               biasTheta,
-               mseMain,
-               mseCross,
-               mseTheta,
-               isZeroTres10) %>% 
-    as_tibble()
+  # cbind everything into a single dataframe
+  out <- cbind(biasMainMean, 
+               biasMainMed,
+               mseMainMean,
+               mseMainMed,
+               biasCrossMean,
+               biasCrossMed,
+               mseCrossMean,
+               mseCrossMed,
+               biasThetaMean,
+               biasThetaMed,
+               # mseThetaMean, ### TBA
+               # mseThetaMed,
+               biasFactCorrMean,
+               biasFactCorrMed,
+               mseFactCorrMean,
+               mseFactCorrMed
+               )
   
-  # make row and colnames proper
-  rownames(out) <- NULL
-  colnames(out)[1] <- "item"
-  # recode output into wide format and cbind convergence into it
-  out <- tidyr::pivot_wider(out, 
-                            names_from = item, 
-                            values_from = c(biasMain, 
-                                            biasCross, 
-                                            biasTheta,
-                                            mseMain,
-                                            mseCross,
-                                            mseTheta,
-                                            isZeroTres10
-                            )) 
-  # add factCorr columns
-  out$biasFactCorr <- biasFactCorr
-  out$mseFactCorr <- mseFactCorr
   
   # cbind conditions into output
-  out <- cbind(out, conditions)
+  out <- cbind(out, select(resultsTrimmed, prior:iteration))
   # return output
   return(out)
   

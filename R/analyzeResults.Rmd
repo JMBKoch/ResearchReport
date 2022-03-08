@@ -9,7 +9,7 @@ output: html_document
 
 ## Step1: Prepearations
 
-```{r, warning = F}
+```{r, message = F}
 #source required functions & parameters
 source('~/1vs2StepBayesianRegSEM/R/functions.R')
 source('~/1vs2StepBayesianRegSEM/R/parameters.R')
@@ -21,6 +21,7 @@ resultsSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv",
                         sep = " ", 
                         header = TRUE)
 convSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
+                     sep = " ",
                      header = TRUE)
 ```
 
@@ -40,6 +41,12 @@ resultsTrimmed <- resultsSVNP # voor nu ff convergence negeren, wordt belangrijk
 ## Compute output object based on the converged results
 
 ```{r}
-output <- computeOutcomes(resultsTrimmed)
+outcomes <- computeOutcomes(resultsTrimmed, modelPars)
 ```
+
+```{r}
+head(outcomes)
+```
+
+
 
