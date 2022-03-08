@@ -14,6 +14,8 @@ file.remove(c("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv",
               "~/1vs2StepBayesianRegSEM/output/convSVNP.csv"))
 # do the sampling where every available core (nWorkers in condtions.R) does 
 #    one unique combination of conditions
+# measure start time
+startTime <- Sys.time()
 # create clusters
 clusters <- makePSOCKcluster(nClusters) 
 # source functions & conditions within clusters
@@ -34,7 +36,10 @@ outputFinalSVNP <- clusterApplyLB(clusters,
                                   samplePars = samplePars)
 # close clusters
 stopCluster(clusters) 
-
+# measure end time
+endTime <- Sys.time()
+# measure elapsed time
+endTime-startTime
 
 ## Execute simulation for RHSP ---------------------------------------------
 ## do the sampling

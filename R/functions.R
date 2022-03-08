@@ -217,7 +217,7 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
       conv <- convergence(rstanObj, conditions = condCurrent)
       # add iteration
       conv$iteration <- i
-      # add pos (for easy matching based on unique codition config)
+      # add pos (for easy matching based on unique condition config)
       conv$pos <- pos
       convFinal <- rbind(convFinal, conv)
       
