@@ -42,11 +42,73 @@ resultsTrimmed <- resultsSVNP # voor nu ff convergence negeren, wordt belangrijk
 
 ```{r}
 outcomes <- computeOutcomes(resultsTrimmed, modelPars)
+outcomes$sigmaSqu = outcomes$sigma^2
 ```
 
 ```{r}
 head(outcomes)
 ```
 
+#### PLOT 
 
+# Start off with a plot that interesting in any case:
+
+- Mean bias correation depending on the size of the cross-loading
+
+```{r}
+outcomes %>% 
+  select(biasFactCorrMean, cross) %>%
+  group_by(cross) %>% 
+  summarise(meanBiasFactCorrMean = mean(biasFactCorrMean)) %>% 
+  ggplot(aes(x = as.factor(cross), y = meanBiasFactCorrMean))+
+  geom_point()+
+  theme_light()
+```
+
+```{r}
+c("\u03c3\u00B2", "\u03c3\u00B2", "\u03c3\u00B2")
+outcomes %>% 
+  select(biasFactCorrMean, cross, sigmaSqu) %>%
+  group_by(cross, sigmaSqu) %>% 
+  mutate(label = paste0("\u03c3\u00B2 = ", sigmaSqu)) %>% 
+  summarise(meanBiasFactCorrMean = mean(biasFactCorrMean)) %>% 
+  ggplot(aes(x = as.factor(cross), y = meanBiasFactCorrMean))+
+  geom_point(shape = 3)+
+  facet_wrap(~sigmaSqu, labeller = T(C) )+
+  labs(x = "Size Cross Loading",
+       y = "Mean Bias in Mean Estimates Factor Correlation")+
+  theme_light()
+```
+
+```{r}
+outcomes %>% 
+  select(biasMainMean_5, cross) %>%
+  group_by(cross) %>% 
+  summarise(meanBiasMainMean_5 = mean(biasMainMean_5)) %>% 
+  ggplot(aes(x = as.factor(cross), y = meanBiasMainMean_5))+
+  geom_point(shape = 3)+
+  theme_light()
+```
+
+
+Some ideas for possible plots
+
+- mean bias Main depending on sigma
+- mean bias 
+
+```{r}
+quantilesWide <- select(resultsTrimmed, X2.5._1:X90._6)
+quantilesLong <- 
+  intervalsWide %>% 
+  pivot_longer(everything(), 
+               names_to = c("quantile", "item"),
+               names_sep = "_")
+```
+
+```{r}
+quantilesLong %>% 
+  group_by(item) %>% 
+  select()
+  filter(c(X2.5.))
+```
 

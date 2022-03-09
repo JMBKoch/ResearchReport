@@ -287,7 +287,7 @@ computeOutcomes <- function(resultsTrimmed, modelPars){
   # subset variances of parameters
   mainVar <- select(resultsTrimmed, mainEstVar_1:mainEstVar_6)
   crossVar <- select(resultsTrimmed, crossEstVar_1:crossEstVar_6)
-  #thetaVar <- select(resultsTrimmed, thetaEstVar_1:thetaEstVar_6) ## TBA again later!!!!
+  thetaVar <- select(resultsTrimmed, thetaEstVar_1:thetaEstVar_6) 
   corrVar <- select(resultsTrimmed, corrEstVar)
 
   ### Bias Mean estimates
@@ -354,7 +354,7 @@ computeOutcomes <- function(resultsTrimmed, modelPars){
   }
   mseFactCorrMean <- biasFactCorrMean + corrVar
   colnames(mseFactCorrMean) <- "mseFactCorrMean"
-  #mseThetaMean <- biasThetaMean + thetaVar ### TBA later
+  mseThetaMean <- biasThetaMean + thetaVar 
   
   ### MSE Median estimates
   mseMainMed <- biasMainMed + mainVar
@@ -367,27 +367,35 @@ computeOutcomes <- function(resultsTrimmed, modelPars){
   }
   mseFactCorrMed <- biasFactCorrMed + corrVar
   colnames(mseFactCorrMed) <- "mseFactCorrMed"
-  #mseThetaMed <- biasThetaMean + thetaVar ### TBA later
+  mseThetaMed <- biasThetaMean + thetaVar 
     
 
-  ## isZero, based on different selection criteria
-  ##### TBA: The final outcomes, i.e. Power (p 6 Zhang et al., 2021), type-I error rates, 
-  ##### Ratio correct identification to total number identified pars, no established metric
+  #### Selection variables (i.e. whether cross-loadins are zero)
   ## Treshold: 0 if estimate smaller than 0.10
-  #isZeroTres10 <- sapply(crossEst, function(x)ifelse(x < 0.10, 0, 1))
-  ## Treshold: 0 if estimate is smaller than
+  #isZeroTres10Mean <- apply(crossMean, 1, function(x)ifelse(x < 0.10, 0, 1))
+  #isZeroTres10Med <- apply(crossMed, 1, function(x)ifelse(x < 0.10, 0, 1))
   #
-  ## 95% Credibility interval containing zero
-  #isZeroCred95 <- apply(resultsTrimmed$credInterval, 
-  #                      1, 
-  #                      function(x) dplyr::between(0, x[1], x[2]))
-  #tres10Power <- 
-  #tres10TypeI <- 
-  #cred95Power <- 
-  #cred95TypeI <- 
-  #cred90Power <- 
-  #cred90TypeI <- 
-  #cred80Power <- 
+  ### 95%, 90%, and 80% Credibility interval containing zero
+  ## subset intervals
+  #quantilesWide <- select(resultsTrimmed, X2.5._1:X90._6)
+  ## recode into long format
+  #quantilesLong <- 
+  #  quantilesWide %>% 
+  #  pivot_longer(everything(), 
+  #               names_to = c("quantile", "item"),
+  #               names_sep = "_")
+  #
+  #quant
+  #
+  #                      
+  #                      
+  #tres10Power <-
+  #tres10TypeI <-
+  #cred95Power <-
+  #cred95TypeI <-
+  #cred90Power <-
+  #cred90TypeI <-
+  #cred80Power <-
   #cred80TypeI <- 
 
   # cbind everything into a single dataframe
@@ -401,15 +409,16 @@ computeOutcomes <- function(resultsTrimmed, modelPars){
                mseCrossMed,
                biasThetaMean,
                biasThetaMed,
-               # mseThetaMean, ### TBA
-               # mseThetaMed,
+               mseThetaMean, 
+               mseThetaMed,
                biasFactCorrMean,
                biasFactCorrMed,
                mseFactCorrMean,
                mseFactCorrMed
-               #, 
-               #tres10Power,
-               #tres10TypeI,
+               #tres10PowerMean,
+               #tres10PowerMed,
+               #tres10TypeIMean,
+               #tres10TypeIMed,
                #cred95Power,
                #cred95TypeI,
                #cred90Power,
@@ -417,8 +426,7 @@ computeOutcomes <- function(resultsTrimmed, modelPars){
                #cred80Power,
                #cred80TypeI
                )
-  
-  
+ 
   # cbind conditions into output
   out <- cbind(out, select(resultsTrimmed, prior:iteration))
   # return output
@@ -430,20 +438,18 @@ computeOutcomes <- function(resultsTrimmed, modelPars){
 # makes all required plots (generally? for AN outcome?) and saves them
 #### start with bias for now,ff litertuur weer induiken & Sara spreken over wat handig is
 #
-#plotsMeanBias <- function(output, parameterName, condition){
-#
-#      name <- paste0("mean", parameterName)
-#  
-#      out %>% 
-#        group_by(condition) %>% 
-#        summarise(name = mean(parameterName)) %>% 
-#        ggplot(mapping = aes(x = condition, y = name))+
-#        geom_point()
-#
-#}       
-#        
-#out <- read.csv("~/1vs2StepBayesianRegSEM/output/ResultsMiniSimSVNP.csv", row.names = 1)
-#        
+plotsMeanBias <- function(output, parameterName, condition){
+
+      name <- paste0("mean", parameterName)
+  
+      out %>% 
+        group_by(condition) %>% 
+        summarise(name = mean(parameterName)) %>% 
+        ggplot(mapping = aes(x = condition, y = name))+
+        geom_point()
+
+}       
+        
 #plotsMeanBias(out, "biasFactCorr", condition= sigma)
 
 
