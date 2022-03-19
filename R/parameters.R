@@ -50,16 +50,20 @@ sigma <- c(sqrt(0.1), # specified such that sigma^2 > sigma
 # Regularized Horseshoe Prior ---------------------------------------------
 scaleGlobal <- c(0.1, 1) # scale for half-t prior omega
 scaleLocal <- c(0.1, 1) # scale for half-t prior tau_j
-dfGlobal <- c(1, 3) # df for half-t prior omega
-dfLocal <- c(1, 3) # df for half-t prior tau_j
-nu <- c(1, 3) # df IG for c^2 (slab)
+#dfGlobal <- c(1, 3) # df for half-t prior omega
+#dfLocal <- c(1, 3) # df for half-t prior tau_j
+#nu <- c(1, 3) # df IG for c^2 (slab)
+dfGlobal <- 1
+dfLocal <- 1
+nu <- 1
+
 scaleSlab <- c(0.1, 1, 5) # scale of slab
 
 # Population conditions ----------------------------------------------------
-N <- c(100, 200)
-#N <- 100
-cross <- c(0.2, 0.5)
-#cross <- 0.2
+#N <- c(100, 200)
+N <- 200
+#cross <- c(0.2, 0.5)
+cross <- 0.5
 
 # Combine conditions ------------------------------------------------------
 # specify combinations of population conditions & hyperpars per prior
@@ -89,11 +93,11 @@ condRHSP <-
 samplePars <- list(
                 nChain = 2,
                 nWarmup = 2000,
-                nSampling = 2000
+                nSampling = 4000
                 )
 
 # Parallelization Parameter -----------------------------------------------
-nClusters <- 12 # voor nu gwn 12, het aantal condities
+nClusters <- 12 
 
 # other study parameters --------------------------------------------------
-nIter <- 50 # ff dit proberen
+nIter <- 2 

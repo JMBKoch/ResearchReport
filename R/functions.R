@@ -79,13 +79,22 @@ prepareDataset <- function(conditions, main, Psi, Theta){
 
 # saveResults() ------------------------------------------------------------
 # function takes rstan object and saves the estimes 
-saveResults <- function(rstanObj,  conditions){
+saveResults <- function(rstanObj,  conditions, modelPars){
+  
+  crossTrue <- numeric(6)
+  # save true cross loading based on cond
+  if (conditions$cross == 0.5){
+    crossTrue <- c(0.5, 0, 0, 0, 0, 0.5)
+  }else if (conditions$cross == 0.2){
+    crossTrue <- c(0.2, 0, 0, 0, 0, 0.2)
+  }
 
+  crossMatrix <- as.matrix(rstanObj, pars = "lambdaCrossC") # save because handy for quantiles
+  
   # estimates Lambda ### median straks wss alleen maar belangrijk voor kruisladingen
   mainEstMean <- apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, mean)
   mainEstMed <-  apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, median)
   mainEstVar <-  apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, var)
-  crossMatrix <- as.matrix(rstanObj, pars = "lambdaCrossC") # save because handy for quantiles
   crossEstMean <- apply(crossMatrix, 2, mean)
   crossEstMed <-  apply(crossMatrix, 2, median)
   crossEstVar <-  apply(crossMatrix, 2, var)
@@ -100,21 +109,59 @@ saveResults <- function(rstanObj,  conditions){
   corrEstMed <-   apply(as.matrix(rstanObj, pars = "PsiC[2, 1]"), 2, median)
   corrEstVar <-   apply(as.matrix(rstanObj, pars = "PsiC[2, 1]"), 2, var)
 
+  ## bias
+  # mean
+  biasMainMean <-     abs(mainEstMean - modelPars$main)
+  biasCrossMean <-    abs(corrEstMean - crossTrue)
+  biasThetaMean <-    abs(thetaEstMean - diag(modelPars$Theta))
+  biasFactCorrMean <- abs(corrEstMean - modelPars$Psi[2, 1])
+  
+  # median
+  biasMainMed <-     abs(mainEstMed - modelPars$main)
+  biasCrossMed <-    abs(corrEstMed - crossTrue)
+  biasThetaMed <-    abs(thetaEstMed - diag(modelPars$Theta))
+  biasFactCorrMed <- abs(corrEstMed - modelPars$Psi[2, 1])
+  
+
+  # helper function
+  mse <- function(rstanObj, par, estimate){
+    ## MSE ### TBA: AVOID THE HARD CODING OF P
+    P <- 19 # 6x theta, 6x main, 6x cross, 1x factCorr, = 19
+    N <- nrow(as.matrix(rstanObj))
+    mse <- sum((as.matrix(rstanObj, pars = par) - estimate)^2) / (N - P)
+    return(mse)
+  }
+  
+  # mean
+  mseMainMean <- sapply()
+  mseCrossMean <-  
+  msethetaMean <-  
+  mseFactCorrMean <-  
   
   # Parameters for Selection part of CrossLoadins, i.e. different configs of credible intervals
   crossQuantiles <- t(apply(crossMatrix, 2, quantile, c(0.025, 0.975, 0.05, 0.95, 0.10, 0.90)))
+  
+  # Per Cross Loading Power and Type I
+  
+  
   
   # cbind and return output
   out <- cbind(1:6,
                mainEstMean, 
                mainEstMed,
                mainEstVar,
+               biasMainMean,
+               biasMainMed,
                crossEstMean,
                crossEstMed,
                crossEstVar,
+               biasCrossMean,
+               biasCrossMed,
                thetaEstMean,
                thetaEstMed,
                thetaEstVar,
+               biasThetaMean,
+               biasThetaMed,
                crossQuantiles) %>% 
         as_tibble()
   colnames(out)[1] <- "item"
@@ -124,11 +171,16 @@ saveResults <- function(rstanObj,  conditions){
                             values_from = colnames(out[-1])) 
   
   # cbind estimates of corr (only 1 per six items) into output
-  out <- cbind(out, corrEstMean, corrEstMed, corrEstVar)
+  out <- cbind(out, 
+               corrEstMean, 
+               corrEstMed, 
+               corrEstVar,
+               biasFactCorrMean,
+               biasFactCorrMed,
+               mseFactCorrMean)
   # cbind conditions into output
   out <- cbind(out, conditions)
   rownames(out) <- NULL
-  
   
   # return output
   return(out)
@@ -259,7 +311,7 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
 # selectConv -------------------------------------------------------------
 # function takes whole output and trims dataset such that only converged iterations are included
 #selectConv <- function(results){}
-### Opsplitsenin Strict en niet zo strict? 
+### Opsplitsen in Strict en niet zo strict? Doe maar eerst gwn strict
 
 # computeOutcomes ---------------------------------------------------------
 # Takes as input the results of a study (minus non converged) and computes all main outcomes
