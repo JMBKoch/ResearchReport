@@ -124,18 +124,20 @@ saveResults <- function(rstanObj,  conditions, modelPars){
   
 
   # helper function
-  mse <- function(rstanObj, par, estimate){
+  mse <- function(rstanObj, pars, estimate){
     ## MSE ### TBA: AVOID THE HARD CODING OF P
     P <- 19 # 6x theta, 6x main, 6x cross, 1x factCorr, = 19
     N <- nrow(as.matrix(rstanObj))
-    mse <- sum((as.matrix(rstanObj, pars = par) - estimate)^2) / (N - P)
+    mse <- numeric(length(pars))
+    for(i in 1:length(pars))
+       mse[i] <- sum((as.matrix(rstanObj, pars = paste0(pars[i]) - estimate[i])^2) / (N - P)
     return(mse)
   }
   
   # mean
-  mseMainMean <- sapply()
+  mseMainMean <- mse(rstanObj, pars = )
   mseCrossMean <-  
-  msethetaMean <-  
+  msethetaMean <-  c
   mseFactCorrMean <-  
   
   # Parameters for Selection part of CrossLoadins, i.e. different configs of credible intervals
