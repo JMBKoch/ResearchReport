@@ -1,0 +1,29 @@
+---
+title: "Research Report Presentation"
+author: "Koch, J.M.B. (Michael)"
+date: "3/26/2022"
+output: ioslides_presentation
+#bibliography      : ["refs.bib"]
+---
+
+## Getting A Step Ahead: Using the Regulararised Horseshoe Prior (RHSP) to Select Cross-Loadings in Bayesian Regularized SEM
+
+## The art of Statistical Modeling
+
+## Fundamental Trade-off in Statistical Modeling 
+
+## Simple Structure: a poor Solution for a Complicated Issue
+
+## Small Variance Normal Prior (SVNP): a better Solution for a Complicated Issue 
+
+## Bayesian SEM: still no ideal Solution for a Complicated Issue
+
+## Promising Alternative: The Regularized Horseshoe Prior
+
+## Preliminary Results: How does the SVNP perform 
+
+## Foreshadowing Thesis
+
+## Check out my work on Github
+
+## References

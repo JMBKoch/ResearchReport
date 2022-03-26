@@ -88,8 +88,8 @@ saveResults <- function(rstanObj,  conditions, modelPars){
   }else if (conditions$cross == 0.2){
     crossTrue <- c(0.2, 0, 0, 0, 0, 0.2)
   }
-
-  crossMatrix <- as.matrix(rstanObj, pars = "lambdaCrossC") # save because handy for quantiles
+  # save in format that's convenient for computing quantiles below
+  crossMatrix <- as.matrix(rstanObj, pars = "lambdaCrossC") 
   
   # estimates Lambda ### median straks wss alleen maar belangrijk voor kruisladingen
   mainEstMean <- apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, mean)
@@ -105,42 +105,57 @@ saveResults <- function(rstanObj,  conditions, modelPars){
   thetaEstVar <- apply(as.matrix(rstanObj, pars = "theta"), 2, var)
   
   # estimate Factor-Corr
-  corrEstMean <-  apply(as.matrix(rstanObj, pars = "PsiC[2, 1]"), 2, mean)
-  corrEstMed <-   apply(as.matrix(rstanObj, pars = "PsiC[2, 1]"), 2, median)
-  corrEstVar <-   apply(as.matrix(rstanObj, pars = "PsiC[2, 1]"), 2, var)
+  factCorrEstMean <-  apply(as.matrix(rstanObj, pars = "PsiC[2, 1]"), 2, mean)
+  factCorrEstMed <-   apply(as.matrix(rstanObj, pars = "PsiC[2, 1]"), 2, median)
+  factCorrEstVar <-   apply(as.matrix(rstanObj, pars = "PsiC[2, 1]"), 2, var)
 
   ## bias
   # mean
   biasMainMean <-     abs(mainEstMean - modelPars$main)
-  biasCrossMean <-    abs(corrEstMean - crossTrue)
+  biasCrossMean <-    abs(factCorrEstMean - crossTrue)
   biasThetaMean <-    abs(thetaEstMean - diag(modelPars$Theta))
-  biasFactCorrMean <- abs(corrEstMean - modelPars$Psi[2, 1])
+  biasFactCorrMean <- abs(factCorrEstMean - modelPars$Psi[2, 1])
   
   # median
   biasMainMed <-     abs(mainEstMed - modelPars$main)
-  biasCrossMed <-    abs(corrEstMed - crossTrue)
+  biasCrossMed <-    abs(factCorrEstMed - crossTrue)
   biasThetaMed <-    abs(thetaEstMed - diag(modelPars$Theta))
-  biasFactCorrMed <- abs(corrEstMed - modelPars$Psi[2, 1])
+  biasFactCorrMed <- abs(factCorrEstMed - modelPars$Psi[2, 1])
   
-
+  ## MSE
   # helper function
-  mse <- function(rstanObj, pars, estimate){
-    ## MSE ### TBA: AVOID THE HARD CODING OF P
+  mse <- function(rstanObj, parsName, estimate){
+    ### TBA: AVOID THE HARD CODING OF P
     P <- 19 # 6x theta, 6x main, 6x cross, 1x factCorr, = 19
     N <- nrow(as.matrix(rstanObj))
-    mse <- numeric(length(pars))
-    for(i in 1:length(pars))
-       mse[i] <- sum((as.matrix(rstanObj, pars = paste0(pars[i]) - estimate[i])^2) / (N - P)
+    
+    # make conditional on whether factCorr (only single par) or other parameters
+    if(parsName == "PsiC[2,1]"){
+      mse <- sum((as.matrix(rstanObj, pars = "PsiC[2,1]") - estimate)^2) / (N - P)
+      names(mse) <-  "PsiC[2,1]"
+    }else{
+    
+      # Create parsIndex
+      parsIndex <- character(k)
+      for(i in 1:k){
+        parsIndex[i] <-  paste0(parsName, "[", as.character(i), "]")
+      }
+      mse <- numeric(k)
+      for(i in 1:k){
+         mse[i] <- sum((as.matrix(rstanObj, pars = parsIndex[i]) - estimate[i])^2) / (N - P)
+      }
+      names(mse) <- parsIndex
+    }
     return(mse)
   }
   
   # mean
-  mseMainMean <- mse(rstanObj, pars = )
-  mseCrossMean <-  
-  msethetaMean <-  c
-  mseFactCorrMean <-  
+  mseMainMean <- mse(rstanObj, "lambdaMainC", mainEstMean)
+  mseCrossMean <-  mse(rstanObj, "lambdaCrossC", crossEstMean)
+  msethetaMean <-  mse(rstanObj, "theta", thetaEstMean)
+  mseFactCorrMean <-  mse(rstanObj, "PsiC[2,1]", factCorrEstMean)
   
-  # Parameters for Selection part of CrossLoadins, i.e. different configs of credible intervals
+  # Parameters for Selection part of CrossLoadings, i.e. different configs of credible intervals
   crossQuantiles <- t(apply(crossMatrix, 2, quantile, c(0.025, 0.975, 0.05, 0.95, 0.10, 0.90)))
   
   # Per Cross Loading Power and Type I
@@ -174,9 +189,9 @@ saveResults <- function(rstanObj,  conditions, modelPars){
   
   # cbind estimates of corr (only 1 per six items) into output
   out <- cbind(out, 
-               corrEstMean, 
-               corrEstMed, 
-               corrEstVar,
+               factCorrEstMean, 
+               factCorrEstMed, 
+               factCorrEstVar,
                biasFactCorrMean,
                biasFactCorrMed,
                mseFactCorrMean)
@@ -332,17 +347,17 @@ computeOutcomes <- function(resultsTrimmed, modelPars){
   mainMean <- select(resultsTrimmed, mainEstMean_1:mainEstMean_6) 
   crossMean <- select(resultsTrimmed, crossEstMean_1:crossEstMean_6)
   thetaMean <-  select(resultsTrimmed, thetaEstMean_1:thetaEstMean_6)
-  corrMean <- select(resultsTrimmed, corrEstMean)
+  corrMean <- select(resultsTrimmed, factCorrEstMean)
   # subset median estimates of parameters
   mainMed <- select(resultsTrimmed, mainEstMed_1:mainEstMed_6)
   crossMed <- select(resultsTrimmed, crossEstMed_1:crossEstMed_6)
   thetaMed <- select(resultsTrimmed, thetaEstMed_1:thetaEstMed_6)
-  corrMed <- select(resultsTrimmed, corrEstMed)
+  corrMed <- select(resultsTrimmed, factCorrEstMed)
   # subset variances of parameters
   mainVar <- select(resultsTrimmed, mainEstVar_1:mainEstVar_6)
   crossVar <- select(resultsTrimmed, crossEstVar_1:crossEstVar_6)
   thetaVar <- select(resultsTrimmed, thetaEstVar_1:thetaEstVar_6) 
-  corrVar <- select(resultsTrimmed, corrEstVar)
+  corrVar <- select(resultsTrimmed, factCorrEstVar)
 
   ### Bias Mean estimates
   # compute the biases main loadings

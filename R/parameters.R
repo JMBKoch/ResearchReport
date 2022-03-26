@@ -100,4 +100,4 @@ samplePars <- list(
 nClusters <- 12 
 
 # other study parameters --------------------------------------------------
-nIter <- 2 
+nIter <- 200 
