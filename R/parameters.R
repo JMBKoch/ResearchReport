@@ -50,18 +50,16 @@ sigma <- c(sqrt(0.1), # specified such that sigma^2 > sigma
 # Regularized Horseshoe Prior ---------------------------------------------
 scaleGlobal <- c(0.1, 1) # scale for half-t prior omega
 scaleLocal <- c(0.1, 1) # scale for half-t prior tau_j
-#dfGlobal <- c(1, 3) # df for half-t prior omega
-#dfLocal <- c(1, 3) # df for half-t prior tau_j
-#nu <- c(1, 3) # df IG for c^2 (slab)
-dfGlobal <- 1
-dfLocal <- 1
-nu <- 1
+dfGlobal <- c(1, 3) # df for half-t prior omega
+dfLocal <- c(1, 3) # df for half-t prior tau_j
+nu <- c(1, 3) # df IG for c^2 (slab)
+
 
 scaleSlab <- c(0.1, 1, 5) # scale of slab
 
 # Population conditions ----------------------------------------------------
-#N <- c(100, 200)
-N <- 200
+N <- c(100, 200)
+#N <- 200
 #cross <- c(0.2, 0.5)
 cross <- 0.5
 

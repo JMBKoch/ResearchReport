@@ -155,11 +155,16 @@ saveResults <- function(rstanObj,  conditions, modelPars){
   msethetaMean <-  mse(rstanObj, "theta", thetaEstMean)
   mseFactCorrMean <-  mse(rstanObj, "PsiC[2,1]", factCorrEstMean)
   
-  # Parameters for Selection part of CrossLoadings, i.e. different configs of credible intervals
+  ## Selection part of CrossLoadings, i.e. different configs of credible intervals
+  # compute Quantiles of Cross loadings
   crossQuantiles <- t(apply(crossMatrix, 2, quantile, c(0.025, 0.975, 0.05, 0.95, 0.10, 0.90)))
-  
-  # Per Cross Loading Power and Type I
-  
+  # Compute IsZero based on Tresholds
+  isZeroTres10Mean <- apply(crossMean, 1, function(x)ifelse(x < 0.10, 0, 1))
+  isZeroTres10Med <- apply(crossMed, 1, function(x)ifelse(x < 0.10, 0, 1))
+  # Compute IsZero based on CI'
+  isZero95CI <- apply(crossQuantiles[, 1:2] , 1 , function(x)between(0, x[1], x[2]))
+  isZero90CI <- apply(crossQuantiles[, 3:4] , 1 , function(x)between(0, x[1], x[2]))
+  isZero80CI <- apply(crossQuantiles[, 5:6] , 1 , function(x)between(0, x[1], x[2]))
   
   
   # cbind and return output
@@ -179,7 +184,12 @@ saveResults <- function(rstanObj,  conditions, modelPars){
                thetaEstVar,
                biasThetaMean,
                biasThetaMed,
-               crossQuantiles) %>% 
+               crossQuantiles,
+               isZeroTres10Mean,
+               isZeroTres10Med,
+               isZero95CI,
+               isZero90CI,
+               isZero80CI) %>% 
         as_tibble()
   colnames(out)[1] <- "item"
   # recode output into wide format and cbind convergence into it
