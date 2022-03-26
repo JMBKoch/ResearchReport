@@ -136,12 +136,12 @@ saveResults <- function(rstanObj,  conditions, modelPars){
     }else{
     
       # Create parsIndex
-      parsIndex <- character(k)
-      for(i in 1:k){
+      parsIndex <- character(6)
+      for(i in 1:6){
         parsIndex[i] <-  paste0(parsName, "[", as.character(i), "]")
       }
-      mse <- numeric(k)
-      for(i in 1:k){
+      mse <- numeric(6)
+      for(i in 1:6){
          mse[i] <- sum((as.matrix(rstanObj, pars = parsIndex[i]) - estimate[i])^2) / (N - P)
       }
       names(mse) <- parsIndex
@@ -159,12 +159,19 @@ saveResults <- function(rstanObj,  conditions, modelPars){
   # compute Quantiles of Cross loadings
   crossQuantiles <- t(apply(crossMatrix, 2, quantile, c(0.025, 0.975, 0.05, 0.95, 0.10, 0.90)))
   # Compute IsZero based on Tresholds
-  isZeroTres10Mean <- apply(crossMean, 1, function(x)ifelse(x < 0.10, 0, 1))
-  isZeroTres10Med <- apply(crossMed, 1, function(x)ifelse(x < 0.10, 0, 1))
+  isZeroTres0.10Mean <- sapply(crossEstMean,  function(x)ifelse(abs(x) < 0.10, 0, 1))
+  isZeroTres0.10Med <- sapply(crossEstMed, function(x)ifelse(abs(x) < 0.10, 0, 1))
+  isZeroTres0.15Mean <- sapply(crossEstMean,  function(x)ifelse(abs(x) < 0.15, 0, 1))
+  isZeroTres0.15Med <- sapply(crossEstMed, function(x)ifelse(abs(x) < 0.15, 0, 1))
+  isZeroTres0.05Mean <- sapply(crossEstMean,  function(x)ifelse(abs(x) < 0.05, 0, 1))
+  isZeroTres0.05Med <- sapply(crossEstMed, function(x)ifelse(abs(x) < 0.05, 0, 1))
+  isZeroTres0Mean <- sapply(crossEstMean,  function(x)ifelse(abs(x) == 0, 0, 1))
+  isZeroTres0Med <- sapply(crossEstMed, function(x)ifelse(abs(x) == 0, 0, 1))
   # Compute IsZero based on CI'
   isZero95CI <- apply(crossQuantiles[, 1:2] , 1 , function(x)between(0, x[1], x[2]))
   isZero90CI <- apply(crossQuantiles[, 3:4] , 1 , function(x)between(0, x[1], x[2]))
   isZero80CI <- apply(crossQuantiles[, 5:6] , 1 , function(x)between(0, x[1], x[2]))
+  # TBA: HPD??
   
   
   # cbind and return output
@@ -185,8 +192,14 @@ saveResults <- function(rstanObj,  conditions, modelPars){
                biasThetaMean,
                biasThetaMed,
                crossQuantiles,
-               isZeroTres10Mean,
-               isZeroTres10Med,
+               isZeroTres0.10Mean,
+               isZeroTres0.10Med,
+               isZeroTres0.15Mean,
+               isZeroTres0.15Med,
+               isZeroTres0.05Mean,
+               isZeroTres0.05Med,
+               isZeroTres0Mean,
+               isZeroTres0Med,
                isZero95CI,
                isZero90CI,
                isZero80CI) %>% 
@@ -284,7 +297,7 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
       rstanObj <- read_stan_csv(samples$output_files())
       
       # save Results
-      output <- saveResults(rstanObj, conditions = condCurrent)
+      output <- saveResults(rstanObj, conditions = condCurrent, modelPars = modelPars)
       # add iteration to output
       output$iteration <- i
       # add pos (for easy matching based on unique codition config)
@@ -328,10 +341,6 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
   
 }
 
-# runSim() ----------------------------------------------------------------
-# function 
-#runSim() <- function()
-
 ################################################################################################
 # Part 2: Postprocessing Output of Simulation
 ################################################################################################
@@ -342,176 +351,15 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
 
 # computeOutcomes ---------------------------------------------------------
 # Takes as input the results of a study (minus non converged) and computes all main outcomes
-computeOutcomes <- function(resultsTrimmed, modelPars){
-  
- ## helper function computeBias()
- computeBias <- function(est, true){
-   
-   bias <- abs(est-true)
-   return(bias)
-   
- }
- 
-  ### subset estimates for more concise code below:
-  # subset mean estimates of parameters
-  mainMean <- select(resultsTrimmed, mainEstMean_1:mainEstMean_6) 
-  crossMean <- select(resultsTrimmed, crossEstMean_1:crossEstMean_6)
-  thetaMean <-  select(resultsTrimmed, thetaEstMean_1:thetaEstMean_6)
-  corrMean <- select(resultsTrimmed, factCorrEstMean)
-  # subset median estimates of parameters
-  mainMed <- select(resultsTrimmed, mainEstMed_1:mainEstMed_6)
-  crossMed <- select(resultsTrimmed, crossEstMed_1:crossEstMed_6)
-  thetaMed <- select(resultsTrimmed, thetaEstMed_1:thetaEstMed_6)
-  corrMed <- select(resultsTrimmed, factCorrEstMed)
-  # subset variances of parameters
-  mainVar <- select(resultsTrimmed, mainEstVar_1:mainEstVar_6)
-  crossVar <- select(resultsTrimmed, crossEstVar_1:crossEstVar_6)
-  thetaVar <- select(resultsTrimmed, thetaEstVar_1:thetaEstVar_6) 
-  corrVar <- select(resultsTrimmed, factCorrEstVar)
-
-  ### Bias Mean estimates
-  # compute the biases main loadings
-  biasMainMean <- t(apply(mainMean, 1, computeBias, true = modelPars$main))
-  for(i in 1:6){
-    colnames(biasMainMean)[i] <- paste0("biasMainMean", "_", as.character(i))
-  }
-  # compute biases mean estimates cross-loadings
-  crossTrue <- as.data.frame(matrix(NA, nrow = nrow(resultsTrimmed), ncol = 6))
-  biasCrossMean <- as.data.frame(matrix(NA, nrow = nrow(resultsTrimmed), ncol = 6))
-  for(i in 1:nrow(resultsTrimmed)){
-    if(resultsTrimmed[i, ]$cross == 0.5){
-      crossTrue[i, ] <- rep(0.5, 6)
-    }else{
-      crossTrue[i, ] <- rep(0.2, 6)
-    }
-    biasCrossMean[i, ] <- abs(crossMean[i, ] - crossTrue[i, ])
-  }  
-  for(i in 1:6){
-    colnames(biasCrossMean)[i] <- paste0("biasCrossMean", "_", as.character(i))
-  }
-  # compute biases mean estimates theta
-  biasThetaMean <- t(apply(thetaMean, 1, computeBias, true = diag(modelPars$Theta)))
-  for(i in 1:6){
-    colnames(biasThetaMean)[i] <- paste0("biasThetaMean", "_", as.character(i))
-  }
-  # compute biases mean estimate factor Correlation
-  biasFactCorrMean <-  abs(corrMean - modelPars$Psi[1, 2])
-  names(biasFactCorrMean) <- "biasFactCorrMean"
-
-  ## Bias Median estimates
-  # compute the biases main loadings
-  biasMainMed <- t(apply(mainMed, 1, computeBias, true = modelPars$main))
-  # fix colnames of biases mean estimates main loadings
-  for(i in 1:6){
-    colnames(biasMainMed)[i] <- paste0("biasMainMed", "_", as.character(i))
-  }
-  # compute biases median estimates cross-loadings
-  biasCrossMed <- as.data.frame(matrix(NA, nrow = nrow(resultsTrimmed), ncol = 6))
-  for(i in 1:nrow(resultsTrimmed)){
-    biasCrossMed[i, ] <- abs(crossMed[i, ] - crossTrue[i, ])
-  }  
-  for(i in 1:6){
-    colnames(biasCrossMed)[i] <- paste0("biasCrossMed", "_", as.character(i))
-  }
-  # compute biases median estimates theta
-  biasThetaMed <- t(apply(thetaMed, 1, computeBias, true = diag(modelPars$Theta)))
-  for(i in 1:6){
-    colnames(biasThetaMed)[i] <- paste0("biasThetaMed", "_", as.character(i))
-  }
-  # compute biases median estimate factor Correlation
-  biasFactCorrMed <-  abs(corrMed - modelPars$Psi[1, 2])
-  names(biasFactCorrMed) <- "biasFactCorrMed"
-  
-  ### MSE Mean estimates
-  mseMainMean <- biasMainMean + mainVar
-  for(i in 1:6){
-    colnames(mseMainMean)[i] <- paste0("mseMainMean", "_", as.character(i))
-  }
-  mseCrossMean <- biasCrossMean + crossVar
-  for(i in 1:6){
-    colnames(mseCrossMean)[i] <- paste0("mseCrossMean", "_", as.character(i))
-  }
-  mseFactCorrMean <- biasFactCorrMean + corrVar
-  colnames(mseFactCorrMean) <- "mseFactCorrMean"
-  mseThetaMean <- biasThetaMean + thetaVar 
-  
-  ### MSE Median estimates
-  mseMainMed <- biasMainMed + mainVar
-  for(i in 1:6){
-    colnames(mseMainMed)[i] <- paste0("mseMainMed", "_", as.character(i))
-  }
-  mseCrossMed <- biasCrossMed + crossVar
-  for(i in 1:6){
-    colnames(mseCrossMed)[i] <- paste0("mseCrossMed", "_", as.character(i))
-  }
-  mseFactCorrMed <- biasFactCorrMed + corrVar
-  colnames(mseFactCorrMed) <- "mseFactCorrMed"
-  mseThetaMed <- biasThetaMean + thetaVar 
-    
-
-  #### Selection variables (i.e. whether cross-loadins are zero)
-  ## Treshold: 0 if estimate smaller than 0.10
-  #isZeroTres10Mean <- apply(crossMean, 1, function(x)ifelse(x < 0.10, 0, 1))
-  #isZeroTres10Med <- apply(crossMed, 1, function(x)ifelse(x < 0.10, 0, 1))
-  #
-  ### 95%, 90%, and 80% Credibility interval containing zero
-  ## subset intervals
-  #quantilesWide <- select(resultsTrimmed, X2.5._1:X90._6)
-  ## recode into long format
-  #quantilesLong <- 
-  #  quantilesWide %>% 
-  #  pivot_longer(everything(), 
-  #               names_to = c("quantile", "item"),
-  #               names_sep = "_")
-  #
-  #quant
-  #
-  #                      
-  #                      
-  #tres10Power <-
-  #tres10TypeI <-
-  #cred95Power <-
-  #cred95TypeI <-
-  #cred90Power <-
-  #cred90TypeI <-
-  #cred80Power <-
-  #cred80TypeI <- 
-
-  # cbind everything into a single dataframe
-  out <- cbind(biasMainMean, 
-               biasMainMed,
-               mseMainMean,
-               mseMainMed,
-               biasCrossMean,
-               biasCrossMed,
-               mseCrossMean,
-               mseCrossMed,
-               biasThetaMean,
-               biasThetaMed,
-               mseThetaMean, 
-               mseThetaMed,
-               biasFactCorrMean,
-               biasFactCorrMed,
-               mseFactCorrMean,
-               mseFactCorrMed
-               #tres10PowerMean,
-               #tres10PowerMed,
-               #tres10TypeIMean,
-               #tres10TypeIMed,
-               #cred95Power,
-               #cred95TypeI,
-               #cred90Power,
-               #cred90TypeI,
-               #cred80Power,
-               #cred80TypeI
-               )
- 
-  # cbind conditions into output
-  out <- cbind(out, select(resultsTrimmed, prior:iteration))
-  # return output
-  return(out)
-  
-}
+#computeOutcomes <- function(resultsTrimmed, modelPars){
+#  
+# 
+#  # cbind conditions into output
+#  out <- cbind(out, select(resultsTrimmed, prior:iteration))
+#  # return output
+#  return(out)
+#  
+#}
 
 # Plots -----------------------------------------------------------------
 # makes all required plots (generally? for AN outcome?) and saves them

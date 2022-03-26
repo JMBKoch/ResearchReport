@@ -60,8 +60,8 @@ scaleSlab <- c(0.1, 1, 5) # scale of slab
 # Population conditions ----------------------------------------------------
 N <- c(100, 200)
 #N <- 200
-#cross <- c(0.2, 0.5)
-cross <- 0.5
+cross <- c(0.2, 0.5)
+#cross <- 0.5
 
 # Combine conditions ------------------------------------------------------
 # specify combinations of population conditions & hyperpars per prior
@@ -98,4 +98,4 @@ samplePars <- list(
 nClusters <- 12 
 
 # other study parameters --------------------------------------------------
-nIter <- 200 
+nIter <- 2 
