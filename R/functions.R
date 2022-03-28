@@ -122,57 +122,24 @@ saveResults <- function(rstanObj,  conditions, modelPars){
   biasThetaMed <-    abs(thetaEstMed - diag(modelPars$Theta))
   biasFactCorrMed <- abs(factCorrEstMed - modelPars$Psi[2, 1])
   
-  ## MSE
-  # helper function
-  mse <- function(rstanObj, parsName, estimate){
-    ### TBA: AVOID THE HARD CODING OF P
-    P <- 19 # 6x theta, 6x main, 6x cross, 1x factCorr, = 19
-    N <- nrow(as.matrix(rstanObj))
-    
-    # make conditional on whether factCorr (only single par) or other parameters
-    if(parsName == "PsiC[2,1]"){
-      mse <- sum((as.matrix(rstanObj, pars = "PsiC[2,1]") - estimate)^2) / (N - P)
-      names(mse) <-  "PsiC[2,1]"
-    }else{
-    
-      # Create parsIndex
-      parsIndex <- character(6)
-      for(i in 1:6){
-        parsIndex[i] <-  paste0(parsName, "[", as.character(i), "]")
-      }
-      mse <- numeric(6)
-      for(i in 1:6){
-         mse[i] <- sum((as.matrix(rstanObj, pars = parsIndex[i]) - estimate[i])^2) / (N - P)
-      }
-      names(mse) <- parsIndex
-    }
-    return(mse)
-  }
-  
-  # mean
-  mseMainMean <- mse(rstanObj, "lambdaMainC", mainEstMean)
-  mseCrossMean <-  mse(rstanObj, "lambdaCrossC", crossEstMean)
-  msethetaMean <-  mse(rstanObj, "theta", thetaEstMean)
-  mseFactCorrMean <-  mse(rstanObj, "PsiC[2,1]", factCorrEstMean)
   
   ## Selection part of CrossLoadings, i.e. different configs of credible intervals
   # compute Quantiles of Cross loadings
-  crossQuantiles <- t(apply(crossMatrix, 2, quantile, c(0.025, 0.975, 0.05, 0.95, 0.10, 0.90)))
+  crossQuantiles <- t(apply(crossMatrix, 2, quantile, c(0.025, 0.975, 0.05, 0.95, 0.10, 0.90, 0.25, 0.75)))
   # Compute IsZero based on Tresholds
-  isZeroTres0.10Mean <- sapply(crossEstMean,  function(x)ifelse(abs(x) < 0.10, 0, 1))
-  isZeroTres0.10Med <- sapply(crossEstMed, function(x)ifelse(abs(x) < 0.10, 0, 1))
-  isZeroTres0.15Mean <- sapply(crossEstMean,  function(x)ifelse(abs(x) < 0.15, 0, 1))
-  isZeroTres0.15Med <- sapply(crossEstMed, function(x)ifelse(abs(x) < 0.15, 0, 1))
-  isZeroTres0.05Mean <- sapply(crossEstMean,  function(x)ifelse(abs(x) < 0.05, 0, 1))
-  isZeroTres0.05Med <- sapply(crossEstMed, function(x)ifelse(abs(x) < 0.05, 0, 1))
-  isZeroTres0Mean <- sapply(crossEstMean,  function(x)ifelse(abs(x) == 0, 0, 1))
-  isZeroTres0Med <- sapply(crossEstMed, function(x)ifelse(abs(x) == 0, 0, 1))
+  isZeroTres0.10Mean <- sapply(crossEstMean, function(x) ifelse(abs(x) < 0.10, 0, 1))
+  isZeroTres0.10Med <- sapply(crossEstMed, function(x) ifelse(abs(x) < 0.10, 0, 1))
+  isZeroTres0.15Mean <- sapply(crossEstMean,  function(x) ifelse(abs(x) < 0.15, 0, 1))
+  isZeroTres0.15Med <- sapply(crossEstMed, function(x) ifelse(abs(x) < 0.15, 0, 1))
+  isZeroTres0.05Mean <- sapply(crossEstMean,  function(x) ifelse(abs(x) < 0.05, 0, 1))
+  isZeroTres0.05Med <- sapply(crossEstMed, function(x) ifelse(abs(x) < 0.05, 0, 1))
+  isZeroTres0Mean <- sapply(crossEstMean,  function(x) ifelse(abs(x) == 0, 0, 1))
+  isZeroTres0Med <- sapply(crossEstMed, function(x) ifelse(abs(x) == 0, 0, 1))
   # Compute IsZero based on CI'
-  isZero95CI <- apply(crossQuantiles[, 1:2] , 1 , function(x)between(0, x[1], x[2]))
-  isZero90CI <- apply(crossQuantiles[, 3:4] , 1 , function(x)between(0, x[1], x[2]))
-  isZero80CI <- apply(crossQuantiles[, 5:6] , 1 , function(x)between(0, x[1], x[2]))
-  # TBA: HPD??
-  
+  isZero95CI <- apply(crossQuantiles[, 1:2] , 1 , function(x) between(0, x[1], x[2]))
+  isZero90CI <- apply(crossQuantiles[, 3:4] , 1 , function(x) between(0, x[1], x[2]))
+  isZero80CI <- apply(crossQuantiles[, 5:6] , 1 , function(x) between(0, x[1], x[2]))
+  isZero50CI <- apply(crossQuantiles[, 7:8] , 1 , function(x) between(0, x[1], x[2]))
   
   # cbind and return output
   out <- cbind(1:6,
@@ -216,8 +183,7 @@ saveResults <- function(rstanObj,  conditions, modelPars){
                factCorrEstMed, 
                factCorrEstVar,
                biasFactCorrMean,
-               biasFactCorrMed,
-               mseFactCorrMean)
+               biasFactCorrMed)
   # cbind conditions into output
   out <- cbind(out, conditions)
   rownames(out) <- NULL
@@ -257,6 +223,7 @@ convergence <- function(rstanObj, conditions) {
   conv <- cbind(conv, conditions)
   # return output
   return(conv)
+  
 }
 
 # sampling() --------------------------------------------------------------
@@ -280,12 +247,8 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
   
   # Draw the Samples
     for (i in 1:nIter){
-      
-      # simulate data based on current conditions
-      dataset <- prepareDataset(conditions = condCurrent,
-                                main = modelPars$main, 
-                                Psi = modelPars$Psi, 
-                                Theta = modelPars$Theta)
+  
+
       
       # draw samples
       samples <- model$sample(data = dataset,

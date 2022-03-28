@@ -17,10 +17,10 @@ source('~/1vs2StepBayesianRegSEM/R/parameters.R')
 
 ```{r}
 # load results
-resultsSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv", 
+resultsSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/backupResults/18.3/resultsSVNP.csv", 
                         sep = " ", 
                         header = TRUE)
-convSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
+convSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/backupResults/18.3/convSVNP.csv",
                      sep = " ",
                      header = TRUE)
 ```
@@ -60,7 +60,7 @@ head(outcomes)
 
 ```{r}
 t1 <- 
-outcomes %>% 
+resultsTrimmed %>% 
   select(biasFactCorrMean, cross) %>%
   group_by(cross) %>% 
   summarise(`Mean Bias in Mean Estimates Factor Correlation` = mean(biasFactCorrMean))
@@ -79,7 +79,7 @@ papaja::apa_table(t1)
 ### Factor Correlation
 
 ```{r}
-outcomes %>% 
+resultsTrimmed %>% 
   select(biasFactCorrMean, cross) %>%
   group_by(cross) %>% 
   summarise(meanBiasFactCorrMean = mean(biasFactCorrMean)) %>% 
@@ -92,7 +92,7 @@ outcomes %>%
 ```
 
 ```{r}
-outcomes %>% 
+resultsTrimmed %>% 
   select(biasFactCorrMean, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -110,7 +110,7 @@ outcomes %>%
 ### Main Loadings
 
 ```{r}
-outcomes %>% 
+resultsTrimmed %>% 
   select(biasMainMean_1:biasMainMean_6, cross) %>%
   mutate(biasMainMeanPooled = (biasMainMean_1+biasMainMean_2+biasMainMean_3+biasMainMean_4+biasMainMean_5+biasMainMean_6)/6) %>% 
   group_by(as.factor(cross)) %>% 
@@ -126,7 +126,7 @@ outcomes %>%
 ### Cross-Loadings
 
 ```{r}
-outcomes %>% 
+resultsTrimmed %>% 
   select(biasCrossMean_1:biasCrossMean_6, cross) %>%
   mutate(biasCrossMeanPooled = (biasCrossMean_1 + biasCrossMean_2+biasCrossMean_3+biasCrossMean_4+biasCrossMean_5+biasCrossMean_6)/6) %>% 
   group_by(as.factor(cross)) %>% 

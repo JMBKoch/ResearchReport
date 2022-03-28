@@ -3,7 +3,10 @@
 ################################################################################
 # This is the main script running the simulation 
 # Dependencies: functions.R; parameters.R; 
-# set.seed(0704)
+
+# setting seed for reproducibility ----------------------------------------
+set.seed(0704)
+
 # source functions and conditions outside clusters ------------------------
 source('~/1vs2StepBayesianRegSEM/R/functions.R')
 source('~/1vs2StepBayesianRegSEM/R/parameters.R')

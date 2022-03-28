@@ -63,14 +63,17 @@ N <- c(100, 200)
 cross <- c(0.2, 0.5)
 #cross <- 0.5
 
-# Combine conditions ------------------------------------------------------
-# specify combinations of population conditions & hyperpars per prior
+# Making condition objects ------------------------------------------------
+condPop   <- 
+  expand.grid(
+    N,
+    cross
+  )
+
 condSVNP <- 
   expand.grid(
     prior = "SVNP",
-    sigma = sigma,
-    N = N,
-    cross = cross
+    sigma = sigma
   )
 
 condRHSP <- 
@@ -81,9 +84,7 @@ condRHSP <-
     dfGlobal = dfGlobal,
     dfLocal = dfLocal,
     nu = nu,
-    scaleSlab = scaleSlab, 
-    N = N,
-    cross = cross
+    scaleSlab = scaleSlab
   )
 
 # Sampling parameters -----------------------------------------------------
@@ -96,6 +97,7 @@ samplePars <- list(
 
 # Parallelization Parameter -----------------------------------------------
 nClusters <- 12 
+#nClusters <- 46
 
 # other study parameters --------------------------------------------------
-nIter <- 2 
+nIter <- 200
