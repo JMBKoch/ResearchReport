@@ -11,6 +11,12 @@ set.seed(0704)
 source('~/1vs2StepBayesianRegSEM/R/functions.R')
 source('~/1vs2StepBayesianRegSEM/R/parameters.R')
 
+# Simulate the data -------------------------------------------------------
+datasets <- simDat(condPop = condPop, modelPars = modelPars, nIter = nIter)
+write_rds(datasets, file = "~/1vs2StepBayesianRegSEM/data/datasets.Rds")
+
+
+
 ## Execute simulation for SVNP ---------------------------------------------
 ### Make sure output is deleted such that no appendation takes place (BE CAREFUL!)
 file.remove(c("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv",
@@ -31,7 +37,7 @@ clusterCall(clusters,
             function() lapply(packages, library, character.only = TRUE))
 # run functon in clustered way where every set of condition gets it's own core
 outputFinalSVNP <- clusterApplyLB(clusters, 
-                                  1:nrow(condSVNP), 
+                                  1:length(dataStan), 
                                   sampling,
                                   conditions = condSVNP,
                                   modelPars = modelPars,
@@ -48,7 +54,7 @@ endTimeSVNP-startTimeSVNP
 # do the sampling
 # Make sure output is deleted such that no appendation takes place (BE CAREFUL!)
 #file.remove(c("~/1vs2StepBayesianRegSEM/output/resultsRHSP.csv",
-#              "~/1vs2StepBayesianRegSEM/output/convRHSP.csv"))
+#              "~/1vs2StepdBayesianRegSEM/output/convRHSP.csv"))
 #startTimeRHSP <- Sys.time()
 ## create cluster
 #clusters <- makePSOCKcluster(nClusters) 

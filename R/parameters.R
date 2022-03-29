@@ -64,10 +64,11 @@ cross <- c(0.2, 0.5)
 #cross <- 0.5
 
 # Making condition objects ------------------------------------------------
+## gwn opsplitsen in condPop en de overige twee
 condPop   <- 
   expand.grid(
-    N,
-    cross
+    N = N,
+    cross = cross
   )
 
 condSVNP <- 
@@ -100,4 +101,4 @@ nClusters <- 12
 #nClusters <- 46
 
 # other study parameters --------------------------------------------------
-nIter <- 200
+nIter <- 2

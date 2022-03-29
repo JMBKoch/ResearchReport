@@ -7,11 +7,13 @@
 ################################################################################
 # Part 1: functions for executing simulation study
 ################################################################################
-# prepareDataset() -------------------------------------------------------
-# function that prepares a stan ready dataset
-prepareDataset <- function(conditions, main, Psi, Theta){
+
+# simDat() ----------------------------------------------------------------
+# function that prepares all # popCod x nIter individual datasets of this study
+#   be analyzed into 
+simDat <- function(condPop, modelPars, nIter){
   
-  # (inner) helper functions ------------------------------------------------
+  # (inner) helper function ------------------------------------------------
   # simY() 
   # function to simulate data under desired model sourced from parameters.R
   
@@ -27,20 +29,53 @@ prepareDataset <- function(conditions, main, Psi, Theta){
     return(Y)
   }
   
-  # prepareDat() 
-  # function to prepare stan data object from simdat() based on a unique
-  #   combination of hyper-pars
-  prepareDat <- function(Y, conditions){ 
-    if(conditions$prior == "SVNP"){
+  # allocate memory for output
+  dat <- list()
+  
+  # start nested for loop    
+  for (i in 1:nrow(condPop)){
+    for (j in 1:nIter){
+    # specify crossloadings & N based on conditions
+    if(condPop$cross[i] == 0.2){
+      cross <- modelPars$cross2
+    } else{
+      cross <- modelPars$cross5
+    }
+    N <- condPop$N[i]
+    
+    dataInd <- simY(modelPars$main, cross = cross, modelPars$Psi, modelPars$Theta, N)
+    condInd <- list(N = N, cross = cross[1])
+    
+    dat[[i]][[j]] <- list(data = dataInd, popCond = condInd)
+    }
+  }   
+  # return datasets
+  return(dat)
+}
+
+
+
+# prepareDat() ------------------------------------------------------------
+
+# function to prepare stan data object from a unique element of the output of simDat()
+# based on a unique combination of hyper-pars
+prepareDat <- function(datasets, conditions){ 
+  
+  for (i in 1:nrow(conditions)){
+    
+    condCurrent <- conditions[i, ]
+    dataStan <- list()
+    
+    if(condCurrent$prior == "SVNP"){
       out <-  list(
         N = nrow(Y),
         P = ncol(Y),
         Q = 2,
         Y = Y, 
         sigma = conditions$sigma,
-        cross = conditions$cross
+        #cross = conditions$cross
       )
-    }else if(conditions$prior == "RHSP"){
+    }else if(condCurrent$prior == "RHSP"){
       out <- list(
         N = nrow(Y),
         P = ncol(Y),
@@ -52,29 +87,16 @@ prepareDataset <- function(conditions, main, Psi, Theta){
         dfLocal = conditions$dfLocal, # df for half-t prior tau_j
         nu = conditions$nu, # df IG for c^2
         scaleSlab = conditions$scaleSlab, # scale of slab
-        cross = conditions$cross
+        #cross = conditions$cross
       )
     } 
-    return(out)
-  }
-  
-    # allocate memory for output
-    dat <- list()
-      
-    # specify crossloadings & N based on conditions
-    if(conditions$cross == 0.2){
-      cross <- cross2
-    } else{
-      cross <- cross5
-    }
-    N <- conditions$N
     
-    # simulate the data
-    Y <- simY(main, cross, Psi, Theta, N)
-    dat <-  prepareDat(Y, conditions) 
-
-  # return dataset
-  return(dat)
+    
+    dataStan[]
+    
+    
+  }
+  return(dataStan)
 }
 
 # saveResults() ------------------------------------------------------------
@@ -169,7 +191,8 @@ saveResults <- function(rstanObj,  conditions, modelPars){
                isZeroTres0Med,
                isZero95CI,
                isZero90CI,
-               isZero80CI) %>% 
+               isZero80CI, 
+               isZero50CI) %>% 
         as_tibble()
   colnames(out)[1] <- "item"
   # recode output into wide format and cbind convergence into it
@@ -229,14 +252,11 @@ convergence <- function(rstanObj, conditions) {
 # sampling() --------------------------------------------------------------
 # takes as input the conditions chain-length, warmup, n_chains, n_parallel chains &
 #   all hyperparameters sourced from parameters.R
-sampling <- function(pos, conditions, modelPars, nIter, samplePars){
+sampling <- function(pos, dataStan, modelPars, nIter, samplePars){
   
   # memory allocation final output
   outputFinal <- data.frame()
   convFinal <- data.frame()
-
-  # specify current set of condition based on pos 
-  condCurrent <- conditions[pos, ]
 
   # compile model (if already compiled this will just not be executed)
   if (condCurrent$prior == "SVNP"){
@@ -247,11 +267,12 @@ sampling <- function(pos, conditions, modelPars, nIter, samplePars){
   
   # Draw the Samples
     for (i in 1:nIter){
-  
-
+      
+      # specify current data
+      datCurrent <- dataStan[[i]][pos]
       
       # draw samples
-      samples <- model$sample(data = dataset,
+      samples <- model$sample(data = datCurrent,
                               chains = samplePars$nChain, 
                               iter_warmup = samplePars$nWarmup,
                               iter_sampling = samplePars$nSampling)
