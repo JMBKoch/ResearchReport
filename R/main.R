@@ -21,6 +21,10 @@ write_rds(datasets, file = "~/1vs2StepBayesianRegSEM/data/datasets.Rds")
 ### Make sure output is deleted such that no appendation takes place (BE CAREFUL!)
 file.remove(c("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv",
               "~/1vs2StepBayesianRegSEM/output/convSVNP.csv"))
+
+# Prepare datasets for stan -----------------------------------------------
+dataStanSVNP <- prepareDat(datasets, condSVNP)
+
 # do the sampling where every available core (nWorkers in condtions.R) does 
 #    one unique combination of conditions
 # measure start time
@@ -37,7 +41,7 @@ clusterCall(clusters,
             function() lapply(packages, library, character.only = TRUE))
 # run functon in clustered way where every set of condition gets it's own core
 outputFinalSVNP <- clusterApplyLB(clusters, 
-                                  1:length(dataStan), 
+                                  1:length(dataStanSVNP), 
                                   sampling,
                                   conditions = condSVNP,
                                   modelPars = modelPars,

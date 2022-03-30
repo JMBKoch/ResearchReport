@@ -26,7 +26,7 @@ simDatasets <- function(condPop, nIter, modelPars){
     # allocate memory for the final output, a nested list
     datasets <- list()
     
-    # prepare 200 x "# unique combination of conditions" datasets
+    # prepare nIter x "# unique combination of conditions" datasets
     for (i in 1:nrow(condPop)){
       # simulate & prepare data 50x per set of conditions (row of conditionsRHSP)
       dat <- list()
@@ -42,15 +42,15 @@ simDatasets <- function(condPop, nIter, modelPars){
         N <- condPop[i, ]$N
         
         dat[[j]] <- simY(modelPars$main, cross = cross, modelPars$Psi, modelPars$Theta, N)
-
+      }
       # save data in appropriate element of final output
       datasets[[i]] <- dat
     }
     # return datasets
     return(datasets)
-}
-  
 
+  
+}
 
 # prepareDat() ------------------------------------------------------------
 
@@ -58,22 +58,27 @@ simDatasets <- function(condPop, nIter, modelPars){
 # based on a unique combination of hyper-pars
 prepareDat <- function(datasets, conditions){ 
   
+  
+  # allocate memory for nIter datasets per set of condCurrent
+  dataStanCondCurrent <- list()
+  
   # allocate memory for final output
   dataStan <- list()
   
   # unlist datasets
   datasetsUnlisted <- lapply(rapply(datasets, enquote, how = "unlist"), eval)
-  for(pos in 1:length(datasetsUnlisted)){ 
-    for (i in 1:nrow(conditions)){
+
+  # start nested loop
+  for (pos in 1:nrow(conditions)){
+    for(i in 1:length(datasetsUnlisted)){ 
+
     
     # grab current conditions
-    condCurrent <- conditions[i, ]
+    condCurrent <- conditions[pos, ]
     
-    # bind pop conditions with prior-specific conditions
-    Y <- datasetsUnlisted[[pos]]
-    
-    # allocate memory for nIter datasets per set of condCurrent
-    dataStanCondCurrent <- list()
+    # grab current dataset
+    Y <- datasetsUnlisted[[i]]
+
     
     if(condCurrent$prior == "SVNP"){
       
@@ -82,7 +87,7 @@ prepareDat <- function(datasets, conditions){
         P = ncol(Y),
         Q = 2,
         Y = Y, 
-        sigma = condCurrent$sigma,
+        sigma = condCurrent$sigma
       )
     }else if(condCurrent$prior == "RHSP"){
       dataStanCondCurrent[[i]] <- list(
@@ -90,16 +95,16 @@ prepareDat <- function(datasets, conditions){
         P = ncol(Y),
         Q = 2,
         Y = Y, 
-        scaleGlobal = conditions$scaleGlobal, # scale omega
-        scaleLocal = conditions$scaleLocal, # scale lambda
-        dfGlobal = conditions$dfGlobal, # df for half-t prior omega
-        dfLocal = conditions$dfLocal, # df for half-t prior tau_j
-        nu = conditions$nu, # df IG for c^2
-        scaleSlab = conditions$scaleSlab, # scale of slab
+        scaleGlobal = condCurrent$scaleGlobal, # scale omega
+        scaleLocal = condCurrent$scaleLocal, # scale lambda
+        dfGlobal = condCurrent$dfGlobal, # df for half-t prior omega
+        dfLocal = condCurrent$dfLocal, # df for half-t prior tau_j
+        nu = condCurrent$nu, # df IG for c^2
+        scaleSlab = condCurrent$scaleSlab # scale of slab
       )
       } 
     } 
-    dataStan[pos] <- dataStanCondCurrent
+    dataStan[[pos]] <- dataStanCondCurrent
   }
   return(dataStan)
 }
