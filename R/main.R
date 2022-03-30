@@ -12,7 +12,7 @@ source('~/1vs2StepBayesianRegSEM/R/functions.R')
 source('~/1vs2StepBayesianRegSEM/R/parameters.R')
 
 # Simulate the data -------------------------------------------------------
-datasets <- simDat(condPop = condPop, modelPars = modelPars, nIter = nIter)
+datasets <- simDatasets(condPop = condPop, modelPars = modelPars, nIter = nIter)
 write_rds(datasets, file = "~/1vs2StepBayesianRegSEM/data/datasets.Rds")
 
 
@@ -77,3 +77,13 @@ endTimeSVNP-startTimeSVNP
 #endTimeRHSP <- Sys.time()
 ## measure elapsed time
 #endTimeRHSP-startTimeRHSP
+
+
+length(lapply(rapply(datasets, enquote, how = "unlist"), eval))
+
+datasetsUnlisted <- lapply(rapply(datasets, enquote, how = "unlist"), eval)
+
+head(datasetsUnlisted[[1]]) # N = 100, cross = 0.2
+head(datasetsUnlisted[[201]]) # N = 200, cross = 0.2
+head(datasetsUnlisted[[401]]) # N = 100, cross = 0.5
+head(datasetsUnlisted[[601]]) # N = 200, cross = 0.5

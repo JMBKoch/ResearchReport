@@ -7,10 +7,9 @@
 ################################################################################
 # Part 1: functions for executing simulation study
 ################################################################################
-
-# prepareDatasets() -------------------------------------------------------
+# simDatasets() -----------------------------------------------------------
 # function that prepares a list with (nIter X nrow(cond)) datasets 
-prepareDatasets <- function(condPop, nIter, modelPars){
+simDatasets <- function(condPop, nIter, modelPars){
    
     ### TBA: work with different levels of cross-loadings!!!
     simY <- function(main, cross, Psi, Theta, N){
@@ -41,9 +40,9 @@ prepareDatasets <- function(condPop, nIter, modelPars){
         }
         
         N <- condPop[i, ]$N
-        Y <- simY(modelPars$main, cross = cross, modelPars$Psi, modelPars$Theta, N)
-        dat[[j]] <-  list(Y = Y, condPop = condPop[i, ])
-      }
+        
+        dat[[j]] <- simY(modelPars$main, cross = cross, modelPars$Psi, modelPars$Theta, N)
+
       # save data in appropriate element of final output
       datasets[[i]] <- dat
     }
@@ -52,52 +51,6 @@ prepareDatasets <- function(condPop, nIter, modelPars){
 }
   
 
-# simDat() ----------------------------------------------------------------
-# function that prepares all # popCod x nIter individual datasets of this study
-#   be analyzed into 
-simDat <- function(condPop, modelPars, nIter){
-  
-  # (inner) helper function ------------------------------------------------
-  # simY() 
-  # function to simulate data under desired model sourced from parameters.R
-  
-  ### TBA: work with different levels of cross-loadings!!!
-  simY <- function(main, cross, Psi, Theta, N){
-    L <- matrix(NA, nrow = 6, ncol = 2)
-    L[1:3, 1] <- main[1:3]
-    L[4:6, 2] <- main[4:6]
-    L[4:6, 1] <- cross[1:3]
-    L[1:3, 2] <- cross[4:6]
-    Sigma <- L%*%Psi%*%t(L) + Theta
-    Y <- mvtnorm::rmvnorm(N, rep(0, 6), Sigma)
-    return(Y)
-  }
-  
-  # allocate memory for output
-  dat <- list()
-  
-  # start nested for loop    
-  for (i in 1:nrow(condPop)){
-    for (j in 1:nIter){
-    # specify crossloadings & N based on conditions
-    if(condPop$cross[i] == 0.2){
-      cross <- modelPars$cross2
-    } else{
-      cross <- modelPars$cross5
-    }
-    N <- condPop$N[i]
-    
-    dataInd <- simY(modelPars$main, cross = cross, modelPars$Psi, modelPars$Theta, N)
-    condInd <- list(N = N, cross = cross[1])
-    
-    dat[[i]][[j]] <- list(data = dataInd, popCond = condInd)
-    }
-  }   
-  # return datasets
-  return(dat)
-}
-
-
 
 # prepareDat() ------------------------------------------------------------
 
@@ -105,22 +58,34 @@ simDat <- function(condPop, modelPars, nIter){
 # based on a unique combination of hyper-pars
 prepareDat <- function(datasets, conditions){ 
   
-  for (i in 1:nrow(conditions)){
+  # allocate memory for final output
+  dataStan <- list()
+  
+  # unlist datasets
+  datasetsUnlisted <- lapply(rapply(datasets, enquote, how = "unlist"), eval)
+  for(pos in 1:length(datasetsUnlisted)){ 
+    for (i in 1:nrow(conditions)){
     
+    # grab current conditions
     condCurrent <- conditions[i, ]
-    dataStan <- list()
+    
+    # bind pop conditions with prior-specific conditions
+    Y <- datasetsUnlisted[[pos]]
+    
+    # allocate memory for nIter datasets per set of condCurrent
+    dataStanCondCurrent <- list()
     
     if(condCurrent$prior == "SVNP"){
-      out <-  list(
+      
+      dataStanCondCurrent[[i]] <-  list(
         N = nrow(Y),
         P = ncol(Y),
         Q = 2,
         Y = Y, 
-        sigma = conditions$sigma,
-        #cross = conditions$cross
+        sigma = condCurrent$sigma,
       )
     }else if(condCurrent$prior == "RHSP"){
-      out <- list(
+      dataStanCondCurrent[[i]] <- list(
         N = nrow(Y),
         P = ncol(Y),
         Q = 2,
@@ -131,14 +96,10 @@ prepareDat <- function(datasets, conditions){
         dfLocal = conditions$dfLocal, # df for half-t prior tau_j
         nu = conditions$nu, # df IG for c^2
         scaleSlab = conditions$scaleSlab, # scale of slab
-        #cross = conditions$cross
       )
+      } 
     } 
-    
-    
-    dataStan[]
-    
-    
+    dataStan[pos] <- dataStanCondCurrent
   }
   return(dataStan)
 }
