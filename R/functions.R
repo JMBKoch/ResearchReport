@@ -8,6 +8,50 @@
 # Part 1: functions for executing simulation study
 ################################################################################
 
+# prepareDatasets() -------------------------------------------------------
+# function that prepares a list with (nIter X nrow(cond)) datasets 
+prepareDatasets <- function(condPop, nIter, modelPars){
+   
+    ### TBA: work with different levels of cross-loadings!!!
+    simY <- function(main, cross, Psi, Theta, N){
+      L <- matrix(NA, nrow = 6, ncol = 2)
+      L[1:3, 1] <- main[1:3]
+      L[4:6, 2] <- main[4:6]
+      L[4:6, 1] <- cross[1:3]
+      L[1:3, 2] <- cross[4:6]
+      Sigma <- L%*%Psi%*%t(L) + Theta
+      Y <- mvtnorm::rmvnorm(N, rep(0, 6), Sigma)
+      return(Y)
+    }
+    
+    # allocate memory for the final output, a nested list
+    datasets <- list()
+    
+    # prepare 200 x "# unique combination of conditions" datasets
+    for (i in 1:nrow(condPop)){
+      # simulate & prepare data 50x per set of conditions (row of conditionsRHSP)
+      dat <- list()
+      for (j in 1:nIter){
+        
+        # specify crossloadings & N based on conditions
+        if(condPop$cross[i] == 0.2){
+          cross <- modelPars$cross2
+        } else{
+          cross <- modelPars$cross5
+        }
+        
+        N <- condPop[i, ]$N
+        Y <- simY(modelPars$main, cross = cross, modelPars$Psi, modelPars$Theta, N)
+        dat[[j]] <-  list(Y = Y, condPop = condPop[i, ])
+      }
+      # save data in appropriate element of final output
+      datasets[[i]] <- dat
+    }
+    # return datasets
+    return(datasets)
+}
+  
+
 # simDat() ----------------------------------------------------------------
 # function that prepares all # popCod x nIter individual datasets of this study
 #   be analyzed into 

@@ -101,4 +101,4 @@ nClusters <- 12
 #nClusters <- 46
 
 # other study parameters --------------------------------------------------
-nIter <- 2
+nIter <- 200
