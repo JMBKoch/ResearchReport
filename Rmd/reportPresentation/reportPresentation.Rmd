@@ -1,14 +1,15 @@
 ---
-title: "Research Report Presentation"
+title: "Getting A Step Ahead: Using the Regulararised Horseshoe Prior (RHSP) to Select Cross-Loadings in Bayesian Regularized SEM"
+#subtitle: "Research Report Presentation"
 author: "Koch, J.M.B. (Michael)"
 date: "3/26/2022"
 output: ioslides_presentation
 #bibliography      : ["refs.bib"]
 ---
 
-## Getting A Step Ahead: Using the Regulararised Horseshoe Prior (RHSP) to Select Cross-Loadings in Bayesian Regularized SEM
-
 ## The art of Statistical Modeling
+
+[](datagenVsModel.png)
 
 ## Fundamental Trade-off in Statistical Modeling 
 

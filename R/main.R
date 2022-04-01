@@ -41,8 +41,9 @@ clusterCall(clusters,
             function() lapply(packages, library, character.only = TRUE))
 # run functon in clustered way where every set of condition gets it's own core
 outputFinalSVNP <- clusterApplyLB(clusters, 
-                                  1:length(dataStanSVNP), 
+                                  1:nrow(condSVNP), 
                                   sampling,
+                                  dataStan = dataStanSVNP,
                                   conditions = condSVNP,
                                   modelPars = modelPars,
                                   nIter = nIter,
@@ -83,11 +84,12 @@ endTimeSVNP-startTimeSVNP
 #endTimeRHSP-startTimeRHSP
 
 
-length(lapply(rapply(datasets, enquote, how = "unlist"), eval))
+test <- sampling(pos = 1, 
+                 dataStan = dataStanSVNP, 
+                 modelPars = modelPars, 
+                 condPrior = condSVNP, 
+                 condPop = condPop,
+                 nIter = nIter, 
+                 samplePars = samplePars)
 
-datasetsUnlisted <- lapply(rapply(datasets, enquote, how = "unlist"), eval)
 
-head(datasetsUnlisted[[1]]) # N = 100, cross = 0.2
-head(datasetsUnlisted[[201]]) # N = 200, cross = 0.2
-head(datasetsUnlisted[[401]]) # N = 100, cross = 0.5
-head(datasetsUnlisted[[601]]) # N = 200, cross = 0.5

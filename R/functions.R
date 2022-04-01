@@ -33,7 +33,7 @@ simDatasets <- function(condPop, nIter, modelPars){
       for (j in 1:nIter){
         
         # specify crossloadings & N based on conditions
-        if(condPop$cross[i] == 0.2){
+        if(condPop[i, ]$cross == 0.2){
           cross <- modelPars$cross2
         } else{
           cross <- modelPars$cross5
@@ -44,7 +44,7 @@ simDatasets <- function(condPop, nIter, modelPars){
         dat[[j]] <- simY(modelPars$main, cross = cross, modelPars$Psi, modelPars$Theta, N)
       }
       # save data in appropriate element of final output
-      datasets[[i]] <- dat
+      datasets[[i]] <- list(dat)
     }
     # return datasets
     return(datasets)
@@ -59,7 +59,7 @@ simDatasets <- function(condPop, nIter, modelPars){
 prepareDat <- function(datasets, conditions){ 
   
   
-  # allocate memory for nIter datasets per set of condCurrent
+  # allocate memory for nIter datasets per set of current prior conditions
   dataStanCondCurrent <- list()
   
   # allocate memory for final output
@@ -67,6 +67,12 @@ prepareDat <- function(datasets, conditions){
   
   # unlist datasets
   datasetsUnlisted <- lapply(rapply(datasets, enquote, how = "unlist"), eval)
+  
+  # make vector of the cross-loading: based on datasim, this is simply 0.2
+  #  for first half, and 0.5 for second half. 
+  cross <- numeric(length(datasetsUnlisted))
+  cross[1:length(datasetsUnlisted)/2] <- 0.2
+  cross[(length(datasetsUnlisted)/2 + 1):length(datasetsUnlisted)] <- 0.5
 
   # start nested loop
   for (pos in 1:nrow(conditions)){
@@ -82,16 +88,19 @@ prepareDat <- function(datasets, conditions){
     
     if(condCurrent$prior == "SVNP"){
       
+      
       dataStanCondCurrent[[i]] <-  list(
         N = nrow(Y),
+        cross = cross[i],
         P = ncol(Y),
         Q = 2,
-        Y = Y, 
+        Y = (Y), 
         sigma = condCurrent$sigma
       )
     }else if(condCurrent$prior == "RHSP"){
       dataStanCondCurrent[[i]] <- list(
         N = nrow(Y),
+        cross = cross[i],
         P = ncol(Y),
         Q = 2,
         Y = Y, 
@@ -110,20 +119,20 @@ prepareDat <- function(datasets, conditions){
 }
 
 # saveResults() ------------------------------------------------------------
-# function takes rstan object and saves the estimes 
-saveResults <- function(rstanObj,  conditions, modelPars){
+# function takes rstan object and saves the results 
+saveResults <- function(pos, rstanObj, condPrior, condPop, modelPars){
   
   crossTrue <- numeric(6)
   # save true cross loading based on cond
-  if (conditions$cross == 0.5){
+  if (condPop$cross == 0.5){
     crossTrue <- c(0.5, 0, 0, 0, 0, 0.5)
-  }else if (conditions$cross == 0.2){
+  }else if (condPop$cross == 0.2){
     crossTrue <- c(0.2, 0, 0, 0, 0, 0.2)
   }
   # save in format that's convenient for computing quantiles below
   crossMatrix <- as.matrix(rstanObj, pars = "lambdaCrossC") 
   
-  # estimates Lambda ### median straks wss alleen maar belangrijk voor kruisladingen
+  # estimates Lambda 
   mainEstMean <- apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, mean)
   mainEstMed <-  apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, median)
   mainEstVar <-  apply(as.matrix(rstanObj, pars = "lambdaMainC"), 2, var)
@@ -218,7 +227,10 @@ saveResults <- function(rstanObj,  conditions, modelPars){
                biasFactCorrMean,
                biasFactCorrMed)
   # cbind conditions into output
-  out <- cbind(out, conditions)
+  
+  
+  ## TBA: add 
+  out <- cbind(out, condPrior, condPop)
   rownames(out) <- NULL
   
   # return output
@@ -228,7 +240,7 @@ saveResults <- function(rstanObj,  conditions, modelPars){
 
 # convergence() -----------------------------------------------------------
 # takes rstan object as input and computes and returns convergence diagnostics
-convergence <- function(rstanObj, conditions) {
+convergence <- function(rstanObj, condPrior, condPop) {
   
   # start with Rhat and n_eff
   conv <- as.data.frame(
@@ -253,7 +265,7 @@ convergence <- function(rstanObj, conditions) {
   conv$sampleT1 = time["chain:1", "sample"]
   conv$sampleT2 = time["chain:2", "sample"]
   # cbind conditions into output
-  conv <- cbind(conv, conditions)
+  conv <- cbind(conv, condPrior, condPop)
   # return output
   return(conv)
   
@@ -262,24 +274,37 @@ convergence <- function(rstanObj, conditions) {
 # sampling() --------------------------------------------------------------
 # takes as input the conditions chain-length, warmup, n_chains, n_parallel chains &
 #   all hyperparameters sourced from parameters.R
-sampling <- function(pos, dataStan, modelPars, nIter, samplePars){
+sampling <- function(pos, dataStan, modelPars, condPrior, condPop,  nIter, samplePars){
+  
   
   # memory allocation final output
   outputFinal <- data.frame()
   convFinal <- data.frame()
+  # memory allocation for samples
+  samples <- list()
+  
+  
+  # select current hyper-parameter conditions
+  condPriorCurrent <- condPrior[pos, ]
 
   # compile model (if already compiled this will just not be executed)
-  if (condCurrent$prior == "SVNP"){
+  if (condPriorCurrent$prior == "SVNP"){
       model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/SVNP.stan")
-  }else if (condCurrent$prior == "RHSP"){
+  }else if (condPriorCurrent$prior == "RHSP"){
       model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/RHSP.stan")
   }
   
   # Draw the Samples
-    for (i in 1:nIter){
+    for (i in 1:nIter*4){
       
       # specify current data
-      datCurrent <- dataStan[[i]][pos]
+      datCurrent <- dataStan[[pos]][[i]]
+      
+      # specify current condPop
+      condPopCurrent <- data.frame(
+                           N = dataStanSVNP[[pos]][[i]]$N,
+                           cross = dataStanSVNP[[pos]][[i]]$cross
+                           )
       
       # draw samples
       samples <- model$sample(data = datCurrent,
@@ -291,7 +316,11 @@ sampling <- function(pos, dataStan, modelPars, nIter, samplePars){
       rstanObj <- read_stan_csv(samples$output_files())
       
       # save Results
-      output <- saveResults(rstanObj, conditions = condCurrent, modelPars = modelPars)
+      output <- saveResults(pos, 
+                            rstanObj,
+                            condPop = condPopCurrent, 
+                            condPrior = condPriorCurrent, 
+                            modelPars = modelPars)
       # add iteration to output
       output$iteration <- i
       # add pos (for easy matching based on unique codition config)
@@ -300,24 +329,24 @@ sampling <- function(pos, dataStan, modelPars, nIter, samplePars){
       outputFinal <- rbind(outputFinal, output)
       
       # save convergence diagnostics
-      conv <- convergence(rstanObj, conditions = condCurrent)
+      conv <- convergence(rstanObj, condPrior = condPriorCurrent, condPop = condPopCurrent)
       # add iteration
       conv$iteration <- i
       # add pos (for easy matching based on unique condition config)
       conv$pos <- pos
       convFinal <- rbind(convFinal, conv)
       
-    }
-  
+    
   # Write output to disk (per set of conditions in an appending fashion)
   ### THIS ONLY WORKS WHEN files dont already exist, so maybe delete them before?, e.g. in main.R
-  resultsName <- ifelse(condCurrent$prior == "SVNP",
+  resultsName <- ifelse(condPriorCurrent$prior == "SVNP",
                         "~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv",
                         "~/1vs2StepBayesianRegSEM/output/resultsRHSP.csv")
                         
-  convName <- ifelse(condCurrent$prior == "SVNP",
+  convName <- ifelse(condPriorCurrent$prior == "SVNP",
                      "~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
                      "~/1vs2StepBayesianRegSEM/output/convRHSP.csv")
+  
   write.table(outputFinal, 
               file = resultsName,
               append = TRUE,
@@ -329,12 +358,14 @@ sampling <- function(pos, dataStan, modelPars, nIter, samplePars){
               row.names = FALSE,
               col.names=!file.exists(convName))
   
+  
+  
   # return list with results and convergence diags
   return(list(results = outputFinal,
               convergence = convFinal))
   
 }
-
+}
 ################################################################################################
 # Part 2: Postprocessing Output of Simulation
 ################################################################################################
@@ -359,17 +390,17 @@ sampling <- function(pos, dataStan, modelPars, nIter, samplePars){
 # makes all required plots (generally? for AN outcome?) and saves them
 #### start with bias for now,ff litertuur weer induiken & Sara spreken over wat handig is
 #
-plotsMeanBias <- function(output, parameterName, condition){
-
-      name <- paste0("mean", parameterName)
-  
-      out %>% 
-        group_by(condition) %>% 
-        summarise(name = mean(parameterName)) %>% 
-        ggplot(mapping = aes(x = condition, y = name))+
-        geom_point()
-
-}       
+#plotsMeanBias <- function(output, parameterName, condition){
+#
+#      name <- paste0("mean", parameterName)
+#  
+#      out %>% 
+#        group_by(condition) %>% 
+#        summarise(name = mean(parameterName)) %>% 
+#        ggplot(mapping = aes(x = condition, y = name))+
+#        geom_point()
+#
+#}       
         
 #plotsMeanBias(out, "biasFactCorr", condition= sigma)
 
