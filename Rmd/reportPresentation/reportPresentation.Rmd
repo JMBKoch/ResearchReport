@@ -9,7 +9,7 @@ output: ioslides_presentation
 
 ## The art of Statistical Modeling
 
-[](datagenVsModel.png)
+![](~/1vs2StepBayesianRegSEM/Rmd/figures/datagenVsModelMeme.png)
 
 ## Fundamental Trade-off in Statistical Modeling 
 
