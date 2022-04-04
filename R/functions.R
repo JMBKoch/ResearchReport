@@ -119,7 +119,7 @@ prepareDat <- function(datasets, condPrior, nIter){
     } 
     dataStan[[pos]] <- dataStanCondCurrent
   }
-  #return unnested output, such that it can be looped over
+  #return unnested output, such that it can be looped over in sampling()
   ips::unlistFirstLevel(dataStan)
 }
 
