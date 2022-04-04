@@ -56,13 +56,12 @@ simDatasets <- function(condPop, nIter, modelPars){
 
 # function to prepare stan data object from a unique element of the output of simDat()
 # based on a unique combination of hyper-pars
-prepareDat <- function(datasets, conditions){ 
-  
+prepareDat <- function(datasets, conditions, nIter){ 
   
   # allocate memory for nIter datasets per set of current prior conditions
   dataStanCondCurrent <- list()
   
-  # allocate memory for final output
+  # allocate memory for nested output
   dataStan <- list()
   
   # unlist datasets
@@ -73,6 +72,8 @@ prepareDat <- function(datasets, conditions){
   cross <- numeric(length(datasetsUnlisted))
   cross[1:length(datasetsUnlisted)/2] <- 0.2
   cross[(length(datasetsUnlisted)/2 + 1):length(datasetsUnlisted)] <- 0.5
+  # make vector of iteration
+  iter <- rep(1:nIter, length(datasets))
 
   # start nested loop
   for (pos in 1:nrow(conditions)){
@@ -87,11 +88,11 @@ prepareDat <- function(datasets, conditions){
 
     
     if(condCurrent$prior == "SVNP"){
-      
-      
+  
       dataStanCondCurrent[[i]] <-  list(
         N = nrow(Y),
         cross = cross[i],
+        iter = iter[i],
         P = ncol(Y),
         Q = 2,
         Y = (Y), 
@@ -101,6 +102,7 @@ prepareDat <- function(datasets, conditions){
       dataStanCondCurrent[[i]] <- list(
         N = nrow(Y),
         cross = cross[i],
+        iter = iter[i],
         P = ncol(Y),
         Q = 2,
         Y = Y, 
@@ -115,7 +117,8 @@ prepareDat <- function(datasets, conditions){
     } 
     dataStan[[pos]] <- dataStanCondCurrent
   }
-  return(dataStan)
+  #return unnested output, such that it can be looped over
+  ips::unlistFirstLevel(dataStanSVNP)
 }
 
 # saveResults() ------------------------------------------------------------
@@ -280,9 +283,6 @@ sampling <- function(pos, dataStan, modelPars, condPrior, condPop,  nIter, sampl
   # memory allocation final output
   outputFinal <- data.frame()
   convFinal <- data.frame()
-  # memory allocation for samples
-  samples <- list()
-  
   
   # select current hyper-parameter conditions
   condPriorCurrent <- condPrior[pos, ]
@@ -295,15 +295,14 @@ sampling <- function(pos, dataStan, modelPars, condPrior, condPop,  nIter, sampl
   }
   
   # Draw the Samples
-    for (i in 1:nIter*4){
-      
+
       # specify current data
-      datCurrent <- dataStan[[pos]][[i]]
+      datCurrent <- dataStan[[pos]]
       
       # specify current condPop
       condPopCurrent <- data.frame(
-                           N = dataStanSVNP[[pos]][[i]]$N,
-                           cross = dataStanSVNP[[pos]][[i]]$cross
+                           N = datCurrent$N,
+                           cross = datCurrent$cross
                            )
       
       # draw samples
@@ -322,7 +321,7 @@ sampling <- function(pos, dataStan, modelPars, condPrior, condPop,  nIter, sampl
                             condPrior = condPriorCurrent, 
                             modelPars = modelPars)
       # add iteration to output
-      output$iteration <- i
+      output$iteration <- datCurrent$iter
       # add pos (for easy matching based on unique codition config)
       output$pos <- pos
       # rbind output into final output
@@ -331,7 +330,7 @@ sampling <- function(pos, dataStan, modelPars, condPrior, condPop,  nIter, sampl
       # save convergence diagnostics
       conv <- convergence(rstanObj, condPrior = condPriorCurrent, condPop = condPopCurrent)
       # add iteration
-      conv$iteration <- i
+      conv$iteration <- datCurrent[[pos]]$iter
       # add pos (for easy matching based on unique condition config)
       conv$pos <- pos
       convFinal <- rbind(convFinal, conv)
@@ -364,7 +363,6 @@ sampling <- function(pos, dataStan, modelPars, condPrior, condPop,  nIter, sampl
   return(list(results = outputFinal,
               convergence = convFinal))
   
-}
 }
 ################################################################################################
 # Part 2: Postprocessing Output of Simulation
