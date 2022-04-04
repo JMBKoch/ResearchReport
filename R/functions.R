@@ -56,7 +56,7 @@ simDatasets <- function(condPop, nIter, modelPars){
 
 # function to prepare stan data object from a unique element of the output of simDat()
 # based on a unique combination of hyper-pars
-prepareDat <- function(datasets, conditions, nIter){ 
+prepareDat <- function(datasets, condPrior, nIter){ 
   
   # allocate memory for nIter datasets per set of current prior conditions
   dataStanCondCurrent <- list()
@@ -76,12 +76,12 @@ prepareDat <- function(datasets, conditions, nIter){
   iter <- rep(1:nIter, length(datasets))
 
   # start nested loop
-  for (pos in 1:nrow(conditions)){
+  for (pos in 1:nrow(condPrior)){
     for(i in 1:length(datasetsUnlisted)){ 
 
     
     # grab current conditions
-    condCurrent <- conditions[pos, ]
+    condCurrent <- condPrior[pos, ]
     
     # grab current dataset
     Y <- datasetsUnlisted[[i]]
@@ -96,6 +96,7 @@ prepareDat <- function(datasets, conditions, nIter){
         P = ncol(Y),
         Q = 2,
         Y = (Y), 
+        #prior = "SVNP",
         sigma = condCurrent$sigma
       )
     }else if(condCurrent$prior == "RHSP"){
@@ -106,6 +107,7 @@ prepareDat <- function(datasets, conditions, nIter){
         P = ncol(Y),
         Q = 2,
         Y = Y, 
+        #prior = "RHSP",
         scaleGlobal = condCurrent$scaleGlobal, # scale omega
         scaleLocal = condCurrent$scaleLocal, # scale lambda
         dfGlobal = condCurrent$dfGlobal, # df for half-t prior omega
@@ -118,15 +120,16 @@ prepareDat <- function(datasets, conditions, nIter){
     dataStan[[pos]] <- dataStanCondCurrent
   }
   #return unnested output, such that it can be looped over
-  ips::unlistFirstLevel(dataStanSVNP)
+  ips::unlistFirstLevel(dataStan)
 }
 
 # saveResults() ------------------------------------------------------------
 # function takes rstan object and saves the results 
-saveResults <- function(pos, rstanObj, condPrior, condPop, modelPars){
+saveResults <- function(rstanObj, condPrior, condPop, modelPars){
   
+  
+  # save true cross loading based on condPop
   crossTrue <- numeric(6)
-  # save true cross loading based on cond
   if (condPop$cross == 0.5){
     crossTrue <- c(0.5, 0, 0, 0, 0, 0.5)
   }else if (condPop$cross == 0.2){
@@ -229,10 +232,9 @@ saveResults <- function(pos, rstanObj, condPrior, condPop, modelPars){
                factCorrEstVar,
                biasFactCorrMean,
                biasFactCorrMed)
-  # cbind conditions into output
+
   
-  
-  ## TBA: add 
+  ## cinb
   out <- cbind(out, condPrior, condPop)
   rownames(out) <- NULL
   
@@ -262,13 +264,15 @@ convergence <- function(rstanObj, condPrior, condPop) {
   div <- subset(bayesplot::nuts_params(rstanObj), Parameter == "divergent__")
   conv$sumDiv  <- sum(div$Value)
   # save runtime
-  time = get_elapsed_time(rstanObj)
-  conv$warmupT1 = time["chain:1", "warmup"]
-  conv$warmupT2 = time["chain:2", "warmup"]
-  conv$sampleT1 = time["chain:1", "sample"]
-  conv$sampleT2 = time["chain:2", "sample"]
+  time  <-  get_elapsed_time(rstanObj)
+  conv$warmupT1 <- time["chain:1", "warmup"]
+  conv$warmupT2 <- time["chain:2", "warmup"]
+  conv$sampleT1 <- time["chain:1", "sample"]
+  conv$sampleT2 <- time["chain:2", "sample"]
   # cbind conditions into output
-  conv <- cbind(conv, condPrior, condPop)
+  conv <- cbind(conv, 
+                rbind(condPrior, condPrior), #rbinding to avoid warning of short variable row names
+                rbind(condPop, condPop)) 
   # return output
   return(conv)
   
@@ -277,64 +281,70 @@ convergence <- function(rstanObj, condPrior, condPop) {
 # sampling() --------------------------------------------------------------
 # takes as input the conditions chain-length, warmup, n_chains, n_parallel chains &
 #   all hyperparameters sourced from parameters.R
-sampling <- function(pos, dataStan, modelPars, condPrior, condPop,  nIter, samplePars){
+sampling <- function(pos, prior, dataStan, modelPars, samplePars){
   
   
-  # memory allocation final output
-  outputFinal <- data.frame()
-  convFinal <- data.frame()
+  # select current data
+  datCurrent <- dataStan[[pos]]
   
-  # select current hyper-parameter conditions
-  condPriorCurrent <- condPrior[pos, ]
-
-  # compile model (if already compiled this will just not be executed)
-  if (condPriorCurrent$prior == "SVNP"){
+  # Execute prior-specific steps
+  if (prior == "SVNP"){
+    
+    # compile model (if already compiled this will just not be executed)
       model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/SVNP.stan")
-  }else if (condPriorCurrent$prior == "RHSP"){
-      model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/RHSP.stan")
-  }
-  
-  # Draw the Samples
-
-      # specify current data
-      datCurrent <- dataStan[[pos]]
       
-      # specify current condPop
-      condPopCurrent <- data.frame(
-                           N = datCurrent$N,
-                           cross = datCurrent$cross
+    # select current hyper-parameter conditions
+    condPriorCurrent <- data.frame(
+                           prior = "SVNP",
+                           sigma = datCurrent$sigma
                            )
       
-      # draw samples
-      samples <- model$sample(data = datCurrent,
-                              chains = samplePars$nChain, 
-                              iter_warmup = samplePars$nWarmup,
-                              iter_sampling = samplePars$nSampling)
-      
-      # save as rstan object
-      rstanObj <- read_stan_csv(samples$output_files())
-      
-      # save Results
-      output <- saveResults(pos, 
-                            rstanObj,
-                            condPop = condPopCurrent, 
-                            condPrior = condPriorCurrent, 
-                            modelPars = modelPars)
-      # add iteration to output
-      output$iteration <- datCurrent$iter
-      # add pos (for easy matching based on unique codition config)
-      output$pos <- pos
-      # rbind output into final output
-      outputFinal <- rbind(outputFinal, output)
-      
-      # save convergence diagnostics
-      conv <- convergence(rstanObj, condPrior = condPriorCurrent, condPop = condPopCurrent)
-      # add iteration
-      conv$iteration <- datCurrent[[pos]]$iter
-      # add pos (for easy matching based on unique condition config)
-      conv$pos <- pos
-      convFinal <- rbind(convFinal, conv)
-      
+  }else if (prior == "RHSP"){
+    
+    # compile model (if already compiled this will just not be executed)
+    model <- cmdstan_model("~/1vs2StepBayesianRegSEM/stan/RHSP.stan")
+    
+    # select current hyper-parameter conditions
+    condPriorCurrent <- data.frame(prior = "RHSP",
+                                   scaleGlobal = datCurrent$scaleGlobal,
+                                   scaleLocal = datCurrent$scaleLocal,
+                                   dfGlobal = datCurrent$dfGlobal,
+                                   dfLocal = datCurrent$dfLocal,
+                                   nu = datCurrent$nu,
+                                   scaleSlab = datCurrent$scaleSlab)
+  }
+  
+  # specify current condPop
+  condPopCurrent <- data.frame(
+    N = datCurrent$N,
+    cross = datCurrent$cross
+  )
+  
+  # Draw the Samples
+  samples <- model$sample(data = datCurrent,
+                          chains = samplePars$nChain, 
+                          iter_warmup = samplePars$nWarmup,
+                          iter_sampling = samplePars$nSampling)
+  
+  # save as rstan object
+  rstanObj <- read_stan_csv(samples$output_files())
+  
+  # save Results
+  output <- saveResults(rstanObj,
+                        condPrior = condPriorCurrent, 
+                        condPop = condPopCurrent, 
+                        modelPars = modelPars)
+  # add iteration to output
+  output$iteration <- datCurrent$iter
+  # add pos (for easy matching based on unique codition config)
+  output$pos <- pos
+  # rbind output into final output
+  # save convergence diagnostics
+  conv <- convergence(rstanObj, condPrior = condPriorCurrent, condPop = condPopCurrent)
+  # add iteration
+  conv$iteration <- datCurrent$iter
+  # add pos (for easy matching based on unique condition config)
+  conv$pos <- pos
     
   # Write output to disk (per set of conditions in an appending fashion)
   ### THIS ONLY WORKS WHEN files dont already exist, so maybe delete them before?, e.g. in main.R
@@ -346,22 +356,20 @@ sampling <- function(pos, dataStan, modelPars, condPrior, condPop,  nIter, sampl
                      "~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
                      "~/1vs2StepBayesianRegSEM/output/convRHSP.csv")
   
-  write.table(outputFinal, 
+  write.table(output, 
               file = resultsName,
               append = TRUE,
               row.names = FALSE,
               col.names=!file.exists(resultsName))
-  write.table(convFinal,
+  write.table(conv,
               file = convName,
               append = TRUE,
               row.names = FALSE,
               col.names=!file.exists(convName))
-  
-  
-  
+ 
   # return list with results and convergence diags
-  return(list(results = outputFinal,
-              convergence = convFinal))
+  return(list(results = output,
+              convergence = conv))
   
 }
 ################################################################################################

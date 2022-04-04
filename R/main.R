@@ -11,19 +11,21 @@ set.seed(0704)
 source('~/1vs2StepBayesianRegSEM/R/functions.R')
 source('~/1vs2StepBayesianRegSEM/R/parameters.R')
 
-# Simulate the data -------------------------------------------------------
+
+# Prepare data ------------------------------------------------------------
+# simulate data
 datasets <- simDatasets(condPop = condPop, modelPars = modelPars, nIter = nIter)
-write_rds(datasets, file = "~/1vs2StepBayesianRegSEM/data/datasets.Rds")
-
-
+# save raw data
+save(datasets, file = "~/1vs2StepBayesianRegSEM/data/datasets.Rds")
+# prepare data for stan
+dataStanSVNP <- prepareDat(datasets, condSVNP, nIter)
+# save stan-ready data
+save(dataStanSVNP, file = "~/1vs2StepBayesianRegSEM/data/dataStanSVNP.Rds")
 
 ## Execute simulation for SVNP ---------------------------------------------
 ### Make sure output is deleted such that no appendation takes place (BE CAREFUL!)
 file.remove(c("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv",
               "~/1vs2StepBayesianRegSEM/output/convSVNP.csv"))
-
-# Prepare datasets for stan -----------------------------------------------
-dataStanSVNP <- prepareDat(datasets, condSVNP)
 
 # do the sampling where every available core (nWorkers in condtions.R) does 
 #    one unique combination of conditions
@@ -31,7 +33,7 @@ dataStanSVNP <- prepareDat(datasets, condSVNP)
 startTimeSVNP <- Sys.time()
 # create clusters
 clusters <- makePSOCKcluster(nClusters) 
-# source functions & conditions within clusters
+# source functions & parameters within clusters
 clusterCall(clusters, 
             function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
 clusterCall(clusters, 
@@ -39,14 +41,18 @@ clusterCall(clusters,
 # Load packages per cluster
 clusterCall(clusters, 
             function() lapply(packages, library, character.only = TRUE))
-# run functon in clustered way where every set of condition gets it's own core
+# read in stan-ready data within clusters
+clusterCall(clusters,
+            function() load("~/1vs2StepBayesianRegSEM/data/dataStanSVNP.Rds"))
+
+# run functon in clustered way where it's clustered over individual combo's of 
+#  iteration, condPop and condPrior
 outputFinalSVNP <- clusterApplyLB(clusters, 
-                                  1:nrow(condSVNP), 
+                                  1:length(dataStanSVNP),
                                   sampling,
-                                  dataStan = dataStanSVNP,
-                                  conditions = condSVNP,
-                                  modelPars = modelPars,
-                                  nIter = nIter,
+                                  dataStan = dataStanSVNP, 
+                                  prior = "SVNP",
+                                  modelPars = modelPars, 
                                   samplePars = samplePars)
 # close clusters
 stopCluster(clusters) 
@@ -56,40 +62,11 @@ endTimeSVNP <- Sys.time()
 endTimeSVNP-startTimeSVNP
 
 # Execute simulation for RHSP ---------------------------------------------
-# do the sampling
-# Make sure output is deleted such that no appendation takes place (BE CAREFUL!)
-#file.remove(c("~/1vs2StepBayesianRegSEM/output/resultsRHSP.csv",
-#              "~/1vs2StepdBayesianRegSEM/output/convRHSP.csv"))
-#startTimeRHSP <- Sys.time()
-## create cluster
-#clusters <- makePSOCKcluster(nClusters) 
-## source functions & conditions within clusters
-#clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/functions.R'))
-#clusterCall(clusters, function() source('~/1vs2StepBayesianRegSEM/R/parameters.R'))
-##Load packages per cluster
-#clusterCall(clusters, function() lapply(packages, library, character.only = TRUE))
-##run function in clustered way where every set of condition gets it's own core
-#outputFinalRHSP <- clusterApplyLB(clusters, 
-#                                  1:nrow(condRHSP), 
-#                                  sampling,
-#                                  conditions = condRHSP,
-#                                  modelPars = modelPars,
-#                                  nIter = nIter,
-#                                  samplePars = samplePars)
-## close clusters
-#stopCluster(clusters) 
-## measure end time
-#endTimeRHSP <- Sys.time()
-## measure elapsed time
-#endTimeRHSP-startTimeRHSP
 
 
-test <- sampling(pos = 1, 
-                 dataStan = dataStanSVNP, 
-                 modelPars = modelPars, 
-                 condPrior = condSVNP, 
-                 condPop = condPop,
-                 nIter = nIter, 
-                 samplePars = samplePars)
+
+
+
+
 
 

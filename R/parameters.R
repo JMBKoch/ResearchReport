@@ -98,7 +98,7 @@ samplePars <- list(
                 )
 
 # Parallelization Parameter -----------------------------------------------
-nClusters <- 12 
+nClusters <- 4
 #nClusters <- 46
 
 # other study parameters --------------------------------------------------
