@@ -15,10 +15,10 @@ You can clone the repository by running:
 
 - The model and all other study parameters (e.g. number of iterations) are specified in `.R/parameters.R`. Note that if the model is adjusted, the code in `./stan` needs to be adjusted accordingly as well. 
 
-`./R/functions` contains all functions that are used in `.R/main.R`.
+- `./R/functions` contains all functions that are used in `.R/main.R`.
 
-`./data` contains the raw datasets that were simulated based on the population conditions. It will be simulated and saved again when running `.R/main.R`.
+- `./data` contains the raw datasets that were simulated based on the population conditions. It will be simulated and saved again when running `.R/main.R`.
 
-`.Rmd/` contains all manusicripts, the most important one being `.Rmd/thesis/thesis.Rmd`.
+- `.Rmd/` contains all manuscripts, the most important one being `.Rmd/thesis/thesis.Rmd`.
 
 (c) J.M.B. Koch, 2022
