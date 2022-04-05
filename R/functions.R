@@ -60,6 +60,7 @@ prepareDat <- function(datasets, condPrior, nIter){
   
   # helper function for unlisting on only first level;
   #  (c) Heibl 2016 (https://github.com/heibl/ips/blob/master/R/unlistFirstLevel.R)
+  #  (didn't just use package because not possible with version of R I'm using)
   unlistFirstLevel <- function(z, use.names = TRUE){
     
     ## get ID of elements which are list ...
@@ -149,7 +150,7 @@ prepareDat <- function(datasets, condPrior, nIter){
     dataStan[[pos]] <- dataStanCondCurrent
   }
   #return unnested output, such that it can be looped over in sampling()
-  ips::unlistFirstLevel(dataStan)
+  unlistFirstLevel(dataStan)
 }
 
 # saveResults() ------------------------------------------------------------
