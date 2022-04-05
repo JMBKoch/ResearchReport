@@ -1,17 +1,24 @@
-# One- vs. two-step Approach in Bayesian Regularized Structual Equation Modeling (SEM)
+# Getting A Step Ahead: Using the Regularized Horseshoe Prior to Select Cross-Loadings in Bayesian Regularized Structural Equation Modeling (SEM)
 
-This repository contains the code of my Master's Thesis in Applied Statistics at Utrecht University (September '21 - May '22). 
 
-While the concepts of *penalization* or *regularization* have been common place in regression and machine learning for a long time, their usage has only more recently been proposed in the context of structural equation modeling (SEM, Jacobucci, Grimm, McArdle, 2016). For instance, cross-loadings in a factor model can be penalized, such that only large cross-loadings are included in the model, whereas small cross loadings are shrunken to zero. 
+This repository contains the code of my Master's Thesis in Methodlogy & Statistics at Utrecht University (September '21 - June '22). 
 
-In a Bayesian context, regularization can be achieved through so-called shrinkage priors (see van Erp, Oberski, & Mulder, 2019 for an overview). One such shrinkage prior is the *small-variance normal prior*, which corresponds to the classical ridge penalty (Muthén & Asparouhov, 2012). The issue with this shrinkage prior, however, is that it not only shrinks small coefficients (to zero), but also shrinks large coefficients (to a smaller estimate). Consequently, the estimates of the larger coefficients are biased substantially. This approach therefore requires a second step, where the model is re-estimated without the shrinkage prior, while fixing those coefficients that were shrunk to zero in the first step to zero. 
+You can clone the repository by running:
 
-The aim of this project is to assess through simulation whether other, more sophisticated shrinkage priors (van Erp, Oberski, & Mulder, 2019) are able to outperform the small-variance normal prior, within a simpler, one-step approach.
+`git clone https://github.com/JMBKoch/1vs2StepBayesianRegSEM/`.
 
-### References
+- Note that all scripts assume that this repository has been cloned to the home directory of a unix-based system. Hence, if you're on Windows or you want to work from a different path, you will have to adjust the paths in all scripts manually.
 
-Jacobucci, R., Grimm, K. J., & McArdle, J. J. (2016). Regularized structural equation modeling. Structural Equation Modeling: A Multidisciplinary Journal, 23(4), 555–566. doi: 10.1080/10705511.2016.1154793 
+- The simulation study can be conducted by sourcing or running `./R/main.R`. 
 
-van Erp, S., Oberski, D. L., & Mulder, J. (2019). Shrinkage priors for bayesian penalized regression. Journal of Mathematical Psychology, 89, 31–50. doi: 10.1016/j.jmp.2018.12.004 
+- Packages should be installed automatically, if they are not yet. However, this may not work on all systems/ versions of R. Hence, if the script does not run checking if the packages are installed correctly may be a sensible first step in the debugging process. An overview of the required packages can be found at the top (line 7-l3) of `./R/parameters.R`.
 
-Muthén, B. O., & Asparouhov, T. (2012). Bayesian structural equation modeling: A more flexible representation of substantive theory. Psychological Methods, 17(3), 313–335. doi: 10.1037/a0026802
+- The model and all other study parameters (e.g. number of iterations) are specified in `./R/parameters.R`. Note that if the model is adjusted, the code in `./stan` needs to be adjusted accordingly as well. 
+
+- `./R/functions` contains all functions that are used in `./R/main.R`.
+
+- `./data` contains the raw datasets that were simulated based on the population conditions. It will be simulated and saved again when running `./R/main.R`.
+
+- `./Rmd/` contains all manuscripts , the most important one being `./Rmd/thesis/thesis.Rmd`.
+
+(c) J.M.B. Koch, 2022
