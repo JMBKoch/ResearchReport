@@ -10,7 +10,6 @@ packages <- c("cmdstanr", # MCMC sampling using stan
               "mvtnorm", # data simulation
               "parallel", # parallelization
               "bayesplot", # convergence diagnostics 
-              "ips" # unlistFirstLevel() for prepareDat()
               )
 # make sure that packages are installed if not present
 package.check <- lapply(
@@ -93,13 +92,12 @@ condRHSP <-
 # save in one list for easier passing to functions
 samplePars <- list(
                 nChain = 2,
-                nWarmup = 50,
-                nSampling = 50
+                nWarmup = 2000,
+                nSampling = 4000
                 )
 
 # Parallelization Parameter -----------------------------------------------
-nClusters <- 4
-#nClusters <- 46
+nClusters <- 46
 
 # other study parameters --------------------------------------------------
-nIter <- 2
+nIter <- 200
