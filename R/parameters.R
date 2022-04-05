@@ -9,7 +9,7 @@ packages <- c("cmdstanr", # MCMC sampling using stan
               "tidyverse", # data wrangling, plotting, pipes
               "mvtnorm", # data simulation
               "parallel", # parallelization
-              "bayesplot", # convergence diagnostics 
+              "bayesplot" # convergence diagnostics 
               )
 # make sure that packages are installed if not present
 package.check <- lapply(
