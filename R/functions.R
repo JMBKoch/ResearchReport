@@ -58,6 +58,35 @@ simDatasets <- function(condPop, nIter, modelPars){
 # based on a unique combination of hyper-pars
 prepareDat <- function(datasets, condPrior, nIter){ 
   
+  # helper function for unlisting on only first level;
+  #  (c) Heibl 2016 (https://github.com/heibl/ips/blob/master/R/unlistFirstLevel.R)
+  unlistFirstLevel <- function(z, use.names = TRUE){
+    
+    ## get ID of elements which are list ...
+    id <- sapply(z, is.list)
+    ## ... but not of class 'phylo'
+    id <- id & !sapply(z, inherits, what =  "phylo")
+    
+    if ( any(id) ){
+      
+      ## unlist
+      zz <- vector(mode = "list")
+      for ( i in seq_along(z) ){
+        if ( id[i] ) zz <- c(zz, z[[i]])
+        else zz <- c(zz, z[i])
+      }
+      
+      ## preserve names
+      if ( use.names ){
+        d <- sapply(z, length)
+        names(zz) <- rep(names(d), d)
+      }
+      
+      z <- zz
+    }
+    z
+  }
+  
   # allocate memory for nIter datasets per set of current prior conditions
   dataStanCondCurrent <- list()
   
