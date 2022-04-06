@@ -17,17 +17,17 @@ source('~/1vs2StepBayesianRegSEM/R/parameters.R')
 
 ```{r}
 # load results
-resultsSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/backupResults/18.3/resultsSVNP.csv", 
+resultsSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv", 
                         sep = " ", 
                         header = TRUE)
-convSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/backupResults/18.3/convSVNP.csv",
+convSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
                      sep = " ",
                      header = TRUE)
 ```
 
 ```{r, chache=T}
 # inspect both a bit
-head(resultsSVNP)
+nrow(resultsSVNP)
 head(convSVNP)
 ```
 
