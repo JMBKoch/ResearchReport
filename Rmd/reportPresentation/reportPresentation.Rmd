@@ -119,6 +119,7 @@ bibliography      : ["refs.bib"]
   - df of global shrinkage parameter: 1, 3
   - scale of local shrinkage parameter: 0.1, 1
   - df of local shrinkage parameter: 1, 3
+  - scale of slab: 0.1, 1, 5
   - df of slab: 1, 3
 
 ## Check out my work on Github
