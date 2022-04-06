@@ -13,6 +13,8 @@ You can clone the repository by running:
 
 - Packages should be installed automatically, if they are not yet. However, this may not work on all systems/ versions of R. Hence, if the script does not run checking if the packages are installed correctly may be a sensible first step in the debugging process. An overview of the required packages can be found at the top (line 7-l3) of `./R/parameters.R`.
 
+- In order for `cmdstanr` to work, it is rquired to run `cmdstanr::install_cmdstan()` a single time. 
+
 - The model and all other study parameters (e.g. number of iterations) are specified in `./R/parameters.R`. Note that if the model is adjusted, the code in `./stan` needs to be adjusted accordingly as well. 
 
 - `./R/functions` contains all functions that are used in `./R/main.R`.
