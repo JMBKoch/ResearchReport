@@ -23,7 +23,7 @@ package.check <- lapply(
 
 # Model--------------------------------------------------------------------
 # Lambda
-main <- c(.5, .75, .25, .1, .5, .25)
+main <- c(.75, .75, .75, .75, .75, .75)
 cross2 <- c(.2, 0, 0, 0, 0, .2) # TBA: make this more generalizable?
 cross5 <- c(.5, 0, 0, 0, 0, .5)
 # Psi
