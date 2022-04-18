@@ -1,7 +1,7 @@
 # Getting A Step Ahead: Using the Regularized Horseshoe Prior to Select Cross-Loadings in Bayesian Regularized Structural Equation Modeling (SEM)
 
 
-This repository contains the code of my Master's Thesis in Methodlogy & Statistics at Utrecht University (September '21 - June '22). 
+This repository contains the code of my Master's Thesis in Methodology & Statistics at Utrecht University (September '21 - June '22). 
 
 You can clone the repository by running:
 
@@ -13,7 +13,7 @@ You can clone the repository by running:
 
 - Packages should be installed automatically, if they are not yet. However, this may not work on all systems/ versions of R. Hence, if the script does not run checking if the packages are installed correctly may be a sensible first step in the debugging process. An overview of the required packages can be found at the top (line 7-l3) of `./R/parameters.R`.
 
-- In order for `cmdstanr` to work, it is rquired to run `cmdstanr::install_cmdstan()` a single time. 
+- In order for `cmdstanr` to work, it is required to run `cmdstanr::install_cmdstan()` a single time. 
 
 - The model and all other study parameters (e.g. number of iterations) are specified in `./R/parameters.R`. Note that if the model is adjusted, the code in `./stan` needs to be adjusted accordingly as well. 
 
