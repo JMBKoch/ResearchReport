@@ -1,0 +1,143 @@
+---
+title: "Getting A Step Ahead: Using the Regulararised Horseshoe Prior (RHSP) to Select Cross-Loadings in Bayesian Regularized SEM"
+#subtitle: "Research Report Presentation"
+author: "Koch, J.M.B. (Michael)"
+date: "3/26/2022"
+output: ioslides_presentation
+bibliography      : ["refs.bib"]
+---
+
+## The Art of Statistical Modeling
+
+\ 
+
+\ 
+
+<center>
+
+![](~/1vs2StepBayesianRegSEM/Rmd/figures/datagenVsModelMeme.png)
+
+</center>
+
+## Fundamental Trade-off in Statistical Modeling 
+
+<center>
+
+![](~/1vs2StepBayesianRegSEM/Rmd/figures/fundamentalTradeoff.png)
+
+</center>
+
+
+## Simple Structure: Simply not the best (Solution for a Complicated Issue)
+
+
+<center>
+
+
+![](~/1vs2StepBayesianRegSEM/Rmd/figures/simpleStructure.png)
+
+
+</center>
+
+
+## Simple Structure: Simply not the best (solution for a complicated issue)
+
+
+<center>
+ 
+
+![](~/1vs2StepBayesianRegSEM/Rmd/figures/simpleStructureMeme.png)
+
+
+</center>
+
+
+## Small Variance Normal Prior (SVNP): a better Solution for a Complicated Issue 
+
+  + Don't just assume that cross-loadings are zero ( $\mathcal{N}(0, 0)$ )
+  + Instead make a more realistic and flexible assumption [@muthen_bayesian_2012]:
+    - Small Variance Prior, e.g.: $\mathcal{N}(0, 0.01)$ 
+    - allowing for a more flexible model identification and model selection
+
+## Small Variance Normal Prior (SVNP): Still no ideal Solution for a Complicated Issue
+
+- Also (relevant) cross-loadings far from zero are shrunken [@lu_bayesian_2016] 
+
+- Consequently other parameters in the model (e.g. the factor-correlation, main-loadings) end up substantially biased too
+
+- As solution, a two-step procedure is required, which is cumbersome and introduces a number of researchers degrees of freedom
+  
+*&#8594;* More advanced priors need to be identified that can outperform the small-variance prior *in a single step*
+
+
+## A Promising Candidate: The Regularized Horseshoe Prior
+
+- Extension of *Horseshoe Prior* [@carvalho_horseshoe_2010]
+- Main idea: global shrinkage parameter (shrinking all cross-loadings to zero) and local shrinkage parameter (allowing the relevant cross-loadings to escape the shrinkage) [@piironen_sparsity_2017]
+- Regularized adds the slab [@piironen_sparsity_2017], which shrinks ALL cross-loadings at least a little bit, to avoid identification issues [see @ghosh_use_2018]
+- Formally:
+
+
+## The present study
+
+<center>
+
+![](~/OneDrive/ms/thesis/Rmd/figures/model.png)
+
+</center>
+
+## The present study
+
+- Monte Carlo Simulation using `stan` [@stan_development_team_stan_2021]
+- Population conditions:
+  - N: 100, 200
+  - magnitude cross-loading: 0.2, 0.5
+- Prior conditions:
+  - $\sigma^2$: 0.1, 0.01, 0.001 [@muthen_bayesian_2012]
+- Sampling parameters:
+  -  burnin 2000, chain length 4000 
+- 200 iterations per individual set of conditions
+- Main outcomes: (mean absolute) bias, MSE, Power, Type I error rate
+  - different selection rules regarding the latter two: tresholds, credible intervals [@zhang_criteria_2021]
+
+## Preliminary Results: How does the SVNP perform 
+
+- Plot Bias Main-Loading 
+- Plot Bias Factor Corr
+
+## Preliminary Results: How does the SVNP perform 
+
+- Preliminary conclusion: 
+  - The SVNP does pretty well with small cross-loadings 
+  - But with larger cross-loadings, the bias becomes substantial 
+
+
+## Foreshadowing Thesis
+
+- same population conditions as above
+- RHSP hyper-parameter conditions:
+  - scale of global shrinkage parameter: 0.1, 1
+  - df of global shrinkage parameter: 1, 3
+  - scale of local shrinkage parameter: 0.1, 1
+  - df of local shrinkage parameter: 1, 3
+  - scale of slab: 0.1, 1, 5
+  - df of slab: 1, 3
+
+## Check out my work on Github
+
+[Feel free to check out, criticize and improve my work!](https://www.github.com/JMBKoch/1vs2StepBayesianRegSEM)
+
+<center>
+
+![](~/1vs2StepBayesianRegSEM/Rmd/figures/dodge.png)
+
+</center>
+
+<style>
+slides > slide { overflow: scroll; }
+slides > slide:not(.nobackground):after {
+  content: '';
+}
+</style>
+
+## References

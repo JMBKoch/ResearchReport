@@ -1,0 +1,12 @@
+base
+methods
+datasets
+utils
+grDevices
+graphics
+stats
+papaja
+LaplacesDemon
+ggplot2
+magrittr
+jtools

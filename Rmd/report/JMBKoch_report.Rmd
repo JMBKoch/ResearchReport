@@ -24,7 +24,7 @@ editor_options:
 ```{=tex}
 % move text to bottom of page
 \vfill
-Research Reports \\
+Research Report\\
 Michael Koch (6412157)\\
 Methodology and Statistics for the Behavioral, Biomedical, and Social Sciences \\
 Supervisor: Dr. Sara van Erp \\ 
@@ -39,12 +39,15 @@ Intented Journal of Publication: Structural Equation Modeling \\
 % make page numbers from second page 
 \pagestyle{plain}
 ```
+
 ```{r setup, include = FALSE}
 library("papaja")
 library(LaplacesDemon) # for horseshoe density 
 library(ggplot2)
 library(magrittr)
 library(jtools) # for apa ggplot theme
+library(kableExtra)
+source('~/OneDrive/ms/thesis/R/parameters.R')
 ```
 
 ```{r analysis-preferences}
@@ -55,66 +58,26 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 \clearpage
 
-The art of statistical modeling revolves around finding an appropriate simplification, i.e., a model, of a true data-generating process (TBA REF). Hereby, a fundamental trade-off arises between model-simplicity and model-complexity. On the one hand, models need to be  simple enough to be (1) identified (i.e., estimate-able with the information available in the data); (2) interpretable; and (3) generalizable (i.e., not over-fitted, hence having enough variance). On the other hand, models need to be complex enough (have enough parameters) to accurately represent the true data generating process (i.e., to not be too biased) (ADD REF). 
+The art of statistical modeling revolves around coming up with an appropriate simplification, a  *model*, of a true *data-generating process*. Hereby, a fundamental trade-off between model-simplicity and model-complexity arises. On the one hand, models need to be simple enough to be (1) identified, i.e., estimate-able with the information available in the data; (2) interpretable; and (3) generalizable (not over-fitted). On the other hand, models need to be complex enough, i.e., have enough parameters, to accurately represent the data generating process, hence to not be too biased [@cox_principles_2006; @james_introduction_2021-1]. 
 
-In the context of confirmatory factor analysis (CFA), an essential tool for modeling measurement structures, it is common practice to deal with this fundamental trade-off by imposing a so-called simple structure (ADD REF). Here, factor loadings that relate items to factors that they theoretically do not belong to, are fixed to zero to identify the model (see Figure 1 for an example of a 2-factor model with simple structure). This practice often leads to poor model fit, which forces researchers to free some cross-loadings after the fact based on empirical grounds (modification indices) to improve fit. This practice is, however, highly flawed, as it risks capitalization of chance and thereby over-fitting (REF), hence ending up with a model that does not generalize well to other datasets from the same population. 
+In Confirmatory factor analysis [CFA, @bollen_structural_1989], an essential tool for modeling measurement structures, it is common practice to deal with this fundamental trade-off by imposing a so-called simple structure. Here, cross-loadings, factor loadings that relate items to factors that they theoretically do not belong to, are fixed to zero to yield an identified and straightforwardly interpretable model. This practice often leads to poor model fit, which forces researchers to free some cross-loadings after the fact based on empirical grounds (modification indices) to improve fit [@lu_bayesian_2016]. This procedure is highly flawed, as it risks capitalization on chance and thereby over-fitting, hence ending up with a model that does not generalize well to other datasets from the same population [@maccallum_model_1992]. 
 
-## Bayesian Regularized SEM
+## Bayesian CFA: The Small Variance Normal Prior (SVNP)
 
-As solution to the issue, @muthen_bayesian_2012 proposed that rather than fixing *all* cross-loadings to zero, one should should assume that *most* cross-loadings are zero. Formally, this is achieved by setting the so-called Small Variance Normal Prior (SVNP) for the cross-loadings, which is a normal distribution with mean zero and a very small variance (e.g.: $\sigma^2$ = 0.1, $\sigma^2$ = 0.01, $\sigma^2$ = 0.001). This prior has a large peak at zero, and very thin tails (see Figure 2). Hence, it attaches large prior mass to cross-loadings of or near zero, while attaching almost no prior mass to cross-loadings further from zero. Consequently, all cross-loadings in the model are shrunken. The larger the prior’s variance, the more admissive the model is in the amount of deviation from zero it allows. Lu and colleguaes note that this approach is simply a form of regularization, where cross-loadings are regularized in an attempt to identify and select relevant cross-loadings as non-zero, such that one ends up with a sparse model.  
+As solution to the issue, @muthen_bayesian_2012 proposed a Bayesian alternative approach to CFA. Rather than identifying models by fixing *all* cross-loadings to zero, one should should assume that *most* cross-loadings are zero. Formally, this is achieved by setting the so-called *Small Variance Normal Prior* (SVNP) for the cross-loadings, which is a normal distribution with mean zero and a very small variance (e.g.: $\sigma^2$ = 0.1, $\sigma^2$ = 0.01, $\sigma^2$ = 0.001). This prior has a large peak at zero, and very thin tails. Hence, it attaches large prior mass to cross-loadings of or near zero, while attaching almost no prior mass to cross-loadings further from zero. Consequently, all cross-loadings in the model are shrunken. The larger the prior’s variance, the more admissive the model is in the amount of deviation from zero it allows. @lu_bayesian_2016 note that this approach is simply a form of regularization, where cross-loadings are regularized in an attempt to identify and select relevant cross-loadings as non-zero, such that one ends up with a sparse model.  
+An issue with @muthen_bayesian_2012's approach is that not only the cross-loadings close to zero, which are considered irrelevant, are shrunken to zero, as desired. Also the ones further from zero are shrunken, which introduces bias [@lu_bayesian_2016]. First, bias naturally occurs in the large cross-loadings itself. However, given that the parameters of a model are estimated conditionally on one another, also in other parameters, such as factor-correlations or main-loadings, substantial bias can arise. Consequently, the method requires a two-step approach. First, the model is estimated with the SVNP. Then the model is re-estimated, with cross-loadings that have been selected to be zero in the previous step are fixed to zero, and the remaining cross-loadings are estimated without shrinkage, avoiding the bias in the model of the previous step. This process is tedious, computationally expensive, and adds a number of undesired researchers degrees of freedom. Therefore, alternative priors need to be identified that can outperform the Small Variance Normal Prior in a single step. The literature on regularization in a regression context [see @van_erp_shrinkage_2019 for an overview] provides a variety of promising candidates for achieving this end. 
 
-An issue with muthen_bayesian_2012's approach is that not only the cross-loadings close to zero that are considered irrelevant are shrunken to zero, as desired, but also the ones further from zero are shrunken towards zero, which introduces bias [@lu_bayesian_2016]. First, bias naturally occurs in the large cross-loadings itself. However, given that the parameters of a model are esitmated conditionally on another, also in other parameters, such as factor-correlations, or main-loadings, substantial bias can arise. Consquently, the method requires a two-step approach. First, the model is estimated with the SVNP. Then the model is re-estimated, with cross-loadings that have been selected to be zero in the previous step are fixed to zero, and the remaining cross-loadings are estimated without shrinkage, avoiding the bias in the model of the previous step. This process is tedious, computationally expensive, and adds a number of undesired researchers degrees of freedom. Therefore, alternative priors need to be identified that can outperform the Small VarianceNormal Prior in a single step. The literature on regularization in a regression context (see @van_erp_shrinkage_2019 for an overview) provides a variety of promising candidates for achieving this end. 
-
-## Spike-and-Slab Prior
-
-One promising regularization prior for the purpose of selecting cross-loadings in regularized Bayesian SEM is the so-called Spike-and-Slab Prior (also known as ). This prior is a discrete mixture prior...? 
-
- - Decription prior also in mathematical terms 
-
- 
-Indeed, @lu_bayesian_2016 found that this prior is doing well in identifying truly non-zero cross-loadings as such. However, the big caveat of this method is that the prior cannot be implemented in STAN, the MCMC-sampling package that is most appropriate to estimated regularized SEM models due to its excellent ability to estimate highly-dimensional models. 
 
 ## The Regularized Horseshoe Prior (RHSP)
 
-The reason that the Spike-and-Slab Prior is unavailable is
+A promising alternative, that is a fully continuous mixture of distributions, and thus employable in STAN, is the so-called *Regularized Horseshoe Prior* [RHSP, @piironen_hyperprior_2017; @piironen_sparsity_2017]. This prior is an extension of the Horseshoe Prior [@carvalho_horseshoe_2010]. The main idea of both priors is that there is a *global shrinkage parameter* $\tau$, shrinking all cross-loadings to zero, and a *local shrinkage parameter*  $\tilde{\omega}_{jk}^2$ that allows the relevant cross-loadings to escape the shrinkage. The issue with the original Horseshoe Prior is that not shrinking large cross-loadings at all can lead to identification issues [see @ghosh_use_2018]. The RHSP solves this issue [@piironen_sparsity_2017], by shrinking all cross-loadings at least a little bit, by setting a slab (very... ). The prior is specified as follows.
 
-(see @betancourt_conceptual_2018). A promising alternative, that is a mixture of fully continous distributions, and thus employable in STAN, is the so-called Reularized Horseshoe Prior (RHSP).
-
-- Extension of Horseshoe Prior [@carvalho_horseshoe_2010]
-- Main idea: global shrinkage parameter (shrinking all cross-loadings to zero) and local shrinkage parameter (allowing the relevant cross-loadings to escape the shrinkage) [@piironen_sparsity_2017]
-- Formally:
-- Regularized adds the slab, which shrinks ALL cross-loadings at least a little bit, to avoid identification issues [see @ghosh_use_2018]
-
-
-- Mathematical formulation 
-
-
-Figure 3 illustrates the two priors, with ... hyper-parameter configurations
-
-# The current study 
-
-While the Regularized Horseshoe Prior has been shown to perform excellently in the selection of relevant predictors in regression [@piironen_sparsity_2017; @van_erp_shrinkage_2019], no previous research has validated its performance in selecting relevant cross-loadings in CFA. To fill this gap, the aim of this study is to compare the RHSP to the SVNP in their performance in selecting the true factor structure in CFA.
-
-## Analytic Strategy
-
-In order to assess the performance of the SVNP in regularizing cross-loadings in Bayesian Regularized SEM, a Monte Carlo simulation study was conduced using STAN [@stan_development_team_stan_2021]. The models were be sampled using the No-U-Turn-Sampler [@homan_no-u-turn_2014], with two chains, a burnin-period of 2000 and a chain-length of 4000. These sampling parameters were identified to be required for the RHSP to reach convergence, and were therefore also used for the SVNP in order to ensure a comparability. 
-
-The datasets were simulated based on a true 2-factor model, which is summarized in Figure 2. We varied the magnitude of the two non-zero cross-loadings between 0.2 and 0.5. Next, we varied the sample sizes of the simulated datasets between N = 100 and N = 200. This choice was made based on the fact that for such simple factor models researchers would be unlikely to collected larger sample sizes in practice. Finally, based on the recommodations of @muthen_bayesian_2012, we included three levels of the hyperparameter $sigma^2$: 0.001, 0.01, 0.1). 
-
-![Figure 2](~/1vs2StepBayesianRegSEM/Rmd/figures/model.png)
-
-A summary of all conditions that is summarized below in Table 1.
-
-- Table 1: Overzicht condities in tabel 
-
-
-As main outcomes, we considered the (mean absolute) bias and the mean squared error (MSE) in all estimated model paramters. 
-
-- Main outcomes: (mean absolute) bias, MSE, Power, Type I error rate
-  - different selection rules regarding the latter two:  tresholds, credible intervals [@zhang_criteria_2021]
-
-
-
+For every Cross-loading  of factor j on item k:
+$$\lambda_{jk} | \tilde{\omega}_{jk}, \tau, c\sim \mathcal{N}(0, \ \tilde{\omega}^2_{jk} \tau^2), \ with \ \tilde{\omega}^2_{jk} = \frac{c^2\omega_{jk}^2}{c^2 + \tau^2 \omega_{jk}^2},$$
+$$\tau | s_{global}^2 \sim half-t_{df_{global}}(0,\  s_{global}^2), \ with \  s_{global} = \frac{p_0}{p-p_0}\frac{\sigma}{\sqrt{N}},$$
+$$\omega_{jk} \sim half-t_{df_{local}}(0, \ s_{local}^2),$$
+$$c^2 | df_{slab}, s_{slab} \sim \mathcal{IG}(\frac{df_{slab}}{2}, \  df_{slab} \times \frac{s_{slab}}{2}^2),$$
+where $p_0$ represents a prior guess of the number of relevant cross-loadings. Note that we deviate from the common notation of the local shrinkage parameter as $\lambda$, as this letter is commonly used to denote factor loadings in CFA.
 
 ```{r dev='cairo_pdf', include=T, echo=F, warning=F, fig.cap="Density Plots of the Regularization Priors of Interest"}
 # Make Figure 1 with 
@@ -144,6 +107,34 @@ data.frame(dens = c(smallVar, regHs),
   theme_apa(legend.pos = "bottom")
 ```
 
+# The current study 
+
+While the Regularized Horseshoe Prior has been shown to perform excellently in the selection of relevant predictors in regression [@piironen_sparsity_2017; @van_erp_shrinkage_2019], no previous research has validated its performance in selecting relevant cross-loadings in CFA. To fill this gap, we aim to compare the RHSP to the SVNP in their performance in selecting the true factor structure in CFA. Below we present our preliminary results regarding the performance of the SVNP. 
+
+## Study Procedure and Parameters
+
+In order to assess the performance of the SVNP in regularizing cross-loadings in Bayesian Regularized SEM, a Monte Carlo simulation study was conduced using STAN [@stan_development_team_stan_2021]. All code that was used to run the simulation study can be openly accessed on the author's [github](https://github.com/JMBKoch/1vs2StepBayesianRegSEM). The models were sampled using the No-U-Turn-Sampler [@homan_no-u-turn_2014], with two chains, a burnin-period of 2000 and a chain-length of 4000. These sampling parameters were identified in pilot-runs to be required for the RHSP to reach convergence, and were therefore also used for the SVNP in order to ensure a fair comparison. 
+
+## True Model and Conditions
+
+The datasets were simulated based on a true 2-factor model, with three items per factor, and a factor correlation of 0.5. The factors were scaled by fixing their means to zero and their variances to 1. All main-loadings were set to 0.75, and all residual variances to 0.3. We included two truly non-zero cross-loadings, that of factor 1 on item 4, and that of factor 2 on item 3. The true model is summarized in the Appendix both in equations and graphically. We varied the magnitude of the two non-zero cross-loadings between 0.2 and 0.5. Next, we varied the sample sizes of the simulated datasets between 100 and 200. This choice was made because for simple factor models researchers would be unlikely to collected larger sample sizes in practice. Finally, based on the recommendations of @muthen_bayesian_2012, we included three levels of the hyper-parameter $\sigma^2$: 0.001, 0.01, 0.1. This left us with a total number of 2 x 2 x 3 = 12 individual sets of conditions. Per set of conditions, 200 iterations were run, yielding a total of 2400 posterior samples. 
+
+## Outcomes 
+
+As main outcome, we considered the Mean (Absolute) Bias of all estimated model parameters. As secondary outcomes, we also computed the Relative Bias and Mean Squared Error [MSE, @morris_using_2019]. Next, we computed the power for the truly non-zero cross-loadings, i.e. the probability of correctly identifying them as non-zero. For the truly zero cross-loadings we computed the Type-I Error Rate, hence the probability of wrongly selecting these cross-loadings as non-zero. For these last two outcomes, in order to select cross-loadings as zero, several selection rules were used based on recommendations @zhang_criteria_2021. First, a number of thresholds were considered, where a cross-loading is selected to be zero when the absolute value of its posterior estimates falls below a certain value. Specifically we considered three thresholds: 0, 0.1, 0.15. Moreover, we selected cross-loadings based on whether or not their 95%, 90%, 80%, and 50% credible interval contained zero. Note that for all outcomes we computed two versions, one based on mean and one based on median posterior estimates. The latter is only reported in case of relevant deviations from the former.
+
+# Results
+
+## Convergence
+
+In terms of convergence, the SVNP showed excellent performance. For all parameters, across all iterations and configurations of conditions, there were none in which $\hat{R} < 1.05$. The lowest value of the Effective Sample Size $N_{eff}$ was still a good 39.4% of the chain length, with the largest majority of runs  even exceeding an excellent 50% of the chain length (96% for the parameter with the largest percentage of $\frac{N_{eff}}{N_{chain}} < 0.5$). Moreover, across all runs there was not a single divergent transition. Therefore, none of the 2400 posterior samples had to be disregarded. 
+
+## Main Results
+
+# Conclusions and Discussion
+
+
+
 \clearpage
 
 ```{tex}
@@ -171,4 +162,31 @@ data.frame(dens = c(smallVar, regHs),
 \setlength{\parindent}{-0.27in}
 \setlength{\leftskip}{0.5in}
 ```
+
+
+# Appendix
+
+## Appendix A: True Model
+
+For every individual i in i = 1,...,N:
+$$Y_i \sim \mathcal{N}(\mathbf{0}, \Sigma),$$ where
+$$\Sigma = \Lambda\Psi\Lambda',$$
+$$\Lambda = 
+    \begin{bmatrix}
+    0.75 & 0 \\
+    0.75 & 0 \\
+    0.75 & 0.2/0.5 \\
+    0.2/0.5 & 0.75 \\
+    0 & 0.75 \\
+    0 & 0.75
+    \end{bmatrix},$$
+$$\Psi =
+    \begin{bmatrix}
+     1 & 0.5 \\
+     0.5 & 1
+    \end{bmatrix}
+,$$ and
+$$\Theta = diag[0.3, 0.3, 0.3, 0.3, 0.3, 0.3].$$
+
+![Graphical Representation of the True Model.](~/OneDrive/ms/thesis/Rmd/figures/model.png)
 
