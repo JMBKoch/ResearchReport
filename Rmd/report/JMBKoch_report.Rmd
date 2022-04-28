@@ -81,9 +81,9 @@ where $p_0$ represents a prior guess of the number of relevant cross-loadings. N
 
 ```{r dev='cairo_pdf', include=T, echo=F, warning=F, fig.cap="Density Plots of the Regularization Priors of Interest"}
 # Make Figure 1 with 
-ndraws <- 5e+05 # 10000 draws
+ndraws <- 5e+05 # 30000 draws
 # sample Small Variance Normal Prior
-smallVar <- rnorm(ndraws, mean = 0, sd = 0.1)
+smallVar <- rnorm(ndraws, mean = 0, sd = sqrt(0.01))
 
 # sample regularized horseshoe prior
 regHs <- rep(NA, ndraws)

@@ -74,15 +74,24 @@ bibliography      : ["refs.bib"]
 
 - Extension of *Horseshoe Prior* [@carvalho_horseshoe_2010]
 - Main idea: global shrinkage parameter (shrinking all cross-loadings to zero) and local shrinkage parameter (allowing the relevant cross-loadings to escape the shrinkage) [@piironen_sparsity_2017]
-- Regularized adds the slab [@piironen_sparsity_2017], which shrinks ALL cross-loadings at least a little bit, to avoid identification issues [see @ghosh_use_2018]
+- Regularized adds a slab, that shrinks ALL cross-loadings at least a little bit [@piironen_sparsity_2017], to avoid identification issues [see @ghosh_use_2018]
+
 - Formally:
 
+## A Promising Candidate: The Regularized Horseshoe Prior
+
+For every Cross-loading  of factor j on item k:
+$$\lambda_{jk} | \tilde{\omega}_{jk}, \tau, c\sim \mathcal{N}(0, \ \tilde{\omega}^2_{jk} \tau^2), \ with \ \tilde{\omega}^2_{jk} = \frac{c^2\omega_{jk}^2}{c^2 + \tau^2 \omega_{jk}^2},$$
+$$\tau | s_{global}^2 \sim half-t_{df_{global}}(0,\  s_{global}^2), \ with \  s_{global} = \frac{p_0}{p-p_0}\frac{\sigma}{\sqrt{N}},$$
+$$\omega_{jk} \sim half-t_{df_{local}}(0, \ s_{local}^2),$$
+$$c^2 | df_{slab}, s_{slab} \sim \mathcal{IG}(\frac{df_{slab}}{2}, \  df_{slab} \times \frac{s_{slab}}{2}^2),$$
+where $p_0$ represents a prior guess of the number of relevant cross-loadings.
 
 ## The present study
 
 <center>
 
-![](~/OneDrive/ms/thesis/Rmd/figures/model.png)
+![](~/1vs2StepBayesianRegSEM/ms/thesis/Rmd/figures/model.png)
 
 </center>
 
@@ -102,15 +111,20 @@ bibliography      : ["refs.bib"]
 
 ## Preliminary Results: How does the SVNP perform 
 
-- Plot Bias Main-Loading 
-- Plot Bias Factor Corr
+![](~/1vs2StepBayesianRegSEM/Rmd/figures/crossLoadings.png)
+
+
 
 ## Preliminary Results: How does the SVNP perform 
 
+![](~/1vs2StepBayesianRegSEM/Rmd/figures/mainLoadings.png)
+
+
 - Preliminary conclusion: 
   - The SVNP does pretty well with small cross-loadings 
-  - But with larger cross-loadings, the bias becomes substantial 
-
+  - But especially with larger cross-loadings, the bias becomes substantial 
+  - Hereby even structural parameters are affected
+  - A sensible choice of $\sigma^2$ 
 
 ## Foreshadowing Thesis
 
@@ -122,6 +136,8 @@ bibliography      : ["refs.bib"]
   - df of local shrinkage parameter: 1, 3
   - scale of slab: 0.1, 1, 5
   - df of slab: 1, 3
+- Worse performance in terms of convergence expected
+- Better performance with larger cross-loadings and 
 
 ## Check out my work on Github
 
