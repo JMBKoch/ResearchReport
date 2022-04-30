@@ -1,11 +1,17 @@
 ---
-title: "Getting A Step Ahead: Using the Regulararised Horseshoe Prior (RHSP) to Select Cross-Loadings in Bayesian Regularized SEM"
+title: "Getting A Step Ahead: Using the Regularized Horseshoe Prior (RHSP) to Select Cross-Loadings in Bayesian Regularized SEM"
 #subtitle: "Research Report Presentation"
 author: "Koch, J.M.B. (Michael)"
 date: "3/26/2022"
 output: ioslides_presentation
 bibliography      : ["refs.bib"]
 ---
+
+```{r, message=F, warning=F, error=F, echo=F}
+library(LaplacesDemon) # for horseshoe density 
+library(tidyverse)
+library(jtools)
+```
 
 ## The Art of Statistical Modeling
 
@@ -28,7 +34,7 @@ bibliography      : ["refs.bib"]
 </center>
 
 
-## Simple Structure: Simply not the best (Solution for a Complicated Issue)
+## Simple Structure
 
 
 <center>
@@ -40,7 +46,7 @@ bibliography      : ["refs.bib"]
 </center>
 
 
-## Simple Structure: Simply not the best (solution for a complicated issue)
+## Simple Structure
 
 
 <center>
@@ -52,14 +58,16 @@ bibliography      : ["refs.bib"]
 </center>
 
 
-## Small Variance Normal Prior (SVNP): a better Solution for a Complicated Issue 
+## Small Variance Normal Prior (SVNP)
 
   + Don't just assume that cross-loadings are zero ( $\mathcal{N}(0, 0)$ )
   + Instead make a more realistic and flexible assumption [@muthen_bayesian_2012]:
     - Small Variance Prior, e.g.: $\mathcal{N}(0, 0.01)$ 
     - allowing for a more flexible model identification and model selection
 
-## Small Variance Normal Prior (SVNP): Still no ideal Solution for a Complicated Issue
+## Small Variance
+
+Issue: 
 
 - Also (relevant) cross-loadings far from zero are shrunken [@lu_bayesian_2016] 
 
@@ -69,16 +77,13 @@ bibliography      : ["refs.bib"]
   
 *&#8594;* More advanced priors need to be identified that can outperform the small-variance prior *in a single step*
 
-
-## A Promising Candidate: The Regularized Horseshoe Prior
+## The Regularized Horseshoe Prior
 
 - Extension of *Horseshoe Prior* [@carvalho_horseshoe_2010]
 - Main idea: global shrinkage parameter (shrinking all cross-loadings to zero) and local shrinkage parameter (allowing the relevant cross-loadings to escape the shrinkage) [@piironen_sparsity_2017]
 - Regularized adds a slab, that shrinks ALL cross-loadings at least a little bit [@piironen_sparsity_2017], to avoid identification issues [see @ghosh_use_2018]
 
-- Formally:
-
-## A Promising Candidate: The Regularized Horseshoe Prior
+## The Regularized Horseshoe Prior
 
 For every Cross-loading  of factor j on item k:
 $$\lambda_{jk} | \tilde{\omega}_{jk}, \tau, c\sim \mathcal{N}(0, \ \tilde{\omega}^2_{jk} \tau^2), \ with \ \tilde{\omega}^2_{jk} = \frac{c^2\omega_{jk}^2}{c^2 + \tau^2 \omega_{jk}^2},$$
@@ -87,11 +92,41 @@ $$\omega_{jk} \sim half-t_{df_{local}}(0, \ s_{local}^2),$$
 $$c^2 | df_{slab}, s_{slab} \sim \mathcal{IG}(\frac{df_{slab}}{2}, \  df_{slab} \times \frac{s_{slab}}{2}^2),$$
 where $p_0$ represents a prior guess of the number of relevant cross-loadings.
 
+## The Regularized Horseshoe Prior
+
+```{r, include=T, echo=F, warning=F}
+# Make Figure 1 with 
+ndraws <- 5e+05 # 30000 draws
+# sample Small Variance Normal Prior
+smallVar <- rnorm(ndraws, mean = 0, sd = sqrt(0.01))
+
+# sample regularized horseshoe prior
+regHs <- rep(NA, ndraws)
+for(i in 1:ndraws){
+  c2 <- rinvgamma(1, shape=0.5, scale=1)
+  lambda <- rhalfcauchy(1, scale=1)
+  tau <- rhalfcauchy(1, scale=1)
+  lambda2_tilde <- c2 * lambda^2/(c2 + tau^2*lambda^2)
+  regHs[i] <- rnorm(1, 0, sqrt(tau^2*lambda2_tilde))
+}
+
+# make plot
+data.frame(dens = c(smallVar, regHs), 
+          prior = as.factor(rep(c("Small Variance Normal Prior (\u03c3\u00B2 = 0.01)", "Regularized Horseshoe Prior"), each = ndraws)),
+          asymp = rep(0, ndraws)) %>% 
+  ggplot(aes(x = dens, fill = prior, linetype = prior)) + 
+  geom_density(alpha = .5)+
+  geom_vline(aes(xintercept = asymp), linetype = "dashed") +
+  xlim(-.5, .5)+
+  labs(x = "Size Cross-Loading", title = NULL)+
+  theme_apa(legend.pos = "bottom")
+```
+
 ## The present study
 
 <center>
 
-![](~/1vs2StepBayesianRegSEM/ms/thesis/Rmd/figures/model.png)
+![](~/1vs2StepBayesianRegSEM/Rmd/figures/model.png)
 
 </center>
 
@@ -103,28 +138,17 @@ where $p_0$ represents a prior guess of the number of relevant cross-loadings.
   - magnitude cross-loading: 0.2, 0.5
 - Prior conditions:
   - $\sigma^2$: 0.1, 0.01, 0.001 [@muthen_bayesian_2012]
-- Sampling parameters:
-  -  burnin 2000, chain length 4000 
-- 200 iterations per individual set of conditions
-- Main outcomes: (mean absolute) bias, MSE, Power, Type I error rate
-  - different selection rules regarding the latter two: tresholds, credible intervals [@zhang_criteria_2021]
+- Main outcomes: (mean absolute) bias, MSE, Power, Type I error rate [based on a variety of selection rules, @zhang_criteria_2021]
 
-## Preliminary Results: How does the SVNP perform 
+## Results
 
-![](~/1vs2StepBayesianRegSEM/Rmd/figures/crossLoadings.png)
+![](~/1vs2StepBayesianRegSEM/Rmd/figures/allPars.png){length=500px}
 
-
-
-## Preliminary Results: How does the SVNP perform 
-
-![](~/1vs2StepBayesianRegSEM/Rmd/figures/mainLoadings.png)
-
-
-- Preliminary conclusion: 
+## Preliminary conclusion: 
   - The SVNP does pretty well with small cross-loadings 
   - But especially with larger cross-loadings, the bias becomes substantial 
   - Hereby even structural parameters are affected
-  - A sensible choice of $\sigma^2$ 
+  - A sensible choice of $\sigma^2$ can help to counter this
 
 ## Foreshadowing Thesis
 
@@ -137,7 +161,7 @@ where $p_0$ represents a prior guess of the number of relevant cross-loadings.
   - scale of slab: 0.1, 1, 5
   - df of slab: 1, 3
 - Worse performance in terms of convergence expected
-- Better performance with larger cross-loadings and 
+- Better performance in terms of bias expected 
 
 ## Check out my work on Github
 

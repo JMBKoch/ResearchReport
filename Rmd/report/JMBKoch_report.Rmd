@@ -133,8 +133,6 @@ In terms of convergence, the SVNP showed excellent performance. For all paramete
 
 # Conclusions and Discussion
 
-
-
 \clearpage
 
 ```{tex}
@@ -163,7 +161,6 @@ In terms of convergence, the SVNP showed excellent performance. For all paramete
 \setlength{\leftskip}{0.5in}
 ```
 
-
 # Appendix
 
 ## Appendix A: True Model
@@ -189,4 +186,3 @@ $$\Psi =
 $$\Theta = diag[0.3, 0.3, 0.3, 0.3, 0.3, 0.3].$$
 
 ![Graphical Representation of the True Model.](~/OneDrive/ms/thesis/Rmd/figures/model.png)
-

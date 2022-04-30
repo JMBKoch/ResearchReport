@@ -762,7 +762,7 @@ resultsSVNP %>%
   labs(x = NULL,
       y = "Mean Absolute Bias",
       title = "Main Loading 1, 2, 5 & 6")+
-  ylim(0, 0.5)+
+  ylim(0, 0.7)+
   theme_apa()
 ```
 
@@ -780,8 +780,8 @@ resultsSVNP %>%
   #facet_wrap(~N)+
   labs(x = NULL,
        y = NULL,
-      title = "Main Loading 4")+
-  ylim(0, 0.5)+
+      title = "Main Loading 3 & 4")+
+  ylim(0, 0.7)+
   theme_apa()
 ```
 
@@ -800,7 +800,7 @@ resultsSVNP %>%
   labs(x = "Size Cross Loading",
        y = "Mean Absolute Bias",
       title = "Factor Correlation")+
-  ylim(0, 0.5)+
+  ylim(0, 0.7)+
   theme_apa()
 ```
 
@@ -828,7 +828,7 @@ allAtOnce + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = 
 ```
 
 ```{r, fig.height = 15}
-png(file = "~/1vs2StepBayesianRegSEM/Rmd/figures/allPars.png", width=400, height=700)
+png(file = "~/1vs2StepBayesianRegSEM/Rmd/figures/allPars.png", width=400, height=550)
 allAtOnce + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "bottom", legend.title = element_blank())
 dev.off()
 ```
