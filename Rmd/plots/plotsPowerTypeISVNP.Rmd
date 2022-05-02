@@ -1,12 +1,9 @@
 ---
-title: "Analyzing the results" 
-author: "Michael Koch"
-date: "07-03-2022"
+title: "Plots Type I & Power"
+author: "Koch, J.M.B. (Michael)"
+date: '2022-05-02'
 output: html_document
 ---
-
-# Working through the results of the Mini- (/ Pilot-) simulation for the SVNP
-
 
 # Step1: Prepearations
 
@@ -29,203 +26,7 @@ convSVNP <- read.csv("~/OneDrive/ms/thesis/output/convSVNP.csv",
                      header = TRUE)
 ```
 
-```{r, chache=T}
-# inspect a bit
-nrow(resultsSVNP)
-```
-
-```{r}
-range(resultsSVNP$pos)
-```
-
-```{r}
-length(resultsSVNP$pos) == length(unique(resultsSVNP$pos))
-```
-
-# Post-process
-
-Arrange the data based on conditions and iteration, change the biases of the cross-loadings (wrongly computed for some reason), and add a sigma squared column, and a condition identifier.
-
-
-```{r}
-resultsSVNP <- 
-  resultsSVNP %>% 
-  arrange(sigma, N, cross, iteration) %>% 
-  mutate(sigmaSqu = sigma^2,
-         biasCrossMean_1 = abs(crossEstMean_1 - cross),
-         biasCrossMean_2 = abs(crossEstMean_2 - 0),
-         biasCrossMean_3 = abs(crossEstMean_3 - 0),
-         biasCrossMean_4 = abs(crossEstMean_4 - 0),
-         biasCrossMean_5 = abs(crossEstMean_5 - 0),
-         biasCrossMean_6 = abs(crossEstMean_6 - cross),
-         condID = rep(1:(nrow(condPop)*nrow(condSVNP)), each = nIter) 
-) 
-  
-```
-
-
-## Convergence
-
-Let's explore the convergence a bit
-
-
-### Divergent transitions
-
-Not a single divergent transition
-
-```{r}
-totalSumDiv <- sum(convSVNP$sumDiv)
-totalSumDiv 
-```
-
-
-### Effective Sample Size
-```{r}
-nIter
-```
-
-```{r}
-convSVNP %>% 
-  filter(parameter == "n_eff") %>% 
-  select(lambdaMainC.1.:theta.6.)%>% 
-  map_df(function(x){x/samplePars$nSampling}) %>%
-  map_df(function(x){x> 0.50}) %>% 
-  map_df(sum) %>% 
-  map_df(function(x){ x/ 2400}) 
-```
-
-Not a single parameter with a MINIMUM effective sample size of smaller than 50% of the total sample size
-
-### R-Hat
-
-```{r}
-convSVNP %>% 
-  filter(parameter == "Rhat") %>% 
-  map_df(max) %>% 
-  map_df(function(x){x < 1.05}) %>% 
-  select(lambdaMainC.1.:theta.6.)
-```
-
-Not a single parameter where the MAXIMUM Rhat IS NOT < 1.005
-
-
-### Max Treedepth
-
-```{r}
-convSVNP %>% 
-  filter(parameter == "Rhat") %>% 
-  select(maxTree) %>% 
-  map_df(max) 
-```
-
-FF met Sara bespreken, maar dit is meer over efficientie dan validiteit van de output, dus het zit sws wel goed!
-
-
-
-## Compute Relative Bias
-
-```{r}
-relBiasSVNP <- 
- resultsSVNP %>% 
-  select(mainEstMean_1:mainEstMean_6,
-        crossEstMean_1:crossEstMean_6,
-        thetaEstMean_1:thetaEstMean_6,
-        factCorrEstMean,
-        cross,
-        sigma, 
-        sigmaSqu,
-        N, 
-        pos,
-        iteration,
-        condID) %>% 
-    mutate(absBiasEstMean_1 = abs(mainEstMean_1-modelPars$main),
-           absBiasEstMean_2 = abs(mainEstMean_2-modelPars$main),
-           absBiasEstMean_3 = abs(mainEstMean_3-modelPars$main),
-           absBiasEstMean_4 = abs(mainEstMean_4-modelPars$main),
-           absBiasEstMean_5 = abs(mainEstMean_5-modelPars$main),
-           absBiasEstMean_6 = abs(mainEstMean_6-modelPars$main),
-           absBiasEstCross_1 = abs(crossEstMean_1-cross),
-           absBiasEstCross_2 = abs(crossEstMean_2-cross),
-           absBiasEstCross_3 = abs(crossEstMean_3-cross),
-           absBiasEstCross_4 = abs(crossEstMean_4-cross),
-           absBiasEstCross_5 = abs(crossEstMean_5-cross),
-           absBiasEstCross_6 = abs(crossEstMean_6-cross),
-           absBiasFactCorrEstMean = abs(factCorrEstMean-modelPars$Psi[1, 2])) %>% 
-    group_by(as.factor(condID)) %>% 
-      summarise(
-        relEstMean_1 =      mean(absBiasEstMean_1) /modelPars$main[1],
-        relBiasEstMean_2 =  mean(absBiasEstMean_2) /modelPars$main[1],
-        relBiasEstMean_3 =  mean(absBiasEstMean_3) /modelPars$main[1],
-        relBiasEstMean_4 =  mean(absBiasEstMean_4) /modelPars$main[1],
-        relBiasEstMean_5 =  mean(absBiasEstMean_5) /modelPars$main[1],
-        relBiasEstMean_6 =  mean(absBiasEstMean_6) /modelPars$main[1],
-        relBiasEstCross_1 = mean(mean(absBiasEstCross_1)/cross),
-        relBiasEstCross_2 = mean(mean(absBiasEstCross_2)/cross),
-        relBiasEstCross_3 = mean(mean(absBiasEstCross_3)/cross), # dodgy fix, double check!
-        relBiasEstCross_4 = mean(mean(absBiasEstCross_4)/cross), 
-        relBiasEstCross_5 = mean(mean(absBiasEstCross_5)/cross),
-        relBiasEstCross_6 = mean(mean(absBiasEstCross_6)/cross), 
-        relBiasFactCorrEstMean = mean(absBiasFactCorrEstMean)/modelPars$Psi[1, 2],
-        N = mean(N),
-        cross = mean(cross),
-        sigmaSqu = mean(sigmaSqu)
-      )
-relBiasSVNP
-```
-
-
-
-## Compute MSE
-
-```{r}
-mseMeanSVNP <- 
- resultsSVNP %>% 
-  select(mainEstMean_1:mainEstMean_6,
-        crossEstMean_1:crossEstMean_6,
-        thetaEstMean_1:thetaEstMean_6,
-        factCorrEstMean,
-        cross,
-        sigma, 
-        sigmaSqu,
-        N, 
-        pos,
-        iteration,
-        condID) %>% 
-    mutate(SquBiasEstMainMean_1 = (mainEstMean_1-modelPars$main)^2,
-           SquBiasEstMainMean_2 = (mainEstMean_2-modelPars$main)^2,
-           SquBiasEstMainMean_3 = (mainEstMean_3-modelPars$main)^2,
-           SquBiasEstMainMean_4 = (mainEstMean_4-modelPars$main)^2,
-           SquBiasEstMainMean_5 = (mainEstMean_5-modelPars$main)^2,
-           SquBiasEstMainMean_6 = (mainEstMean_6-modelPars$main)^2,
-           SquBiasEstCrossMean_1 = (crossEstMean_1-cross)^2,
-           SquBiasEstCrossMean_2 = (crossEstMean_2-cross)^2,
-           SquBiasEstCrossMean_3 = (crossEstMean_3-cross)^2,
-           SquBiasEstCrossMean_4 = (crossEstMean_4-cross)^2,
-           SquBiasEstCrossMean_5 = (crossEstMean_5-cross)^2,
-           SquBiasEstCrossMean_6 = (crossEstMean_6-cross)^2,
-           SquBiasFactCorrEstMean = (factCorrEstMean-modelPars$Psi[1, 2])^2) %>% 
-    group_by(as.factor(condID)) %>% 
-      summarise(
-        mseEstMainMean_1 = mean(SquBiasEstMainMean_1)/ nIter,
-        mseEstMainMean_2 = mean(SquBiasEstMainMean_2) /nIter,
-        mseEstMainMean_3 = mean(SquBiasEstMainMean_3) /nIter,
-        mseEstMainMean_4 = mean(SquBiasEstMainMean_4) /nIter,
-        mseEstMainMean_5 = mean(SquBiasEstMainMean_5) /nIter,
-        mseEstMainMean_6 = mean(SquBiasEstMainMean_6) /nIter,
-        mseEstCrossMean_1 = mean(SquBiasEstCrossMean_1)/nIter,
-        mseEstCrossMean_2 = mean(SquBiasEstCrossMean_2)/nIter,
-        mseEstCrossMean_3 = mean(SquBiasEstCrossMean_3)/nIter,
-        mseEstCrossMean_4 = mean(SquBiasEstCrossMean_4)/nIter, 
-        mseEstCrossMean_5 = mean(SquBiasEstCrossMean_5)/nIter,
-        mseEstCrossMean_6 = mean(SquBiasEstCrossMean_6)/nIter, 
-        mseFactCorrEstMean = mean(SquBiasFactCorrEstMean)/nIter,
-        N = mean(N),
-        cross = mean(cross),
-        sigmaSqu = mean(sigmaSqu)
-      )
-mseMeanSVNP
-```
-
+# Step 2: Compute Type I error rate and Power
 
 ## Type I error rate
 
@@ -286,7 +87,6 @@ The is-zero variables are coded opposite as what they should be. So a zero repre
         sigmaSqu = mean(sigmaSqu))
   
 ```
-
 
 
 # Plots
