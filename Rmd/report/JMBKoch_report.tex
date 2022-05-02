@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 %
 \documentclass[
+  english,
   man]{apa6}
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
@@ -90,15 +91,6 @@
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
-\ifLuaTeX
-\usepackage[bidi=basic]{babel}
-\else
-\usepackage[bidi=default]{babel}
-\fi
-\babelprovide[main,import]{english}
-% get rid of language-specific shorthands (see #6817):
-\let\LanguageShortHands\languageshorthands
-\def\languageshorthands#1{}
 % This preamble allows to remove the redundant title page from papaja's output.pdf
 \usepackage{atbegshi}% http://ctan.org/pkg/atbegshi
 \AtBeginDocument{\AtBeginShipoutNext{\AtBeginShipoutDiscard}}
@@ -152,6 +144,16 @@
 \renewcommand{\efloat@iwrite}[1]{\immediate\expandafter\protected@write\csname efloat@post#1\endcsname{}}
 \makeatother
 \usepackage{csquotes}
+\ifXeTeX
+  % Load polyglossia as late as possible: uses bidi with RTL langages (e.g. Hebrew, Arabic)
+  \usepackage{polyglossia}
+  \setmainlanguage[]{english}
+\else
+  \usepackage[main=english]{babel}
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+\fi
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -185,27 +187,39 @@ Intented Journal of Publication: Structural Equation Modeling \\
 
 \clearpage
 
-The art of statistical modeling revolves around coming up with an appropriate simplification, a \emph{model}, of a true \emph{data-generating process}. Hereby, a fundamental trade-off between model-simplicity and model-complexity arises. On the one hand, models need to be simple enough to be (1) identified, i.e., estimate-able with the information available in the data; (2) interpretable; and (3) generalizable (not over-fitted). On the other hand, models need to be complex enough, i.e., have enough parameters, to accurately represent the data generating process, hence to not be too biased (Cox, 2006; James, Witten, Hastie, \& Tibshirani, 2021).
+The art of statistical modeling revolves around coming up with an appropriate simplification, a \emph{model}, of a true \emph{data-generating process}. Hereby, a fundamental trade-off between model simplicity and model complexity arises, that is mostly knownw under the term \emph{bias-variance trade-off}. Simple models with few parameters have high bias, meaning that they deviate substantially from the true data-generating process. However, these models have low variance, hence they generalize well to other datasets from the same popoulation. Moreover, simple models are easily identified (estimatable with the information available in the data) and easy to interpret. Complex models with large numbers of parameters tend to have low levels of bias, i.e.~they tend to accurately represent the data generating process. However, complex models tend to have high variance. Consquently, complex models are prone to over-fitting, i.e.~picking up patterns that are only relevant in the dataset at hand, but do not generalize well to other datasets. Moreover, complex models can be cumbersome to interpret and often a large number of observations is required to estimate them (Cox, 2006; James, Witten, Hastie, \& Tibshirani, 2021).
 
-In Confirmatory factor analysis (CFA, Bollen, 1989), an essential tool for modeling measurement structures, it is common practice to deal with this fundamental trade-off by imposing a so-called simple structure. Here, cross-loadings, factor loadings that relate items to factors that they theoretically do not belong to, are fixed to zero to yield an identified and straightforwardly interpretable model. This practice often leads to poor model fit, which forces researchers to free some cross-loadings after the fact based on empirical grounds (modification indices) to improve fit (Lu, Chow, \& Loken, 2016). This procedure is highly flawed, as it risks capitalization on chance and thereby over-fitting, hence ending up with a model that does not generalize well to other datasets from the same population (MacCallum, Roznowski, \& Necowitz, 1992).
+\hypertarget{regularization}{%
+\subsection{Regularization}\label{regularization}}
+
+A classic way of dealing with the bias-variance trade-off is \emph{regularization} (Hastie, Tibshirani, \& Wainwright, 2015). Here, during the estimation process of a model it is actively chosen to add some bias to the model to reduce its variance. This helps to ensure that the model becomes easier to interpret and more generalizable. In a frequentist context, regularization is achieved by adding a penality term to the cost function of a model. Such penality ensures that some model parameters that are deemed irrelevant, e.g.~small regression coefficients in a regression model with a large number of predictors, are shrunken to (or towards) zero. In a Bayesian context, the same is achieved by setting a so-called shrinkage-prior (Van Erp, Oberski, \& Mulder, 2019) for the parameter in question. Hereby, for every frequentist penality term a bayesian counterpart exist (Van Erp et al., 2019). For instance, the well-known ridge- (Hoerl \& Kennard, 2000) and lasso-penalization (Tibshirani, 1996) in regression correspond to setting a ridge-prior (Hsiang, 1975) and a laplace-prior (Park \& Casella, 2008) for the regression coefficients respectively.
+
+\hypertarget{simple-structure-in-cfa}{%
+\subsection{Simple Structure in CFA}\label{simple-structure-in-cfa}}
+
+In Confirmatory factor analysis (CFA, Bollen, 1989), an essential tool for modeling measurement structures, it is common practice to deal with the bias-variance trade-off in a brute-force manner, by imposing a so-called simple structure. Here, cross-loadings, factor loadings that relate items to factors that they theoretically do not belong to, are fixed to zero. This is done to yield an identified and straightforwardly interpretable model. However, the practice often leads to poor model fit, which forces researchers to free some cross-loadings after the fact based on empirical grounds (modification indices) to improve fit. This procedure is highly flawed, as it risks capitalization on chance and thereby over-fitting, hence ending up with a model that does not generalize well to other datasets from the same population (MacCallum, Roznowski, \& Necowitz, 1992).
 
 \hypertarget{bayesian-cfa-the-small-variance-normal-prior-svnp}{%
 \subsection{Bayesian CFA: The Small Variance Normal Prior (SVNP)}\label{bayesian-cfa-the-small-variance-normal-prior-svnp}}
 
-As solution to the issue, Muthen and Asparouhov (2012) proposed a Bayesian alternative approach to CFA. Rather than identifying models by fixing \emph{all} cross-loadings to zero, one should should assume that \emph{most} cross-loadings are zero. Formally, this is achieved by setting the so-called \emph{Small Variance Normal Prior} (SVNP) for the cross-loadings, which is a normal distribution with mean zero and a very small variance (e.g.: \(\sigma^2\) = 0.1, \(\sigma^2\) = 0.01, \(\sigma^2\) = 0.001). This prior has a large peak at zero, and very thin tails. Hence, it attaches large prior mass to cross-loadings of or near zero, while attaching almost no prior mass to cross-loadings further from zero. Consequently, all cross-loadings in the model are shrunken. The larger the prior's variance, the more admissive the model is in the amount of deviation from zero it allows. Lu et al. (2016) note that this approach is simply a form of regularization, where cross-loadings are regularized in an attempt to identify and select relevant cross-loadings as non-zero, such that one ends up with a sparse model.\\
-An issue with Muthen and Asparouhov (2012)'s approach is that not only the cross-loadings close to zero, which are considered irrelevant, are shrunken to zero, as desired. Also the ones further from zero are shrunken, which introduces bias (Lu et al., 2016). First, bias naturally occurs in the large cross-loadings itself. However, given that the parameters of a model are estimated conditionally on one another, also in other parameters, such as factor-correlations or main-loadings, substantial bias can arise. Consequently, the method requires a two-step approach. First, the model is estimated with the SVNP. Then the model is re-estimated, with cross-loadings that have been selected to be zero in the previous step are fixed to zero, and the remaining cross-loadings are estimated without shrinkage, avoiding the bias in the model of the previous step. This process is tedious, computationally expensive, and adds a number of undesired researchers degrees of freedom. Therefore, alternative priors need to be identified that can outperform the Small Variance Normal Prior in a single step. The literature on regularization in a regression context (see Van Erp, Oberski, \& Mulder, 2019 for an overview) provides a variety of promising candidates for achieving this end.
+As an alternative to imposing simple structure to identify CFA models, Muthen and Asparouhov (2012) proposed \emph{Bayesian CFA}. Rather than identifying models by fixing \emph{all} cross-loadings to zero, one should assume that \emph{most} cross-loadings are zero. Formally, this is achieved by setting the so-called \emph{Small Variance Normal Prior} (SVNP) for the cross-loadings, which is a normal distribution with mean zero and a very small variance (e.g.: \(\sigma^2\) = 0.1, \(\sigma^2\) = 0.01, \(\sigma^2\) = 0.001). This prior has a large peak at zero, and very thin tails. Hence, it attaches large prior mass to cross-loadings of or near zero, while attaching almost no prior mass to cross-loadings further from zero. Consequently, all cross-loadings in the model are shrunken. The larger the prior's variance, the more admissive the model is in the amount of deviation from zero it allows. Lu, Chow, and Loken (2016) note that this approach is simply a form of regularization, where cross-loadings are regularized in an attempt to identify and select relevant cross-loadings as non-zero, such that one ends up with a sparse model.
+
+An issue with Muthen and Asparouhov (2012)'s Bayesian CFA is that not only the cross-loadings close to zero, which are considered irrelevant, are shrunken to zero, as desired. Also the ones further from zero are shrunken heavily towards zero, which introduces bias (Lu et al., 2016). First, bias naturally occurs in the large cross-loadings itself. However, given that the parameters of a model are estimated conditionally on one another, also in other parameters, such as factor-correlations or main-loadings, substantial bias can arise. Consequently, Bayesian CFA requires two steps in practice. First, the model is estimated with the SVNP set for the cross-loadings.
+
+Finally, the model is then re-estimated, with cross-loadings that have been selected to be zero in the previous step are fixed to zero, and the remaining cross-loadings are estimated without shrinkage, avoiding the bias in the model of the previous step. This process is tedious, computationally expensive, and adds a number of undesired researchers degrees of freedom. Therefore, alternative priors need to be identified that can outperform the Small Variance Normal Prior in a single step. The literature on regularization in a regression context (see Van Erp et al., 2019 for an overview) provides a variety of promising candidates for achieving this end.
 
 \hypertarget{the-regularized-horseshoe-prior-rhsp}{%
 \subsection{The Regularized Horseshoe Prior (RHSP)}\label{the-regularized-horseshoe-prior-rhsp}}
 
-A promising alternative, that is a fully continuous mixture of distributions, and thus employable in STAN, is the so-called \emph{Regularized Horseshoe Prior} (RHSP, Piironen \& Vehtari, 2017a, 2017b). This prior is an extension of the Horseshoe Prior (Carvalho, Polson, \& Scott, 2010). The main idea of both priors is that there is a \emph{global shrinkage parameter} \(\tau\), shrinking all cross-loadings to zero, and a \emph{local shrinkage parameter} \(\tilde{\omega}_{jk}^2\) that allows the relevant cross-loadings to escape the shrinkage. The issue with the original Horseshoe Prior is that not shrinking large cross-loadings at all can lead to identification issues (see Ghosh, Li, \& Mitra, 2018). The RHSP solves this issue (Piironen \& Vehtari, 2017b), by shrinking all cross-loadings at least a little bit, by setting a slab (very\ldots{} ). The prior is specified as follows.
+A promising alternative, that is a fully continuous mixture of distributions, and thus employable in STAN, is the so-called \emph{Regularized Horseshoe Prior} (RHSP, Piironen \& Vehtari, 2017a, 2017b). This prior is an extension of the Horseshoe Prior (Carvalho, Polson, \& Scott, 2010). The main idea of both priors is that there is a \emph{global shrinkage parameter} \(\tau\), shrinking all cross-loadings to zero, and a \emph{local shrinkage parameter} \(\tilde{\omega}_{jk}^2\) that allows the relevant cross-loadings to escape the shrinkage. The issue with the original Horseshoe Prior is that not shrinking large parameters at all can lead to identification issues (see Ghosh, Li, \& Mitra, 2018). The RHSP solves this issue (Piironen \& Vehtari, 2017b), by shrinking all cross-loadings at least a little bit, by setting a slab (very\ldots{} ). The prior is specified as follows.
 
-For every Cross-loading of factor j on item k:
+For every cross-loading of factor j on item k:
 \[\lambda_{jk} | \tilde{\omega}_{jk}, \tau, c\sim \mathcal{N}(0, \ \tilde{\omega}^2_{jk} \tau^2), \ with \ \tilde{\omega}^2_{jk} = \frac{c^2\omega_{jk}^2}{c^2 + \tau^2 \omega_{jk}^2},\]
 \[\tau | s_{global}^2 \sim half-t_{df_{global}}(0,\  s_{global}^2), \ with \  s_{global} = \frac{p_0}{p-p_0}\frac{\sigma}{\sqrt{N}},\]
 \[\omega_{jk} \sim half-t_{df_{local}}(0, \ s_{local}^2),\]
 \[c^2 | df_{slab}, s_{slab} \sim \mathcal{IG}(\frac{df_{slab}}{2}, \  df_{slab} \times \frac{s_{slab}}{2}^2),\]
-where \(p_0\) represents a prior guess of the number of relevant cross-loadings. Note that we deviate from the common notation of the local shrinkage parameter as \(\lambda\), as this letter is commonly used to denote factor loadings in CFA.
+
+where \(p_0\) represents a prior guess of the number of relevant cross-loadings. It is, however, not necessary to use such prior guess \(p_0\)\ldots{} Note that we deviate from the common notation of the local shrinkage parameter as \(\lambda\), as this letter is commonly used to denote factor loadings in CFA.
 
 \begin{figure}
 \centering
@@ -221,7 +235,7 @@ While the Regularized Horseshoe Prior has been shown to perform excellently in t
 \hypertarget{study-procedure-and-parameters}{%
 \subsection{Study Procedure and Parameters}\label{study-procedure-and-parameters}}
 
-In order to assess the performance of the SVNP in regularizing cross-loadings in Bayesian Regularized SEM, a Monte Carlo simulation study was conduced using STAN (Stan Development Team, 2021). All code that was used to run the simulation study can be openly accessed on the author's \href{https://github.com/JMBKoch/1vs2StepBayesianRegSEM}{github}. The models were sampled using the No-U-Turn-Sampler (Homan \& Gelman, 2014), with two chains, a burnin-period of 2000 and a chain-length of 4000. These sampling parameters were identified in pilot-runs to be required for the RHSP to reach convergence, and were therefore also used for the SVNP in order to ensure a fair comparison.
+In order to assess the performance of the SVNP in regularizing cross-loadings in Bayesian Regularized SEM, a Monte Carlo simulation study was conducted using STAN (Stan Development Team, 2021). All code that was used to run the simulation study can be openly accessed on the author's github \href{https://github.com/JMBKoch/1vs2StepBayesianRegSEM}{github.com/JMBKoch/1vs2StepBayesianRegSEM}. The models were sampled using the No-U-Turn-Sampler (Homan \& Gelman, 2014), with two chains, a burnin-period of 2000 and a chain-length of 4000. These sampling parameters were identified in pilot-runs to be required for the RHSP to reach convergence, and were therefore also used for the SVNP in order to ensure a fair comparison.
 
 \hypertarget{true-model-and-conditions}{%
 \subsection{True Model and Conditions}\label{true-model-and-conditions}}
@@ -272,10 +286,19 @@ Cox, D. R. (2006). \emph{Principles of {Statistical} {Inference}}. Cambridge Uni
 \leavevmode\vadjust pre{\hypertarget{ref-ghosh_use_2018}{}}%
 Ghosh, J., Li, Y., \& Mitra, R. (2018). On the {Use} of {Cauchy} {Prior} {Distributions} for {Bayesian} {Logistic} {Regression}. \emph{Bayesian Analysis}, \emph{13}(2), 359--383. \url{https://doi.org/10.1214/17-BA1051}
 
+\leavevmode\vadjust pre{\hypertarget{ref-hastie_statistical_2015}{}}%
+Hastie, T., Tibshirani, R., \& Wainwright, M. (2015). Statistical learning with sparsity. \emph{Monographs on Statistics and Applied Probability}, \emph{143}, 143.
+
+\leavevmode\vadjust pre{\hypertarget{ref-hoerl_ridge_2000}{}}%
+Hoerl, A. E., \& Kennard, R. W. (2000). Ridge {Regression}: {Biased} {Estimation} for {Nonorthogonal} {Problems}. \emph{Technometrics}, \emph{42}(1), 80--86. \url{https://doi.org/10.2307/1271436}
+
 \leavevmode\vadjust pre{\hypertarget{ref-homan_no-u-turn_2014}{}}%
 Homan, M. D., \& Gelman, A. (2014). The {No}-{U}-turn sampler: Adaptively setting path lengths in {Hamiltonian} {Monte} {Carlo}. \emph{The Journal of Machine Learning Research}, \emph{15}(1), 1593--1623.
 
-\leavevmode\vadjust pre{\hypertarget{ref-james_introduction_2021-1}{}}%
+\leavevmode\vadjust pre{\hypertarget{ref-hsiang_bayesian_1975}{}}%
+Hsiang, T. C. (1975). A {Bayesian} {View} on {Ridge} {Regression}. \emph{Journal of the Royal Statistical Society. Series D (The Statistician)}, \emph{24}(4), 267--268. \url{https://doi.org/10.2307/2987923}
+
+\leavevmode\vadjust pre{\hypertarget{ref-james_introduction_2021}{}}%
 James, G., Witten, D., Hastie, T., \& Tibshirani, R. (2021). \emph{An {Introduction} to {Statistical} {Learning}: With {Applications} in {R}}. New York, NY: Springer US. \url{https://doi.org/10.1007/978-1-0716-1418-1}
 
 \leavevmode\vadjust pre{\hypertarget{ref-lu_bayesian_2016}{}}%
@@ -290,6 +313,9 @@ Morris, T. P., White, I. R., \& Crowther, M. J. (2019). Using simulation studies
 \leavevmode\vadjust pre{\hypertarget{ref-muthen_bayesian_2012}{}}%
 Muthen, B., \& Asparouhov, T. (2012). Bayesian {SEM}: {A} more ﬂexible representation of substantive theory, 78. \url{https://doi.org/10.1037/a0026802}
 
+\leavevmode\vadjust pre{\hypertarget{ref-park_bayesian_2008}{}}%
+Park, T., \& Casella, G. (2008). The {Bayesian} {Lasso}. \emph{Journal of the American Statistical Association}, \emph{103}(482), 681--686. \url{https://doi.org/10.1198/016214508000000337}
+
 \leavevmode\vadjust pre{\hypertarget{ref-piironen_hyperprior_2017}{}}%
 Piironen, J., \& Vehtari, A. (2017a). On the {Hyperprior} {Choice} for the {Global} {Shrinkage} {Parameter} in the {Horseshoe} {Prior}. In \emph{Proceedings of the 20th {International} {Conference} on {Artificial} {Intelligence} and {Statistics}} (pp. 905--913). PMLR. Retrieved from \url{https://proceedings.mlr.press/v54/piironen17a.html}
 
@@ -298,6 +324,9 @@ Piironen, J., \& Vehtari, A. (2017b). Sparsity information and regularization in
 
 \leavevmode\vadjust pre{\hypertarget{ref-stan_development_team_stan_2021}{}}%
 Stan Development Team. (2021). Stan {User} {Guide}. Retrieved from \url{https://mc-stan.org/docs/2_27/stan-users-guide-2_27.pdf}
+
+\leavevmode\vadjust pre{\hypertarget{ref-tibshirani_regression_1996}{}}%
+Tibshirani, R. (1996). Regression {Shrinkage} and {Selection} {Via} the {Lasso}. \emph{Journal of the Royal Statistical Society: Series B (Methodological)}, \emph{58}(1), 267--288. \url{https://doi.org/10.1111/j.2517-6161.1996.tb02080.x}
 
 \leavevmode\vadjust pre{\hypertarget{ref-van_erp_shrinkage_2019}{}}%
 Van Erp, S., Oberski, D. L., \& Mulder, J. (2019). Shrinkage priors for {Bayesian} penalized regression. \emph{Journal of Mathematical Psychology}, \emph{89}, 31--50. \url{https://doi.org/10.1016/j.jmp.2018.12.004}

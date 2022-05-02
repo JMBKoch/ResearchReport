@@ -65,8 +65,6 @@ resultsSVNP <-
 ```
 
 
-
-
 ## Convergence
 
 Let's explore the convergence a bit
