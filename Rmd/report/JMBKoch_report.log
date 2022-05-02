@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/Arch Linux) (preloaded format=xelatex 2022.2.2)  2 MAY 2022 10:18
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/Arch Linux) (preloaded format=xelatex 2022.2.2)  2 MAY 2022 10:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1029,48 +1029,51 @@ Package fancyhdr Warning: \headheight is too small (15.2pt):
 (fancyhdr)                \addtolength{\topmargin}{-12.21803pt}.
 
 LaTeX Info: Completed page discarded.
-[0] [1
+[0]
+\openout4 = `JMBKoch_report.fff'.
+
+(JMBKoch_report.fff) [1
 
 ]
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 8.4pt on input line 205.
+(Font)              scaled to size 8.4pt on input line 211.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 6.0pt on input line 205.
+(Font)              scaled to size 6.0pt on input line 211.
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 2
-05.
+11.
 (/usr/share/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 12.0011pt on input line 205.
+(Font)              scaled to size 12.0011pt on input line 211.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 8.40076pt on input line 205.
+(Font)              scaled to size 8.40076pt on input line 211.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 6.00055pt on input line 205.
+(Font)              scaled to size 6.00055pt on input line 211.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 11.99872pt on input line 205.
+(Font)              scaled to size 11.99872pt on input line 211.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 8.3991pt on input line 205.
+(Font)              scaled to size 8.3991pt on input line 211.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 5.99936pt on input line 205.
+(Font)              scaled to size 5.99936pt on input line 211.
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 2
-05.
+11.
 (/usr/share/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-205.
+211.
 (/usr/share/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 205
+LaTeX Font Info:    Trying to load font information for U+msa on input line 211
 .
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (/usr/share/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 205
+LaTeX Font Info:    Trying to load font information for U+msb on input line 211
 .
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -1078,10 +1081,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ) (/usr/share/texmf-dist/tex/latex/microtype/mt-eur.cfg
 File: mt-eur.cfg 2006/07/31 v1.1 microtype config. file: AMS Euler Roman (RS)
-) [2] [3]
-\openout4 = `JMBKoch_report.fff'.
-
-(JMBKoch_report.fff) [4] [5] [6]
+) [2] [3] [4] [5] [6]
 Underfull \vbox (badness 1028) has occurred while \output is active []
 
 [7
@@ -1092,11 +1092,13 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 [8] [9] AED endfloat: Processing end Figures and Tables [10
 
 ] (./JMBKoch_report.fff
+File: ~/OneDrive/ms/thesis/Rmd/figures/model.png Graphic file (type bmp)
+<~/OneDrive/ms/thesis/Rmd/figures/model.png>
 File: JMBKoch_report_files/figure-latex/unnamed-chunk-1-1.pdf Graphic file (typ
 e pdf)
 <use JMBKoch_report_files/figure-latex/unnamed-chunk-1-1.pdf>
-File: ~/OneDrive/ms/thesis/Rmd/figures/model.png Graphic file (type bmp)
-<~/OneDrive/ms/thesis/Rmd/figures/model.png>
+File: ~/1vs2StepBayesianRegSEM/Rmd/figures/allPars.png Graphic file (type bmp)
+<~/1vs2StepBayesianRegSEM/Rmd/figures/allPars.png>
 )
 The property list \polyglossia@langsetup contains the pairs (without outer
 braces):
@@ -1135,18 +1137,18 @@ braces):
 [11
 
 
-] [12] (./JMBKoch_report.aux) )
+] [12] [13] (./JMBKoch_report.aux) )
 (\end occurred inside a group at level 1)
 
-### semi simple group (level 1) entered at line 343 (\begingroup)
+### semi simple group (level 1) entered at line 359 (\begingroup)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 22785 strings out of 476257
- 419520 string characters out of 5816920
- 914549 words of memory out of 5000000
- 43087 multiletter control sequences out of 15000+600000
+ 22797 strings out of 476257
+ 420001 string characters out of 5816920
+ 914581 words of memory out of 5000000
+ 43096 multiletter control sequences out of 15000+600000
  421581 words of font info for 69 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 86i,11n,121p,2253b,537s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,11n,121p,2253b,539s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on JMBKoch_report.pdf (13 pages).
+Output written on JMBKoch_report.pdf (14 pages).

@@ -2,6 +2,13 @@
 \ifnextchar[{\eatarg}{}
 
 \centering
+\includegraphics{~/OneDrive/ms/thesis/Rmd/figures/model.png}
+\caption{Graphical Representation of the True Model.}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\centering
 \includegraphics{JMBKoch_report_files/figure-latex/unnamed-chunk-1-1.pdf}
 \caption{\label{fig:unnamed-chunk-1}Density Plots of the Regularization Priors of Interest}
 \end{figure*}
@@ -9,6 +16,6 @@
 \ifnextchar[{\eatarg}{}
 
 \centering
-\includegraphics{~/OneDrive/ms/thesis/Rmd/figures/model.png}
-\caption{Graphical Representation of the True Model.}
+\includegraphics{~/1vs2StepBayesianRegSEM/Rmd/figures/allPars.png}
+\caption{Main Results: Mean Absolute Bias in the Model Parameters.}
 \end{figure*}

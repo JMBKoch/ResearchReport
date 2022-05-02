@@ -54,10 +54,10 @@ resultsSVNP <-
   arrange(sigma, N, cross, iteration) %>% 
   mutate(sigmaSqu = sigma^2,
          biasCrossMean_1 = abs(crossEstMean_1 - cross),
-         biasCrossMean_2 = abs(crossEstMean_2 - cross),
-         biasCrossMean_3 = abs(crossEstMean_3 - cross),
-         biasCrossMean_4 = abs(crossEstMean_4 - cross),
-         biasCrossMean_5 = abs(crossEstMean_5 - cross),
+         biasCrossMean_2 = abs(crossEstMean_2 - 0),
+         biasCrossMean_3 = abs(crossEstMean_3 - 0),
+         biasCrossMean_4 = abs(crossEstMean_4 - 0),
+         biasCrossMean_5 = abs(crossEstMean_5 - 0),
          biasCrossMean_6 = abs(crossEstMean_6 - cross),
          condID = rep(1:(nrow(condPop)*nrow(condSVNP)), each = nIter) 
 ) 

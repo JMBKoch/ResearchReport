@@ -187,6 +187,12 @@ Intented Journal of Publication: Structural Equation Modeling \\
 
 \clearpage
 
+\begin{figure}
+\centering
+\includegraphics{~/OneDrive/ms/thesis/Rmd/figures/model.png}
+\caption{Graphical Representation of the True Model.}
+\end{figure}
+
 The art of statistical modeling revolves around coming up with an appropriate simplification, a \emph{model}, of a true \emph{data-generating process}. Hereby, a fundamental trade-off between model simplicity and model complexity arises, that is mostly knownw under the term \emph{bias-variance trade-off}. Simple models with few parameters have high bias, meaning that they deviate substantially from the true data-generating process. However, these models have low variance, hence they generalize well to other datasets from the same popoulation. Moreover, simple models are easily identified (estimatable with the information available in the data) and easy to interpret. Complex models with large numbers of parameters tend to have low levels of bias, i.e.~they tend to accurately represent the data generating process. However, complex models tend to have high variance. Consquently, complex models are prone to over-fitting, i.e.~picking up patterns that are only relevant in the dataset at hand, but do not generalize well to other datasets. Moreover, complex models can be cumbersome to interpret and often a large number of observations is required to estimate them (Cox, 2006; James, Witten, Hastie, \& Tibshirani, 2021).
 
 \hypertarget{regularization}{%
@@ -221,6 +227,8 @@ For every cross-loading of factor j on item k:
 
 where \(p_0\) represents a prior guess of the number of relevant cross-loadings. It is, however, not necessary to use such prior guess \(p_0\)\ldots{} Note that we deviate from the common notation of the local shrinkage parameter as \(\lambda\), as this letter is commonly used to denote factor loadings in CFA.
 
+Figure 2 compares the two shrinkage priors.
+
 \begin{figure}
 \centering
 \includegraphics{JMBKoch_report_files/figure-latex/unnamed-chunk-1-1.pdf}
@@ -235,17 +243,17 @@ While the Regularized Horseshoe Prior has been shown to perform excellently in t
 \hypertarget{study-procedure-and-parameters}{%
 \subsection{Study Procedure and Parameters}\label{study-procedure-and-parameters}}
 
-In order to assess the performance of the SVNP in regularizing cross-loadings in Bayesian Regularized SEM, a Monte Carlo simulation study was conducted using STAN (Stan Development Team, 2021). All code that was used to run the simulation study can be openly accessed on the author's github \href{https://github.com/JMBKoch/1vs2StepBayesianRegSEM}{github.com/JMBKoch/1vs2StepBayesianRegSEM}. The models were sampled using the No-U-Turn-Sampler (Homan \& Gelman, 2014), with two chains, a burnin-period of 2000 and a chain-length of 4000. These sampling parameters were identified in pilot-runs to be required for the RHSP to reach convergence, and were therefore also used for the SVNP in order to ensure a fair comparison.
+In order to assess the performance of the SVNP in regularizing cross-loadings in Bayesian Regularized SEM, a Monte Carlo simulation study was conducted using STAN (Stan Development Team, 2021). All code that was used to run the simulation study can be openly accessed on the author's \href{https://github.com/JMBKoch/1vs2StepBayesianRegSEM}{github}. The models were sampled using the No-U-Turn-Sampler (Homan \& Gelman, 2014), with two chains, a burnin-period of 2000 and a chain-length of 4000. These sampling parameters were identified in pilot-runs to be required for the RHSP to reach convergence, and were therefore also used for the SVNP in order to ensure a fair comparison.
 
 \hypertarget{true-model-and-conditions}{%
 \subsection{True Model and Conditions}\label{true-model-and-conditions}}
 
-The datasets were simulated based on a true 2-factor model, with three items per factor, and a factor correlation of 0.5. The factors were scaled by fixing their means to zero and their variances to 1. All main-loadings were set to 0.75, and all residual variances to 0.3. We included two truly non-zero cross-loadings, that of factor 1 on item 4, and that of factor 2 on item 3. The true model is summarized in the Appendix both in equations and graphically. We varied the magnitude of the two non-zero cross-loadings between 0.2 and 0.5. Next, we varied the sample sizes of the simulated datasets between 100 and 200. This choice was made because for simple factor models researchers would be unlikely to collected larger sample sizes in practice. Finally, based on the recommendations of Muthen and Asparouhov (2012), we included three levels of the hyper-parameter \(\sigma^2\): 0.001, 0.01, 0.1. This left us with a total number of 2 x 2 x 3 = 12 individual sets of conditions. Per set of conditions, 200 iterations were run, yielding a total of 2400 posterior samples.
+The datasets were simulated based on a true 2-factor model, with three items per factor, and a factor correlation of 0.5. The factors were scaled by fixing their means to zero and their variances to 1. All main-loadings were set to 0.75, and all residual variances to 0.3. We included two truly non-zero cross-loadings, that of factor 1 on item 4, and that of factor 2 on item 3. The true model is summarized below, both in equations (Appendix A) and graphically (Figure 1). We varied the magnitude of the two non-zero cross-loadings between 0.2 and 0.5. Next, we varied the sample sizes of the simulated datasets between 100 and 200. This choice was made because for simple factor models researchers would be unlikely to collect larger sample sizes in practice. Finally, based on the recommendations of Muthen and Asparouhov (2012), we included three levels of the hyper-parameter \(\sigma^2\): 0.001, 0.01, 0.1. This left us with a total number of 2 x 2 x 3 = 12 individual sets of conditions. Per set of conditions, 200 iterations were run, yielding a total of 2400 posterior samples.
 
 \hypertarget{outcomes}{%
 \subsection{Outcomes}\label{outcomes}}
 
-As main outcome, we considered the Mean (Absolute) Bias of all estimated model parameters. As secondary outcomes, we also computed the Relative Bias and Mean Squared Error (MSE, Morris, White, \& Crowther, 2019). Next, we computed the power for the truly non-zero cross-loadings, i.e.~the probability of correctly identifying them as non-zero. For the truly zero cross-loadings we computed the Type-I Error Rate, hence the probability of wrongly selecting these cross-loadings as non-zero. For these last two outcomes, in order to select cross-loadings as zero, several selection rules were used based on recommendations Zhang, Pan, and Ip (2021). First, a number of thresholds were considered, where a cross-loading is selected to be zero when the absolute value of its posterior estimates falls below a certain value. Specifically we considered three thresholds: 0, 0.1, 0.15. Moreover, we selected cross-loadings based on whether or not their 95\%, 90\%, 80\%, and 50\% credible interval contained zero. Note that for all outcomes we computed two versions, one based on mean and one based on median posterior estimates. The latter is only reported in case of relevant deviations from the former.
+As outcomes, we first considered the Mean (Absolute) Bias of all estimated model parameters (). Next, we also computed the Relative Bias and Mean Squared Error (MSE, Morris, White, \& Crowther, 2019). Next, we computed the power for the truly non-zero cross-loadings, i.e.~the probability of correctly identifying them as non-zero. For the truly zero cross-loadings we computed the Type-I Error Rate, hence the probability of wrongly selecting these cross-loadings as non-zero. For these last two outcomes, in order to select cross-loadings as zero, several selection rules were used based on recommendations Zhang, Pan, and Ip (2021). First, a number of thresholds were considered, where a cross-loading is selected to be zero when the absolute value of its posterior estimates falls below a certain value. Specifically we considered three thresholds: 0, 0.1, 0.15. Moreover, we selected cross-loadings based on whether or not their 95\%, 90\%, 80\%, and 50\% credible interval contained zero. Note that for all outcomes we computed two versions, one based on mean and one based on median posterior estimates. The latter is only reported in case of relevant deviations from the former.
 
 \hypertarget{results}{%
 \section{Results}\label{results}}
@@ -253,10 +261,18 @@ As main outcome, we considered the Mean (Absolute) Bias of all estimated model p
 \hypertarget{convergence}{%
 \subsection{Convergence}\label{convergence}}
 
-In terms of convergence, the SVNP showed excellent performance. For all parameters, across all iterations and configurations of conditions, there were none in which \(\hat{R} < 1.05\). The lowest value of the Effective Sample Size \(N_{eff}\) was still a good 39.4\% of the chain length, with the largest majority of runs even exceeding an excellent 50\% of the chain length (96\% for the parameter with the largest percentage of \(\frac{N_{eff}}{N_{chain}} < 0.5\)). Moreover, across all runs there was not a single divergent transition. Therefore, none of the 2400 posterior samples had to be disregarded.
+In terms of convergence, the SVNP showed excellent performance. Across all iterations and configurations of conditions, there were not a single parameter for which \(\hat{R} < 1.05\). The lowest value of the Effective Sample Size \(N_{eff}\) was still a 39.4\% of the chain length, which is still a very acceptable proporation. For the largest majority of runs \(N_{eff}\) even exceeded 50\% of the chain length (96\% for the parameter with the largest percentage of \(\frac{N_{eff}}{N_{chain}} < 0.5\)). Moreover, across all runs there was not a single divergent transition. Therefore, none of the 2400 posterior samples had to be disregarded.
 
 \hypertarget{main-results}{%
 \subsection{Main Results}\label{main-results}}
+
+The mean absolute bias of all model parameters is summarized below in Figure 3. The outcome is summarized for the different parameters as follows. For cross-loadings
+
+\begin{figure}
+\centering
+\includegraphics{~/1vs2StepBayesianRegSEM/Rmd/figures/allPars.png}
+\caption{Main Results: Mean Absolute Bias in the Model Parameters.}
+\end{figure}
 
 \hypertarget{conclusions-and-discussion}{%
 \section{Conclusions and Discussion}\label{conclusions-and-discussion}}
@@ -371,11 +387,8 @@ For every individual i in i = 1,\ldots,N:
 ,\] and
 \[\Theta = diag[0.3, 0.3, 0.3, 0.3, 0.3, 0.3].\]
 
-\begin{figure}
-\centering
-\includegraphics{~/OneDrive/ms/thesis/Rmd/figures/model.png}
-\caption{Graphical Representation of the True Model.}
-\end{figure}
+\hypertarget{figures}{%
+\section{Figures}\label{figures}}
 
 
 \end{document}

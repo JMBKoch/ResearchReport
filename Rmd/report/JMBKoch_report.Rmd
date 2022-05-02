@@ -58,6 +58,8 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 \clearpage
 
+![Graphical Representation of the True Model.](~/OneDrive/ms/thesis/Rmd/figures/model.png)
+
 The art of statistical modeling revolves around coming up with an appropriate simplification, a  *model*, of a true *data-generating process*. Hereby, a fundamental trade-off between model simplicity and model complexity arises, that is mostly knownw under the term *bias-variance trade-off*. Simple models with few parameters have high bias, meaning that they deviate substantially from the true data-generating process. However, these models have low variance, hence they generalize well to other datasets from the same popoulation. Moreover, simple models are easily identified (estimatable with the information available in the data) and easy to interpret. Complex models with large numbers of parameters tend to have low levels of bias, i.e. they tend to accurately represent the data generating process. However, complex models tend to have high variance. Consquently, complex models are prone to over-fitting, i.e. picking up patterns that are only relevant in the dataset at hand, but do not generalize well to other datasets. Moreover, complex models can be cumbersome to interpret and often a large number of observations is required to estimate them [@cox_principles_2006; @james_introduction_2021].
 
 ## Regularization 
@@ -88,6 +90,8 @@ $$\omega_{jk} \sim half-t_{df_{local}}(0, \ s_{local}^2),$$
 $$c^2 | df_{slab}, s_{slab} \sim \mathcal{IG}(\frac{df_{slab}}{2}, \  df_{slab} \times \frac{s_{slab}}{2}^2),$$
 
 where $p_0$ represents a prior guess of the number of relevant cross-loadings. It is, however, not necessary to use such prior guess $p_0$... Note that we deviate from the common notation of the local shrinkage parameter as $\lambda$, as this letter is commonly used to denote factor loadings in CFA.
+
+Figure 2 compares the two shrinkage priors.
 
 ```{r dev='cairo_pdf', include=T, echo=F, warning=F, fig.cap="Density Plots of the Regularization Priors of Interest"}
 # Make Figure 1 with 
@@ -123,11 +127,11 @@ While the Regularized Horseshoe Prior has been shown to perform excellently in t
 
 ## Study Procedure and Parameters
 
-In order to assess the performance of the SVNP in regularizing cross-loadings in Bayesian Regularized SEM, a Monte Carlo simulation study was conducted using STAN [@stan_development_team_stan_2021]. All code that was used to run the simulation study can be openly accessed on the author's github [github.com/JMBKoch/1vs2StepBayesianRegSEM](https://github.com/JMBKoch/1vs2StepBayesianRegSEM). The models were sampled using the No-U-Turn-Sampler [@homan_no-u-turn_2014], with two chains, a burnin-period of 2000 and a chain-length of 4000. These sampling parameters were identified in pilot-runs to be required for the RHSP to reach convergence, and were therefore also used for the SVNP in order to ensure a fair comparison. 
+In order to assess the performance of the SVNP in regularizing cross-loadings in Bayesian Regularized SEM, a Monte Carlo simulation study was conducted using STAN [@stan_development_team_stan_2021]. All code that was used to run the simulation study can be openly accessed on the author's [github](https://github.com/JMBKoch/1vs2StepBayesianRegSEM). The models were sampled using the No-U-Turn-Sampler [@homan_no-u-turn_2014], with two chains, a burnin-period of 2000 and a chain-length of 4000. These sampling parameters were identified in pilot-runs to be required for the RHSP to reach convergence, and were therefore also used for the SVNP in order to ensure a fair comparison. 
 
 ## True Model and Conditions
 
-The datasets were simulated based on a true 2-factor model, with three items per factor, and a factor correlation of 0.5. The factors were scaled by fixing their means to zero and their variances to 1. All main-loadings were set to 0.75, and all residual variances to 0.3. We included two truly non-zero cross-loadings, that of factor 1 on item 4, and that of factor 2 on item 3. The true model is summarized in the Appendix both in equations and graphically. We varied the magnitude of the two non-zero cross-loadings between 0.2 and 0.5. Next, we varied the sample sizes of the simulated datasets between 100 and 200. This choice was made because for simple factor models researchers would be unlikely to collect larger sample sizes in practice. Finally, based on the recommendations of @muthen_bayesian_2012, we included three levels of the hyper-parameter $\sigma^2$: 0.001, 0.01, 0.1. This left us with a total number of 2 x 2 x 3 = 12 individual sets of conditions. Per set of conditions, 200 iterations were run, yielding a total of 2400 posterior samples. 
+The datasets were simulated based on a true 2-factor model, with three items per factor, and a factor correlation of 0.5. The factors were scaled by fixing their means to zero and their variances to 1. All main-loadings were set to 0.75, and all residual variances to 0.3. We included two truly non-zero cross-loadings, that of factor 1 on item 4, and that of factor 2 on item 3. The true model is summarized below, both in equations (Appendix A) and graphically (Figure 1). We varied the magnitude of the two non-zero cross-loadings between 0.2 and 0.5. Next, we varied the sample sizes of the simulated datasets between 100 and 200. This choice was made because for simple factor models researchers would be unlikely to collect larger sample sizes in practice. Finally, based on the recommendations of @muthen_bayesian_2012, we included three levels of the hyper-parameter $\sigma^2$: 0.001, 0.01, 0.1. This left us with a total number of 2 x 2 x 3 = 12 individual sets of conditions. Per set of conditions, 200 iterations were run, yielding a total of 2400 posterior samples. 
 
 ## Outcomes 
 
@@ -137,9 +141,13 @@ As outcomes, we first considered the Mean (Absolute) Bias of all estimated model
 
 ## Convergence
 
-In terms of convergence, the SVNP showed excellent performance. For all parameters, across all iterations and configurations of conditions, there were none in which $\hat{R} < 1.05$. The lowest value of the Effective Sample Size $N_{eff}$ was still a good 39.4% of the chain length, with the largest majority of runs  even exceeding an excellent 50% of the chain length (96% for the parameter with the largest percentage of $\frac{N_{eff}}{N_{chain}} < 0.5$). Moreover, across all runs there was not a single divergent transition. Therefore, none of the 2400 posterior samples had to be disregarded. 
+In terms of convergence, the SVNP showed excellent performance. Across all iterations and configurations of conditions, there were not a single parameter for which $\hat{R} < 1.05$. The lowest value of the Effective Sample Size $N_{eff}$ was still a 39.4% of the chain length, which is still a very acceptable proporation. For the largest majority of runs $N_{eff}$ even exceeded 50% of the chain length (96% for the parameter with the largest percentage of $\frac{N_{eff}}{N_{chain}} < 0.5$). Moreover, across all runs there was not a single divergent transition. Therefore, none of the 2400 posterior samples had to be disregarded. 
 
 ## Main Results
+
+The mean absolute bias of all model parameters is summarized below in Figure 3. The outcome is summarized for the different parameters as follows. For cross-loadings 
+
+![Main Results: Mean Absolute Bias in the Model Parameters.](~/1vs2StepBayesianRegSEM/Rmd/figures/allPars.png){length=500px}
 
 # Conclusions and Discussion
 
@@ -195,4 +203,5 @@ $$\Psi =
 ,$$ and
 $$\Theta = diag[0.3, 0.3, 0.3, 0.3, 0.3, 0.3].$$
 
-![Graphical Representation of the True Model.](~/OneDrive/ms/thesis/Rmd/figures/model.png)
+
+# Figures
