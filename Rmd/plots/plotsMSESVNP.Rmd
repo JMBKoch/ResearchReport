@@ -220,13 +220,6 @@ crossLoading6
 ```
 
 
-```{r}
-mseMeanSVNP %>% 
-  select(crossEstMean_1:crossEstMean_6, sigma, cross) %>% 
-  group_by(sigma, cross) %>% 
-    summarise_all(mean)
-```
-
 ### Factor Correlation
 
 
@@ -249,13 +242,6 @@ mseMeanSVNP %>%
   theme_apa()
 factCorr
 ```
-
-```{r}
-png(file = "~/Downloads/factCorr.png", width=300, height=250)
-factCorr + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "bottom", legend.title = element_blank())
-dev.off()
-```
-
 
 ### Main Loadings
 
