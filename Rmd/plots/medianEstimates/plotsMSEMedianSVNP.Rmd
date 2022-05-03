@@ -10,9 +10,6 @@ knitr::opts_chunk$set(echo = F, message = F)
 ```
 
 
-
-# Step1: Prepearations
-
 ```{r, message = F, warning = F}
 # load packages outside of simulation
 library(papaja)
@@ -32,7 +29,6 @@ convSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
                      header = TRUE)
 ```
 
-## Post-process
 
 ```{r}
 resultsSVNP <- 
@@ -51,7 +47,6 @@ resultsSVNP <-
 ```
 
 
-# Compute MSE
 
 ```{r}
 mseMedSVNP <- 
@@ -93,7 +88,7 @@ mseMedSVNP <-
         sigmaSqu = mean(sigmaSqu)
       ) %>% 
   mutate_if(is.numeric, round, 5)
-mseMedSVNP
+#mseMedSVNP
 ```
 
 

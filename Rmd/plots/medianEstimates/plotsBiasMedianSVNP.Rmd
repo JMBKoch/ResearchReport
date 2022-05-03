@@ -6,10 +6,9 @@ output: html_document
 ---
 
 ```{r, echo=F}
-knitr::opts_chunk$set(echo = F, message = F)
+knitr::opts_chunk$set(echo = F, message = F, warning = F)
 ```
 
-# Step1: Prepearations
 
 ```{r, message = F, warning = F}
 # load packages outside of simulation
@@ -30,7 +29,6 @@ convSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
                      header = TRUE)
 ```
 
-# Post-process
 
 ```{r}
 resultsSVNP <- 

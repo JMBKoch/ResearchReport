@@ -9,7 +9,6 @@ output: html_document
 knitr::opts_chunk$set(echo = F, message = F)
 ```
 
-# Step1: Prepearations
 
 ```{r, message = F, warning = F}
 # load packages outside of simulation
@@ -30,7 +29,6 @@ convSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
                      header = TRUE)
 ```
 
-## Post-process
 
 ```{r}
 resultsSVNP <- 
@@ -64,7 +62,7 @@ resultsSVNP %>%
   geom_point()+
   geom_line()+
   facet_wrap(~N)+
-  labs(x = NULL,
+  labs(x = "Size Cross Loading",
       y =  "Mean Absolute Bias",
       title = "Cross-Loading 1")+
   theme_apa()
@@ -83,7 +81,7 @@ resultsSVNP %>%
   geom_point()+
   geom_line()+
   facet_wrap(~N)+
-  labs(x = NULL,
+  labs(x = "Size Cross Loading",
       y = "Mean Absolute Bias",
       title = "Cross-Loading 2")+
   ylim(0, 0.5)+
@@ -104,7 +102,7 @@ resultsSVNP %>%
   geom_point()+
   geom_line()+
   facet_wrap(~N)+
-  labs(x = NULL,
+  labs(x = "Size Cross Loading",
       y = "Mean Absolute Bias",
       title = "Cross-Loading 3")+
   ylim(0, 0.5)+
@@ -124,8 +122,8 @@ resultsSVNP %>%
   geom_point()+
   geom_line()+
   facet_wrap(~N)+
-  labs(x = NULL,
-       y = NULL,
+  labs(x = "Size Cross Loading",
+       y =  "Mean Absolute Bias",
       title = "Cross-Loading 4")+
   ylim(0, 0.5)+
   theme_apa()
@@ -166,7 +164,7 @@ resultsSVNP %>%
   facet_wrap(~N)+
   labs(
         x = "Size Cross Loading",
-       y = NULL,
+       y =  "Mean Absolute Bias",
       title = "Cross-Loading 6")+
   ylim(0, 0.5)+
   theme_apa()
@@ -214,7 +212,7 @@ resultsSVNP %>%
   geom_point()+
   geom_line()+
   facet_wrap(~N)+
-  labs(x = NULL,
+  labs(x = "Size Cross Loading",
        y = "Mean Absolute Bias",
       title = "Main Loading 1")+
   ylim(0, 0.5)+
@@ -235,8 +233,8 @@ resultsSVNP %>%
   geom_point()+
   geom_line()+
   facet_wrap(~N)+
-  labs(x = NULL,
-      y = NULL,
+  labs(x = "Size Cross Loading",
+      y =  "Mean Absolute Bias",
       title = " Main Loading 2")+
   ylim(0, 0.5)+
   theme_apa()
@@ -255,7 +253,7 @@ resultsSVNP %>%
   geom_point()+
   geom_line()+
   facet_wrap(~N)+
-  labs(x = NULL,
+  labs(x = "Size Cross Loading",
       y = "Mean Absolute Bias",
       title = "Main Loading 3")+
   ylim(0, 0.5)+
@@ -276,8 +274,8 @@ resultsSVNP %>%
   geom_point()+
   geom_line()+
   facet_wrap(~N)+
-  labs(x = NULL,
-       y = NULL,
+  labs(x = "Size Cross Loading",
+       y =  "Mean Absolute Bias",
       title = "Main Loading 4")+
   ylim(0, 0.5)+
   theme_apa()
@@ -317,7 +315,7 @@ resultsSVNP %>%
   geom_line()+
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
-      y = NULL,
+      y = "Mean Absolute Bias",
       title = "Main Loading 6")+
   ylim(0, 0.5)+
   theme_apa()
@@ -342,7 +340,7 @@ resultsSVNP %>%
   geom_line()+
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
-      y = NULL,
+      y = "Mean Absolute Bias",
       title = "Residual Variance 1")+
   ylim(0, 0.5)+
   theme_apa()
@@ -362,7 +360,7 @@ resultsSVNP %>%
   geom_line()+
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
-      y = NULL,
+      y = "Mean Absolute Bias",
       title = "Residual Variance 2")+
   ylim(0, 0.5)+
   theme_apa()
@@ -382,7 +380,7 @@ resultsSVNP %>%
   geom_line()+
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
-      y = NULL,
+      y = "Mean Absolute Bias",
       title = "Residual Variance 3")+
   ylim(0, 0.5)+
   theme_apa()
@@ -402,7 +400,7 @@ resultsSVNP %>%
   geom_line()+
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
-      y = NULL,
+      y = "Mean Absolute Bias",
       title = "Residual Variance 4")+
   ylim(0, 0.5)+
   theme_apa()
@@ -422,7 +420,7 @@ resultsSVNP %>%
   geom_line()+
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
-      y = NULL,
+      y = "Mean Absolute Bias",
       title = "Residual Variance 5")+
   ylim(0, 0.5)+
   theme_apa()
@@ -443,7 +441,7 @@ resultsSVNP %>%
   geom_line()+
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
-      y = NULL,
+      y = "Mean Absolute Bias",
       title = "Residual Variance 6")+
   ylim(0, 0.5)+
   theme_apa()
