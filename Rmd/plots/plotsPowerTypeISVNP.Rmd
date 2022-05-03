@@ -111,16 +111,7 @@ resultsSVNP <-
 # For CI variables: 0 = nonZero, 1 = zero
 #PowerSVNP <- 
  resultsSVNP %>% 
-  select(
-        isZeroTres0.10Mean_1:isZero50CI_6,
-        cross,
-        sigmaSqu,
-        N, 
-        pos,
-        iteration,
-        condID, 
-        ) %>% 
-  group_by(condID) %>% 
+  group_by(N, sigmaSqu, cross) %>% 
   summarise(powerTres0.15Mean_1 = mean(isZeroTres0.15Mean_1), 
             powerTres0.15Mean_6 = mean(isZeroTres0.15Mean_6), 
             powerTres0.10Mean_1 = mean(isZeroTres0.10Mean_1), 
@@ -135,11 +126,14 @@ resultsSVNP <-
             powerCI90Mean_6 = mean(isZero90CI_6 == 0),
             powerCI80Mean_1 = mean(isZero80CI_1 == 0),
             powerCI80Mean_6 = mean(isZero80CI_6 == 0),
-            powerCI50Mean_1 = mean(isZero80CI_1 == 0),
-            powerCI50Mean_6 = mean(isZero80CI_6 == 0),
+            powerCI50Mean_1 = mean(isZero50CI_1 == 0),
+            powerCI50Mean_6 = mean(isZero50CI_6 == 0),
         N = mean(N),
         cross = mean(cross),
-        sigmaSqu = mean(sigmaSqu))
+        sigmaSqu = mean(sigmaSqu), 
+        X2.5._1 = mean(X2.5._1),
+        X97.5._1 = mean(X97.5._1)) %>% 
+  select(N, sigmaSqu, cross, powerCI95Mean_6, X2.5._1, X97.5._1)
   
 ```
 
