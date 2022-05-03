@@ -3,19 +3,19 @@
 
 \centering
 \includegraphics{JMBKoch_report_files/figure-latex/unnamed-chunk-1-1.pdf}
-\caption{\label{fig:unnamed-chunk-1}Density Plots of the Regularization Priors of Interest}
+\caption{\label{fig:unnamed-chunk-1}Density Plots of the Regularization Priors of Interest.}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
 \centering
-\includegraphics{~/OneDrive/ms/thesis/Rmd/figures/model.png}
+\includegraphics{~/1vs2StepBayesianRegSEM/Rmd/figures/model.png}
 \caption{Graphical Representation of the True Model.}
 \end{figure*}
 \begin{figure*}[hbt]
 \ifnextchar[{\eatarg}{}
 
 \centering
-\includegraphics{~/1vs2StepBayesianRegSEM/Rmd/figures/allPars.png}
-\caption{Main Results: Mean Absolute Bias in the Model Parameters.}
+\includegraphics{~/1vs2StepBayesianRegSEM/Rmd/figures/BiasAllPars.png}
+\caption{Main Results: Mean Absolute Bias in the Model Parameters (N = 200).}
 \end{figure*}
