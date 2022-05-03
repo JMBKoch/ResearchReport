@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/Arch Linux) (preloaded format=xelatex 2022.4.18)  3 MAY 2022 09:33
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/Arch Linux) (preloaded format=xelatex 2022.4.18)  3 MAY 2022 14:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1010,10 +1010,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ) (/usr/share/texmf-dist/tex/latex/microtype/mt-eur.cfg
 File: mt-eur.cfg 2006/07/31 v1.1 microtype config. file: AMS Euler Roman (RS)
-) [2] [3] [4] [5] [6]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-[7] [8]
+) [2] [3] [4] [5] [6] [7] [8]
 Underfull \vbox (badness 1028) has occurred while \output is active []
 
 [9

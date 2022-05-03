@@ -118,7 +118,6 @@ convSVNP %>%
   map_df(max) 
 ```
 
-FF met Sara bespreken, maar dit is meer over efficientie dan validiteit van de output, dus het zit sws wel goed!
 
 
 
@@ -130,7 +129,7 @@ FF met Sara bespreken, maar dit is meer over efficientie dan validiteit van de o
 ```{r}
 crossLoadingsLowBias <- 
 resultsSVNP %>%
-  filter(N = 200) %>% 
+  filter(N == 200) %>% 
   select(biasCrossMean_2, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -150,7 +149,7 @@ resultsSVNP %>%
 ```{r}
 crossLoadingHighBias <- 
 resultsSVNP %>% 
-  filter(N = 200) %>% 
+  filter(N == 200) %>% 
   select(N, biasCrossMean_1, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -170,7 +169,7 @@ resultsSVNP %>%
 ```{r}
 mainLoadingsLowBias <- 
 resultsSVNP %>% 
-  filter(N = 200) %>% 
+  filter(N == 200) %>% 
   select(biasMainMean_1, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -188,7 +187,7 @@ resultsSVNP %>%
 ```{r}
 mainLoadingsHighBias <- 
 resultsSVNP %>% 
-  filter(N = 200) %>% 
+  filter(N == 200) %>% 
   select(biasMainMean_3, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -206,7 +205,7 @@ resultsSVNP %>%
 ```{r}
 factCorr <- 
 resultsSVNP %>% 
-  filter(N = 200) %>% 
+  filter(N == 200) %>% 
   select(biasFactCorrMean, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -224,7 +223,7 @@ resultsSVNP %>%
 ```{r}
 thetas <- 
 resultsSVNP %>% 
-  filter(N = 200) %>% 
+  filter(N == 200) %>% 
   select(biasThetaMean_1, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -259,10 +258,9 @@ dev.off()
 ```{r}
 resultsSVNP %>% 
   filter(N == 200) %>% 
-  select(biasCrossMean_2, cross, sigmaSqu) %>%
+  select(N, biasCrossMean_2, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
-  group_by(#N, 
-    cross, label) %>% 
+  group_by(N,  cross, label) %>% 
   summarise(meanBiasCrossMean_2 = mean(biasCrossMean_2))
 ```
 
@@ -271,8 +269,7 @@ resultsSVNP %>%
   filter(N == 200) %>% 
   select(N, crossEstMean_2, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
-  group_by(#N, 
-    cross, label) %>% 
+  group_by(N,  cross, label) %>% 
   summarise(meanCrossEstMean_2 = mean(crossEstMean_2))
 ```
 
@@ -284,8 +281,7 @@ resultsSVNP %>%
   filter(N == 200) %>% 
   select(N, biasCrossMean_1, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
-  group_by(#N, 
-    cross, label) %>% 
+  group_by(N, cross, label) %>% 
   summarise(meanBiasCrossMean_1 = mean(biasCrossMean_1)) 
 ```
 
@@ -294,8 +290,7 @@ resultsSVNP %>%
   filter(N == 200) %>% 
   select(N, crossEstMean_1, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
-  group_by(#N, 
-    cross, label) %>% 
+  group_by(N, cross, label) %>% 
   summarise(meanCrossEstMean_1 = mean(crossEstMean_1))
 ```
 
@@ -306,8 +301,7 @@ resultsSVNP %>%
   filter(N == 200) %>% 
   select(N, biasMainMean_3, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
-  group_by(#N, 
-           cross, label) %>% 
+  group_by(N, cross, label) %>% 
   summarise(meanBiasMainMean_3 = mean(biasMainMean_3))
 ```
 
@@ -316,9 +310,8 @@ resultsSVNP %>%
   filter(N == 200) %>% 
   select(N, mainEstMean_3, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
-  group_by(#N, 
-           cross, label) %>% 
-  summarise(meanBiasMainMean_3 = mean(biasMainMean_3))
+  group_by(N,cross, label) %>% 
+  summarise(meanMainEstMean_3 = mean(mainEstMean_3))
 ```
 
 ### Factor Corr
@@ -328,8 +321,7 @@ resultsSVNP %>%
   filter(N == 200) %>% 
   select(N, biasFactCorrMean, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
-  group_by(#N, 
-           cross, label) %>% 
+  group_by(N, cross, label) %>% 
   summarise(meanBiasFactCorrEstMean = mean(biasFactCorrMean))
 ```
 

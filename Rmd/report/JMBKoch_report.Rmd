@@ -29,7 +29,7 @@ Michael Koch (6412157)\\
 Methodology and Statistics for the Behavioral, Biomedical, and Social Sciences \\
 Supervisor: Dr. Sara van Erp \\ 
 Email: j.m.b.koch@students.uu.nl \\
-Word Count: 2500 \\
+Word Count: 2483 \\
 Intented Journal of Publication: Structural Equation Modeling \\
 
 % make page numbers start from second page 
@@ -47,8 +47,7 @@ library(ggplot2)
 library(magrittr)
 library(jtools) # for apa ggplot theme
 library(kableExtra)
-source('~/1vs2StepBayesianRegSEM//ms/thesis/R/parameters.R')
-
+source('~/1vs2StepBayesianRegSEM/R/parameters.R')
 ```
 
 ```{r analysis-preferences}
@@ -85,7 +84,9 @@ data.frame(dens = c(smallVar, regHs),
   geom_density(alpha = .5)+
   #geom_vline(aes(xintercept = asymp), linetype = "dashed") +
   xlim(-.5, .5)+
-  labs(x = "Size Cross-Loading", title = NULL)+
+  labs(x = "Size Cross-Loading",
+       y = "Density",
+       , title = NULL)+
   theme_apa(legend.pos = "bottom")
 ```
 
@@ -138,9 +139,10 @@ The datasets were simulated based on a true 2-factor model, with three items per
 
 ## Outcome
 
-As outcome, we focused on the Mean (Absolute) Bias of all estimated model parameters. For every model parameter $\theta$ and for every set of conditions that has been sampled from for $N_{rep}$ replications.
-$$Bias_{\theta, conditions} = \frac{1}{N} \Sigma_{i = 1}^{N_{rep}} |\hat{\theta_i} - \theta_{true}|$$
-We computed two versions, one based on mean and one based on median posterior estimates. The latter is only reported in case of relevant deviations from the former.
+As outcome, we focused on the Mean (Absolute) Bias of the posterior means of all model parameters ($\bar{\theta}$). For every model parameter $\theta$ and for every set of conditions that has been sampled from for $N_{rep}$ replications:
+$$Bias_{\bar{\theta}, conditions} = \frac{1}{N} \Sigma_{i = 1}^{N_{rep}} |\bar{\theta_i} - \theta_{true}|$$ 
+
+We also computed the outcome based on the median posterior estimates ($\tilde{\theta}$). The latter is only reported in case of relevant deviations from the former.
 
 # Results
 
@@ -150,15 +152,15 @@ In terms of convergence, the SVNP showed excellent performance. Across all repli
 
 ## Main Results
 
-The Mean Absolute Bias of all parameters is summarized in Figure 3. For parameters that showed an identical pattern (cross-loadings 2-5; cross-loadings 1 and 6; main-loadings 1, 2, 5, and 6; main-loadings 3 and 4; and residual variances 1-6), the first respecting parameter is presented representative for all, both in the plot and in the numbers presented below. The patterns for the two sample size were almost entirely identical, with a tendency for patterns to be slightly more extreme with N = 100. We therefore decided to only present the results for N = 200. 
+The Mean Absolute Bias of all parameters is summarized in Figure 3. For parameter estimates that showed an identical pattern ($\bar{\lambda}_{c, 2-5}$; $\bar{\lambda}_{c, 1}$ and $\bar{\lambda}_{c, 6}$; $\bar{\lambda}_{m, 1}$, $\bar{\lambda}_{m, 2}$, $\bar{\lambda}_{m, 5}$, and $\bar{\lambda}_{m, 6}$; $\bar{\lambda}_{m, 3-4}$; and $\bar{\theta}_{1-6}$; see Figure 2), the first respecting parameter is presented representative for all, both in the plot and in the numbers presented below. The patterns for the two sample size are almost entirely identical, with a tendency for patterns to be slightly more extreme with N = 100. We therefore decided to only present the results for N = 200. 
 
-Figure 3 shows that, as expected, substantial bias can arise in the model parameters when using the SVNP to regularize cross-loadings. While the bias in the truly zero cross-loadings 2-5 is relatively small, substantial bias can arise for the truly non-zero cross-loadings. Particular with a large cross-loading of 0.5 and $\sigma^2 = 0.001$ the bias is substantial, e.g. $Bias_{\hat{\lambda_{23}}} = 0.485)$, since the true cross-loading of 0.5 is shrunken almost entirely to zero ($\hat{\lambda_{c,1,\sigma^2 = 0.001,}} = 0.015$), explaining the substantial bias. The choice of $\sigma^2$ plays a crucial role here. Also with $\sigma^2 =  0.01$ substantial bias still occurs ($Bias_{\hat{\lambda_{23}}} = 0.296$). Here the cross-loading is still substantially under-estimated ($\hat{\lambda_{23}} = 0.203$). With a $\sigma^2 = 0.1$ the bias in the estimate of the cross-loading is less pronounced, but still present ($Bias_{\hat{\lambda_{23}}} = 0.121$). Here the variance of the prior of the cross-loadings is large enough that the cross-loadings are estimated closer to their large population value, e.g. $\hat{\lambda_{23}} = 0.383$.
+Figure 3 shows that, as expected, substantial bias can arise in the model parameters when using the SVNP to regularize cross-loadings. While the bias in the posterior mean estimates of the truly zero cross-loadings $\bar{\lambda}_{c, 2-5}$ is relatively small, substantial bias arises for the truly non-zero cross-loadings $\bar{\lambda}_{c, 1}$ and $\bar{\lambda}_{c, 6}$. Particularly with a large cross-loading of 0.5 and $\sigma^2 = 0.001$ the bias is substantial, e.g. $Bias_{\bar{\lambda}_{c, 1}} = 0.48$, since the true cross-loading of 0.5 is shrunken almost entirely to zero ($\bar{\lambda}_{c, 1} = 0.02$). The choice of $\sigma^2$ plays a crucial role here. Also with $\sigma^2 =  0.01$ (and true cross-loadings of 0.5) substantial bias still occurs ($Bias_{\bar{\lambda}_{c, 1}} = 0.24$). Here the cross-loading is still substantially under-estimated ($\bar{\lambda}_{c, 1} = 0.26$), though not entirely shrunken to zero. With a $\sigma^2 = 0.1$ the bias in the estimate of the cross-loading is less pronounced ($Bias_{\bar{\lambda}_{c, 1}} = 0.10$). Here the variance of the prior of the cross-loadings is large enough that the cross-loadings are estimated closer to their large population value, e.g. $\bar{\lambda}_{c, 1} = 0.40$.
 
-Next, looking at the main-loadings it is clear that also in the main loadings of factor 1 on item 3 ($\lambda_{m, 3}$ in Figure 2) and of factor 2 on item 4 ($\lambda_{m, 4}$ in Figure 2) substantial bias arises, again in particular under the most extreme combination of conditions.  When the true cross-loadings are 0.5 and $\sigma^2 = 0.001$ the bias becomes very pronounced (e.g. $Bias_{\hat{\lambda_{m, 3}}} = 0.397$). The two loadings have much higher bias than the other four main-loadings as these are the two main-loadings that load onto the same two items on which the truly non-zero cross-loadings load. When these cross-loadings are shrunken to zero, these main loadings now also have to account for the variance in the items that should be accounted for by the cross-loadings. Consquently, these main-loadings are over-estimated, e.g. under the above configuration $\bar{\lambda_{m, 3}} = 1.147$. 
+Next, looking at the main-loadings it is clear that also in the main loadings of factor 1 on item 3 ($\bar{\lambda}_{m, 3}$ in Figure 2) and of factor 2 on item 4 ($\bar{\lambda}_{m, 4}$ in Figure 2) substantial bias arises, again in particular under the most extreme combination of conditions.  When the true cross-loadings are 0.5 and $\sigma^2 = 0.001$ the bias becomes very pronounced (e.g. $Bias_{\bar{\lambda}_{m, 3}} = 0.39$). The two loadings have much higher bias than the other four main-loadings as these are the two main-loadings that load onto the same two items on which the truly non-zero cross-loadings load (see Figure 2). When these cross-loadings are shrunken to zero, these main loadings now also have to account for the variance in the items that should be accounted for by the cross-loadings. Consequently, these main-loadings are over-estimated, e.g. under the above configuration $\bar{\lambda_{m, 3}} = 1.14$. 
 
-Also in the structural parameter of the model, the factor correlation, a similar pattern emerges. While the bias is relatively small and approximately the same for the different values of $\sigma^2$ when the truly non-zero cross-loadings are 0.2, it becomes more pronounced when they are 0.5, particularly when $\sigma^2 = 0.001$ ($Bias_{\hat{r}} = 0.345$). The underlying pattern becomes clear when considering the estimates of the factor correlation. When $\sigma^2 = 0.001$ and the non-zero cross-loadings are 0.5, the factor correlation is heavily over-estimated ($\hat{r} = 0.845$). This is because the covariance between item 3 and 4 that arises from the two cross-loadings, is mis-attributed to the factor-correlation, as the cross-loadings are shrunken to zero.
+Also in the structural parameter of the model, the factor correlation, a similar pattern emerges. While the bias is relatively small and approximately the same for the different values of $\sigma^2$ when the truly non-zero cross-loadings are 0.2, it becomes more pronounced when they are 0.5, particularly when $\sigma^2 = 0.001$ ($Bias_{\bar{r}} = 0.35$). The underlying pattern becomes clear when considering the posterior mean estimates of the factor correlation. When $\sigma^2 = 0.001$ and the non-zero cross-loadings are 0.5, the factor correlation is heavily over-estimated ($\bar{r} = 0.85$). This is because the covariance between item 3 and 4 that arises from the two cross-loadings, is mis-attributed to the factor-correlation, as the cross-loadings are shrunken to zero.
 
-The bias in the residual variances $\theta_{1-6}$ is not substantial across different conditions, although also here a noticable increase occurs between cross-loadings of 0.2 and 0.5, with $\sigma^2 = 0.001$.
+The bias in the estimates of the residual variances $\bar{\theta}_{1-6}$ is not substantial across different conditions, although also here a noticable increase occurs between cross-loadings of 0.2 and 0.5, with $\sigma^2 = 0.001$.
 
 
 # Conclusions and Discussion
