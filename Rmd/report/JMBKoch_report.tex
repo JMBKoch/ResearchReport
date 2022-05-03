@@ -1,6 +1,7 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
   man,floatsintext]{apa6}
@@ -38,7 +39,11 @@
 \hypersetup{
   pdftitle={Getting a Step Ahead: Using the Regularized Horseshoe Prior to Select Cross-Loadings in Bayesian CFA},
   pdflang={en-EN},
-  hidelinks,
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
 \usepackage{graphicx}
@@ -173,7 +178,7 @@ Michael Koch (6412157)\\
 Methodology and Statistics for the Behavioral, Biomedical, and Social Sciences \\
 Supervisor: Dr. Sara van Erp \\ 
 Email: j.m.b.koch@students.uu.nl \\
-Word Count: 2483 \\
+Word Count: 2469 \\
 Intented Journal of Publication: Structural Equation Modeling \\
 
 % make page numbers start from second page 
@@ -202,20 +207,20 @@ In Confirmatory factor analysis (CFA, Bollen, 1989), an essential tool for model
 
 As an alternative way to identify CFA models, Muthen and Asparouhov (2012) proposed \emph{Bayesian CFA}, which can be viewed as a form of regularized SEM (see also Jacobucci, Grimm, \& McArdle, 2016 for a summary of frequentist approaches to regularized Structural Equation Modeling). Rather than identifying models by fixing \emph{all} cross-loadings to zero, one should assume that \emph{most} cross-loadings are zero. This is achieved by setting the so-called \emph{Small Variance Normal Prior} (SVNP) for the cross-loadings, which is a normal distribution with mean zero and a very small variance (e.g.\(\sigma^2\) = 0.01). This prior has a large peak at zero, and very thin tails (Figure 1). Hence, it attaches large prior mass to cross-loadings of or near zero, while attaching almost no prior mass to cross-loadings further from zero. Consequently, all cross-loadings in the model are shrunken. The larger the prior's variance, the more admissive the model is in the amount of deviation from zero it allows.
 
-An issue with Muthen and Asparouhov (2012)'s Bayesian CFA is that not only the cross-loadings close to zero, which are considered irrelevant, are shrunken to zero, as desired. Also the ones further from zero are shrunken heavily towards zero, which introduces bias (Lu, Chow, \& Loken, 2016). First, bias naturally occurs in the large cross-loadings itself. However, given that the parameters of a model are estimated conditionally on one another, also in other parameters, such as factor-correlations or main-loadings, substantial bias can arise. Consequently, Bayesian CFA requires two steps in practice. First, the model is estimated with the SVNP set for the cross-loadings. Cross-loadings are selected as non-zero when their 95\% credible intervals does not contain zero {[}{]}. The model is then re-estimated, with cross-loadings that have been selected to be zero in the previous step are fixed to zero, and the remaining cross-loadings are estimated without shrinkage, avoiding the bias in the model of the previous step. It is desirable to identify alternative priors that can outperform the Small Variance Normal Prior in a single step. The literature on regularization in a regression context (see Van Erp et al., 2019) provides a variety of promising candidates for achieving this end.
+An issue with Muthen and Asparouhov (2012)'s Bayesian CFA is that not only the cross-loadings close to zero, which are considered irrelevant, are shrunken to zero, as desired. Also the ones further from zero are shrunken heavily towards zero, which introduces bias (Lu, Chow, \& Loken, 2016). First, bias naturally occurs in the large cross-loadings itself. However, given that the parameters of a model are estimated conditionally on one another, also in other parameters, such as factor-correlations or main-loadings, substantial bias can arise. Consequently, Bayesian CFA requires two steps in practice. First, the model is estimated with the SVNP set for the cross-loadings. Cross-loadings are selected as non-zero when their 95\% credible intervals does not contain zero. The model is then re-estimated, with cross-loadings that have been selected to be zero in the previous step are fixed to zero, and the remaining cross-loadings are estimated without shrinkage, avoiding the bias in the model of the previous step. It is desirable to identify alternative priors that can outperform the Small Variance Normal Prior in a single step. The literature on regularization in a regression context (see Van Erp et al., 2019) provides a variety of promising candidates for achieving this end.
 
 \hypertarget{the-regularized-horseshoe-prior-rhsp}{%
 \subsection{The Regularized Horseshoe Prior (RHSP)}\label{the-regularized-horseshoe-prior-rhsp}}
 
-A particularly promising candidate is the so-called \emph{Regularized Horseshoe Prior} (RHSP, Piironen \& Vehtari, 2017a, 2017b). This prior is an extension of the Horseshoe Prior (Carvalho, Polson, \& Scott, 2010). The main idea of both priors is that there is a \emph{global shrinkage parameter} \(\tau\), shrinking all cross-loadings to zero, and a \emph{local shrinkage parameter} \(\tilde{\omega}_{jk}^2\) that allows the relevant cross-loadings to escape the shrinkage. The issue with the original Horseshoe Prior is that not shrinking large parameters at all can lead to identification issues (see Ghosh, Li, \& Mitra, 2018). The RHSP solves this issue (Piironen \& Vehtari, 2017b), by shrinking also large parameters a little bit, as the prior for such large parameters approaches a normal (slab) prior with mean zero and variance \(c^2\).
+A particularly promising candidate is the so-called \emph{Regularized Horseshoe Prior} (RHSP, Piironen \& Vehtari, 2017a, 2017b). This prior is an extension of the Horseshoe Prior (Carvalho, Polson, \& Scott, 2010). The main idea of both priors is that there is a \emph{global shrinkage parameter} \(\tau\), shrinking all cross-loadings to zero, and a \emph{local shrinkage parameter} \(\bar{\omega}_{jk}^2\) that allows the relevant cross-loadings to escape the shrinkage. The issue with the original Horseshoe Prior is that not shrinking large parameters at all can lead to identification issues (see Ghosh, Li, \& Mitra, 2018). The RHSP solves this issue (Piironen \& Vehtari, 2017b), by shrinking also large parameters a little bit, as the prior for such large parameters approaches a normal (slab) prior with mean zero and variance \(c^2\).
 
 For every cross-loading of factor j on item k:
-\[\lambda_{jk} | \tilde{\omega}_{jk}, \tau, c\sim \mathcal{N}(0, \ \tilde{\omega}^2_{jk} \tau^2), \ with \ \tilde{\omega}^2_{jk} = \frac{c^2\omega_{jk}^2}{c^2 + \tau^2 \omega_{jk}^2},\]
+\[\lambda_{jk} | \bar{\omega}_{jk}, \tau, c\sim \mathcal{N}(0, \ \bar{\omega}^2_{jk} \tau^2), \ with \ \bar{\omega}^2_{jk} = \frac{c^2\omega_{jk}^2}{c^2 + \tau^2 \omega_{jk}^2},\]
 \[\tau | s_{global}^2 \sim half-t_{df_{global}}(0,\  s_{global}^2), \ with \  s_{global} = \frac{p_0}{p-p_0}\frac{\sigma}{\sqrt{N}},\]
 \[\omega_{jk} \sim half-t_{df_{local}}(0, \ s_{local}^2),\]
 \[c^2 | df_{slab}, s_{slab} \sim \mathcal{IG}(\frac{df_{slab}}{2}, \  df_{slab} \times \frac{s_{slab}^2}{2}),\]
 
-where \(p_0\) represents a prior guess of the number of relevant cross-loadings. It is, however, not necessary to use such prior guess \(p_0\). One can simply set the \(s_{global}\) manually, whereby it is worth to consider that a \(s_{global}\) created based on a prior guess will typically be much lower than 1 (Piironen \& Vehtari, 2017b). Note that we deviate from the common notation of the local shrinkage parameter as \(\lambda\), as this letter is commonly used to denote factor loadings in CFA.
+where \(p_0\) represents a prior guess of the number of relevant cross-loadings. It is, however, not necessary to use such prior guess \(p_0\). One can simply set the \(s_{global}\) manually, whereby it is worth to consider that a \(s_{global}\) created based on a prior guess will typically be much lower than 1 (Piironen \& Vehtari, 2017b).\footnote{We deviate from the common notation of the local shrinkage parameter as \(\lambda\), as this letter is commonly used to denote factor loadings in CFA.}
 
 \begin{figure}
 \centering
@@ -233,12 +238,12 @@ While the Regularized Horseshoe Prior has been shown to perform excellently in t
 \hypertarget{study-procedure-and-parameters}{%
 \subsection{Study Procedure and Parameters}\label{study-procedure-and-parameters}}
 
-In order to assess the performance of the SVNP in regularizing cross-loadings in Bayesian Regularized SEM, a Monte Carlo simulation study was conducted using STAN (Stan Development Team, 2021). All code that was used to run the simulation study can be openly accessed on the author's \href{https://github.com/JMBKoch/1vs2StepBayesianRegSEM}{\textbf{github}}. The models were sampled using the No-U-Turn-Sampler (Homan \& Gelman, 2014), with two chains, a burnin-period of 2000 and a chain-length of 4000. These sampling parameters were identified in pilot runs to be required for the RHSP to reach convergence, and were therefore also used for the SVNP in order to ensure a fair comparison.
+In order to assess the performance of the SVNP in regularizing cross-loadings in Bayesian Regularized SEM, a Monte Carlo simulation study was conducted using STAN (Stan Development Team, 2021). All code that was used to run the simulation study can be openly accessed on the author's \href{https://github.com/JMBKoch/1vs2StepBayesianRegSEM}{\textbf{github}}\footnote{Specifically, the R-scripts needed to run the simulation can be found on \url{https://github.com/JMBKoch/1vs2StepBayesianRegSEM/tree/main/R}. \texttt{parameters.R} can be adjusted to adjust study parameters, and \texttt{main.R} is used to run the main simulation. Required packages are listed at the top of \texttt{parameters.R}}. The models were sampled using the No-U-Turn-Sampler (Homan \& Gelman, 2014), with two chains, a burnin-period of 2000 and a chain-length of 4000. These sampling parameters were identified in pilot runs to be required for the RHSP to reach convergence, and were therefore also used for the SVNP in order to ensure a fair comparison.
 
 \hypertarget{true-model-and-conditions}{%
 \subsection{True Model and Conditions}\label{true-model-and-conditions}}
 
-The datasets were simulated based on a true 2-factor model, with three items per factor, and a factor correlation of 0.5. The factors were scaled by fixing their means to zero and their variances to 1. All main-loadings were set to 0.75, and all residual variances to 0.3. We included two truly non-zero cross-loadings, that of factor 1 on item 4, and that of factor 2 on item 3. The true model is summarized below, both in equations (Appendix A) and graphically (Figure 2). We varied the magnitude of the two non-zero cross-loadings between 0.2 and 0.5. Next, we varied the sample sizes of the simulated datasets between 100 and 200. This choice was made because for simple factor models researchers would be unlikely to collect larger sample sizes in practice. Finally, based on the recommendations of Muthen and Asparouhov (2012), we included three levels of the hyper-parameter \(\sigma^2\): 0.001, 0.01, 0.1. This left us with a total number of 2 x 2 x 3 = 12 individual sets of conditions. Per set of conditions, 200 replications were run, yielding a total of 2400 replications.
+The datasets were simulated based on a true 2-factor model, with three items per factor, and a factor correlation of 0.5. The factors were scaled by fixing their means to zero and their variances to 1. All main-loadings were set to 0.75, and all residual variances to 0.3. We included two truly non-zero cross-loadings, that of factor 1 on item 4, and that of factor 2 on item 3. The true model is summarized below, both in equations (Appendix A) and graphically (Figure 2).\footnote{The stan code of the model can be found at \url{https://github.com/JMBKoch/1vs2StepBayesianRegSEM/blob/main/stan/SVNP.stan}.} We varied the magnitude of the two non-zero cross-loadings between 0.2 and 0.5. Next, we varied the sample sizes of the simulated datasets between 100 and 200. This choice was made because for simple factor models researchers would be unlikely to collect larger sample sizes in practice. Finally, based on the recommendations of Muthen and Asparouhov (2012), we included three levels of the hyper-parameter \(\sigma^2\): 0.001, 0.01, 0.1. This left us with a total number of 2 x 2 x 3 = 12 individual sets of conditions. Per set of conditions, 200 replications were run, yielding a total of 2400 replications.
 
 \begin{figure}
 \centering
@@ -246,13 +251,11 @@ The datasets were simulated based on a true 2-factor model, with three items per
 \caption{Graphical Representation of the True Model.}
 \end{figure}
 
-\hypertarget{outcome}{%
-\subsection{Outcome}\label{outcome}}
+\hypertarget{outcomes}{%
+\subsection{Outcomes}\label{outcomes}}
 
-As outcome, we focused on the Mean (Absolute) Bias of the posterior means of all model parameters (\(\bar{\theta}\)). For every model parameter \(\theta\) and for every set of conditions that has been sampled from for \(N_{rep}\) replications:
-\[Bias_{\bar{\theta}, conditions} = \frac{1}{N} \Sigma_{i = 1}^{N_{rep}} |\bar{\theta_i} - \theta_{true}|\]
-
-We also computed the outcome based on the median posterior estimates (\(\tilde{\theta}\)). The latter is only reported in case of relevant deviations from the former.
+We focus\footnote{We also computed the Mean Squared Error and Relative Bias of the parameter estimates. The same patterns as with the Mean Absolute Bias emerged. Plots summarizing the findings can be found at \url{https://github.com/JMBKoch/1vs2StepBayesianRegSEM/tree/main/Rmd/plots}.} on the Mean (Absolute) Bias of the posterior mean estimates\footnote{We also computed the outcome based on the median posterior estimates averaged per set of conditions (\(\tilde{\theta}|conditions\)). The results showed no relevant deviations from the mean posterior estimates. See \url{https://github.com/JMBKoch/1vs2StepBayesianRegSEM/tree/main/Rmd/plots/medianEstimates}.} of all model parameters, per set of conditions (\(\bar{\theta} | conditions\)). Hence, for every model parameter \(\theta\) and for every set of conditions that has been sampled from for \(N_{rep}\) replications:
+\[Bias_{\bar{\theta} | conditions} = \frac{1}{N} \Sigma_{i = 1}^{N_{rep}} |\bar{\theta_i} - \theta_{true}|\]
 
 \hypertarget{results}{%
 \section{Results}\label{results}}
@@ -265,7 +268,7 @@ In terms of convergence, the SVNP showed excellent performance. Across all repli
 \hypertarget{main-results}{%
 \subsection{Main Results}\label{main-results}}
 
-The Mean Absolute Bias of all parameters is summarized in Figure 3. For parameter estimates that showed an identical pattern (\(\bar{\lambda}_{c, 2-5}\); \(\bar{\lambda}_{c, 1}\) and \(\bar{\lambda}_{c, 6}\); \(\bar{\lambda}_{m, 1}\), \(\bar{\lambda}_{m, 2}\), \(\bar{\lambda}_{m, 5}\), and \(\bar{\lambda}_{m, 6}\); \(\bar{\lambda}_{m, 3-4}\); and \(\bar{\theta}_{1-6}\); see Figure 2), the first respecting estimate is presented representative for all, both in the plot and in the numbers presented below. The patterns for the two sample size are almost entirely identical, with a tendency for patterns to be slightly more extreme with N = 100. We therefore decided to only present the results for N = 200.
+The Mean Absolute Bias of all parameters is summarized in Figure 3. For parameter estimates that showed an identical pattern (\(\bar{\lambda}_{c, 2-5}\); \(\bar{\lambda}_{c, 1}\) and \(\bar{\lambda}_{c, 6}\); \(\bar{\lambda}_{m, 1}\), \(\bar{\lambda}_{m, 2}\), \(\bar{\lambda}_{m, 5}\), and \(\bar{\lambda}_{m, 6}\); \(\bar{\lambda}_{m, 3-4}\); and \(\bar{\theta}_{1-6}\)), the first respecting estimate is presented representative for all, both in the plot and in the numbers presented below. The patterns for the two sample size are almost entirely identical, with a tendency for patterns to be slightly more extreme with N = 100. We therefore decided to only present the results for N = 200.\footnote{The Mean Absolute Bias plotted per N can be found on \url{https://github.com/JMBKoch/1vs2StepBayesianRegSEM/blob/main/Rmd/plots/plotsBiasSVNP.html}}
 
 \begin{figure}
 \centering
@@ -288,7 +291,7 @@ In sum, a clear pattern arose. The SVNP performs well in situations where the tr
 
 Bias occurred much less with \(\sigma^2 = 0.1\). Such relatively large variance still allowed for enough deviations from zero in the cross-loadings to yield relatively accurate estimates of the non-zero cross-loadings itself and consequently the other model parameters. However, this does not mean that one can simply use larger values of \(\sigma^2\) to keep using the SVNP while avoiding bias. In practice, models may include more structural parameters, even more cross-loadings, or a number of residual co-variances. Under these circumstances, large values of \(\sigma^2\) may lead to identification issues. Moreover, the larger \(\sigma^2\), the more cross-loadings will be selected as non-zero, which may ultimately lead to over-fitting.
 
-The RHSP is expected to perform better with large non-zero cross-loadings of 0.5, with estimates of these cross-loadings being able to escape the shrinkage. While some hyper-parameter configurations of the RHSP are likely to show much worse performance in terms of identification, other configurations should allow for regularizing cross-loadings without risking substantial bias nor identification issues.
+The RHSP is expected to generally perform better with large non-zero cross-loadings of 0.5, with estimates of these cross-loadings being able to escape the shrinkage. While some hyper-parameter configurations of the RHSP are likely to show much worse performance in terms of identification, other configurations should allow for regularizing cross-loadings without risking substantial bias nor identification issues.
 
 \clearpage
 
@@ -372,7 +375,7 @@ Van Erp, S., Oberski, D. L., \& Mulder, J. (2019). Shrinkage priors for {Bayesia
 \hypertarget{appendix-a-true-model}{%
 \subsection{Appendix A: True Model}\label{appendix-a-true-model}}
 
-For every individual i in i = 1,\ldots,N:
+For every individual i in i = 1,\ldots, N:
 \[Y_i \sim \mathcal{N}(\mathbf{0}, \Sigma),\] where
 \[\Sigma = \Lambda\Psi\Lambda',\]
 \[\Lambda = 
