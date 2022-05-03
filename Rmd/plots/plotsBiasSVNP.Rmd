@@ -1,17 +1,13 @@
 ---
-title: "Plot Mean Absolute Bias"
+title: "Plots Bias Mean Estimates SVNP"
 author: "Koch, J.M.B. (Michael)"
 date: '2022-05-02'
 output: html_document
 ---
 
----
-title: "PLots MSE Mean Estimates"
-author: "Koch, J.M.B. (Michael)"
-date: '2022-05-02'
-output: html_document
----
-
+```{r, echo=F}
+knitr::opts_chunk$set(echo = F, message = F)
+```
 
 # Step1: Prepearations
 
@@ -26,15 +22,15 @@ source('~/OneDrive/ms/thesis/R/parameters.R')
 
 ```{r}
 # load results
-resultsSVNP <- read.csv("~/OneDrive/ms/thesis/output/resultsSVNP.csv", 
+resultsSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv", 
                         sep = " ", 
                         header = TRUE)
-convSVNP <- read.csv("~/OneDrive/ms/thesis/output/convSVNP.csv",
+convSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
                      sep = " ",
                      header = TRUE)
 ```
 
-# Post-process
+## Post-process
 
 ```{r}
 resultsSVNP <- 
@@ -54,8 +50,6 @@ resultsSVNP <-
 
 
 # Plots
-
-## MSE mean estimates
 
 ### Cross-Loadings
 ```{r}
@@ -335,7 +329,6 @@ mainLoading6
 ### Residual Variances
 
 
-
 ```{r}
 theta1 <- 
 resultsSVNP %>% 
@@ -350,7 +343,7 @@ resultsSVNP %>%
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
       y = NULL,
-      title = "Theta 1")+
+      title = "Residual Variance 1")+
   ylim(0, 0.5)+
   theme_apa()
 theta1
@@ -370,7 +363,7 @@ resultsSVNP %>%
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
       y = NULL,
-      title = "Theta 2")+
+      title = "Residual Variance 2")+
   ylim(0, 0.5)+
   theme_apa()
 theta2
@@ -390,7 +383,7 @@ resultsSVNP %>%
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
       y = NULL,
-      title = "Theta 3")+
+      title = "Residual Variance 3")+
   ylim(0, 0.5)+
   theme_apa()
 theta3
@@ -410,7 +403,7 @@ resultsSVNP %>%
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
       y = NULL,
-      title = "Theta 4")+
+      title = "Residual Variance 4")+
   ylim(0, 0.5)+
   theme_apa()
 theta4
@@ -430,7 +423,7 @@ resultsSVNP %>%
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
       y = NULL,
-      title = "Theta 5")+
+      title = "Residual Variance 5")+
   ylim(0, 0.5)+
   theme_apa()
 theta5
@@ -451,7 +444,7 @@ resultsSVNP %>%
   facet_wrap(~N)+
   labs(x = "Size Cross Loading",
       y = NULL,
-      title = "Theta 6")+
+      title = "Residual Variance 6")+
   ylim(0, 0.5)+
   theme_apa()
 theta6

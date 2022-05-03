@@ -40,14 +40,15 @@ Intented Journal of Publication: Structural Equation Modeling \\
 \pagestyle{plain}
 ```
 
-```{r setup, include = FALSE}
+```{r setup, include = FALSE, cache=T}
 library("papaja")
 library(LaplacesDemon) # for horseshoe density 
 library(ggplot2)
 library(magrittr)
 library(jtools) # for apa ggplot theme
 library(kableExtra)
-source('~/OneDrive/ms/thesis/R/parameters.R')
+source('~/1vs2StepBayesianRegSEM//ms/thesis/R/parameters.R')
+
 ```
 
 ```{r analysis-preferences}
@@ -139,7 +140,7 @@ The datasets were simulated based on a true 2-factor model, with three items per
 
 As outcome, we focused on the Mean (Absolute) Bias of all estimated model parameters. For every model parameter $\theta$ and for every set of conditions that has been sampled from for $N_{rep}$ replications.
 $$Bias_{\theta, conditions} = \frac{1}{N} \Sigma_{i = 1}^{N_{rep}} |\hat{\theta_i} - \theta_{true}|$$
-
+We computed two versions, one based on mean and one based on median posterior estimates. The latter is only reported in case of relevant deviations from the former.
 
 # Results
 
