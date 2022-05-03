@@ -140,3 +140,19 @@ resultsSVNP <-
 
 # Plots
 
+## Ratio of correct identification
+
+See Figure 5 p.7 Zhang et al. 
+
+## ROC
+
+Stappen:
+- TypeI error rate &  Power (True Positive rate) middelen over de 4, ofwel 2 items. 
+- Op X-as type I (false pos), op Y-as power (true-pos)
+- Group/ col = sigma^2
+- N = facet-wrap
+
+=> ff kijken wat er gebeurd
+=> Kan straks makkelijk uitgebreid worden op basis van andere selectiecriteria
+
+KLAAR
