@@ -4,6 +4,7 @@
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
+  english,
   man,floatsintext]{apa6}
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
@@ -95,15 +96,6 @@
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
-\ifLuaTeX
-\usepackage[bidi=basic]{babel}
-\else
-\usepackage[bidi=default]{babel}
-\fi
-\babelprovide[main,import]{english}
-% get rid of language-specific shorthands (see #6817):
-\let\LanguageShortHands\languageshorthands
-\def\languageshorthands#1{}
 % This preamble allows to remove the redundant title page from papaja's output.pdf
 \usepackage{atbegshi}% http://ctan.org/pkg/atbegshi
 \AtBeginDocument{\AtBeginShipoutNext{\AtBeginShipoutDiscard}}
@@ -157,6 +149,16 @@
 \renewcommand{\efloat@iwrite}[1]{\immediate\expandafter\protected@write\csname efloat@post#1\endcsname{}}
 \makeatother
 \usepackage{csquotes}
+\ifXeTeX
+  % Load polyglossia as late as possible: uses bidi with RTL langages (e.g. Hebrew, Arabic)
+  \usepackage{polyglossia}
+  \setmainlanguage[]{english}
+\else
+  \usepackage[main=english]{babel}
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+\fi
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -178,7 +180,7 @@ Michael Koch (6412157)\\
 Methodology and Statistics for the Behavioral, Biomedical, and Social Sciences \\
 Supervisor: Dr. Sara van Erp \\ 
 Email: j.m.b.koch@students.uu.nl \\
-Word Count: 2384 \\
+Word Count: 2511 \\
 Intented Journal of Publication: Structural Equation Modeling \\
 
 % make page numbers start from second page 
@@ -205,7 +207,7 @@ In Confirmatory factor analysis (CFA, Bollen, 1989), an essential tool for model
 \hypertarget{bayesian-cfa-the-small-variance-normal-prior-svnp}{%
 \subsection{Bayesian CFA: The Small Variance Normal Prior (SVNP)}\label{bayesian-cfa-the-small-variance-normal-prior-svnp}}
 
-As an alternative way to identify CFA models, Muthen and Asparouhov (2012) proposed \emph{Bayesian CFA}, which can be viewed as a form of regularized SEM (see also Jacobucci, Grimm, \& McArdle, 2016 for a frequentist perspective on regularized Structural Equation Modeling). Rather than identifying models by fixing \emph{all} cross-loadings to zero, one should assume that \emph{most} cross-loadings are zero. This is achieved by setting the so-called \emph{Small Variance Normal Prior} (SVNP) for the cross-loadings, which is a normal distribution with mean zero and a very small variance (e.g.~\(\sigma^2\) = 0.01). This prior has a large peak at zero, and very thin tails (Figure 1). Hence, it attaches large prior mass to cross-loadings of or near zero, while attaching almost no prior mass to cross-loadings further from zero. Consequently, all cross-loadings in the model are shrunken. The larger the prior's variance, the more admissive the model is in the amount of deviation from zero it allows.
+As an alternative way to identify CFA models, Muthen and Asparouhov (2012) proposed \emph{Bayesian CFA}, which can be viewed as a form of regularized SEM (see Jacobucci, Grimm, \& McArdle, 2016 for a frequentist perspective on regularized Structural Equation Modeling). Rather than identifying models by fixing \emph{all} cross-loadings to zero, one should assume that \emph{most} cross-loadings are zero. This is achieved by setting the so-called \emph{Small Variance Normal Prior} (SVNP) for the cross-loadings, which is a normal distribution with mean zero and a very small variance (e.g.~\(\sigma^2\) = 0.01). This prior has a large peak at zero, and very thin tails (Figure 1). Hence, it attaches large prior mass to cross-loadings of or near zero, while attaching almost no prior mass to cross-loadings further from zero. Consequently, all cross-loadings in the model are shrunken. The larger the prior's variance, the more admissive the model is in the amount of deviation from zero it allows.
 
 An issue with Muthen and Asparouhov (2012)'s Bayesian CFA is that not only the cross-loadings close to zero, which are considered irrelevant, are shrunken to zero, as desired. Also the ones further from zero are shrunken heavily towards zero, which introduces bias (Lu, Chow, \& Loken, 2016). First, bias naturally occurs in the large cross-loadings itself. However, given that the parameters of a model are estimated conditionally on one another, also in other parameters, such as factor-correlations or main-loadings, substantial bias can arise. Consequently, Bayesian CFA requires two steps in practice. First, the model is estimated with the SVNP set for the cross-loadings. Cross-loadings are selected as non-zero when their 95\% credible intervals does not contain zero (Muthen \& Asparouhov, 2012). The model is then re-estimated, with cross-loadings that have been selected to be zero in the previous step are fixed to zero, and the remaining cross-loadings are estimated without shrinkage, avoiding the bias in the model of the previous step. It is desirable to identify alternative priors that can outperform the Small Variance Normal Prior in a single step. The literature on regularization in a regression context (see Van Erp et al., 2019) provides a variety of promising candidates for achieving this end.
 
@@ -216,8 +218,8 @@ A particularly promising candidate is the so-called \emph{Regularized Horseshoe 
 
 For every cross-loading of factor j on item k:
 \[\lambda_{jk} | \bar{\omega}_{jk}, \tau, c\sim \mathcal{N}(0, \ \bar{\omega}^2_{jk} \tau^2), \ with \ \bar{\omega}^2_{jk} = \frac{c^2\omega_{jk}^2}{c^2 + \tau^2 \omega_{jk}^2},\]
-\[\tau | s_{global}^2 \sim half-t_{df_{global}}(0,\  s_{global}^2), \ with \  s_{global} = \frac{p_0}{p-p_0}\frac{\sigma}{\sqrt{N}},\]
-\[\omega_{jk} \sim half-t_{df_{local}}(0, \ s_{local}^2),\]
+\[\tau | df_{global}, s_{global} \sim half-t_{df_{global}}(0,\  s_{global}^2), \ with \  s_{global} = \frac{p_0}{p-p_0}\frac{\sigma}{\sqrt{N}},\]
+\[\omega_{jk}| df_{local}, s_{local} \sim half-t_{df_{local}}(0, \ s_{local}^2),\]
 \[c^2 | df_{slab}, s_{slab} \sim \mathcal{IG}(\frac{df_{slab}}{2}, \  df_{slab} \times \frac{s_{slab}^2}{2}),\]
 
 where \(p_0\) represents a prior guess of the number of relevant cross-loadings. It is, however, not necessary to use \(p_0\). One can simply set \(s_{global}\) manually, whereby it is worth to consider that a \(s_{global}\) created based on a \(p_0\) will typically be much lower than 1 (Piironen \& Vehtari, 2017b).\footnote{We deviate from the common notation of the local shrinkage parameter as \(\lambda\), as this letter is commonly used to denote factor loadings in CFA.}
@@ -254,8 +256,8 @@ The datasets were simulated based on a true 2-factor model, with three items per
 \hypertarget{outcomes}{%
 \subsection{Outcomes}\label{outcomes}}
 
-We focus\footnote{We also computed the Mean Squared Error and Relative Bias of the posterior mean estimates. Moreover all outcomes were also calculated based on median posterior estimates of the model parameters. No findings that counter the conclusions from the Mean Absolute Bias emerged. Plots summarizing the alternative outcomes can be found on \url{https://github.com/JMBKoch/1vs2StepBayesianRegSEM/tree/main/Rmd/plots}.} on the Mean (Absolute) Bias of the posterior mean estimates of all model parameters, per set of conditions (\(\bar{\theta} | conditions\)). Hence, for every model parameter \(\theta\) and for every set of conditions that has been sampled from for \(N_{rep}\) replications:
-\[Bias_{\bar{\theta} | conditions} = \frac{1}{N} \Sigma_{i = 1}^{N_{rep}} |\bar{\theta_i} - \theta_{true}|\]
+We focus\footnote{We also computed the Mean Squared Error and Relative Bias of the posterior mean estimates, and the Power and Type-I Error-Rate in selecting truly non-zero cross-loadings as non-zero. Summaries of these alternative outcomes can be found on \url{https://github.com/JMBKoch/1vs2StepBayesianRegSEM/tree/main/Rmd/plots}.} on the Mean (Absolute) Bias of the posterior mean estimates of all model parameters, per set of conditions (\(\bar{\theta} | conditions\)). Hence, for every model parameter \(\theta\) and for every set of conditions that has been sampled from for \(N_{rep}\) replications:
+\[\bar{Bias}_{\bar{\theta} | conditions} = \frac{1}{N} \Sigma_{i = 1}^{N_{rep}} |\bar{\theta_i} - \theta_{true}|\]
 
 \hypertarget{results}{%
 \section{Results}\label{results}}
@@ -276,11 +278,11 @@ The Mean Absolute Bias of all parameters is summarized in Figure 3. For paramete
 \caption{Main Results: Mean Absolute Bias in the Model Parameters (N = 200).}
 \end{figure}
 
-Figure 3 shows that, as expected, substantial bias can arise in the model parameters when using the SVNP to regularize cross-loadings. While the bias in the posterior mean estimates of the truly zero cross-loadings \(\bar{\lambda}_{c, 2-5}\) was relatively small, substantial bias arose in the truly non-zero cross-loadings \(\bar{\lambda}_{c, 1}\) and \(\bar{\lambda}_{c, 6}\). Particularly with a large true cross-loading of 0.5 and \(\sigma^2 = 0.001\) the bias was substantial, e.g.~\(Bias_{\bar{\lambda}_{c, 1}} = 0.48\), since the true cross-loading of 0.5 was shrunken almost entirely to zero (\(\bar{\lambda}_{c, 1} = 0.02\)). The choice of \(\sigma^2\) plays a crucial role here. Also with \(\sigma^2 = 0.01\) (and true cross-loadings of 0.5) substantial bias still occured (\(Bias_{\bar{\lambda}_{c, 1}} = 0.24\)). Here the cross-loading was still substantially under-estimated (\(\bar{\lambda}_{c, 1} = 0.26\)), though not entirely shrunken to zero. With a \(\sigma^2 = 0.1\) the bias in the estimate of the cross-loading was less pronounced (\(Bias_{\bar{\lambda}_{c, 1}} = 0.10\)). Here the variance of the prior of the cross-loadings was large enough that the cross-loadings are estimated closer to their large population value, e.g.~\(\bar{\lambda}_{c, 1} = 0.40\).
+Figure 3 shows that, as expected, substantial bias can arise in the model parameters when using the SVNP to regularize cross-loadings. While the bias in the posterior mean estimates of the truly zero cross-loadings \(\bar{\lambda}_{c, 2-5}\) was relatively small, substantial bias arose in the truly non-zero cross-loadings \(\bar{\lambda}_{c, 1}\) and \(\bar{\lambda}_{c, 6}\). Particularly with a large true cross-loading of 0.5 and \(\sigma^2 = 0.001\) the bias was substantial, e.g.~\(\bar{Bias}_{\bar{\lambda}_{c, 1}} = 0.48\), since the true cross-loading of 0.5 was shrunken almost entirely to zero (\(\bar{\lambda}_{c, 1} = 0.02\)). The choice of \(\sigma^2\) plays a crucial role here. Also with \(\sigma^2 = 0.01\) (and true cross-loadings of 0.5) substantial bias still occured (\(\bar{Bias}_{\bar{\lambda}_{c, 1}} = 0.24\)). Here the cross-loading was still substantially under-estimated (\(\bar{\lambda}_{c, 1} = 0.26\)), though not entirely shrunken to zero. With a \(\sigma^2 = 0.1\) the bias in the estimate of the cross-loading was less pronounced (\(\bar{Bias}_{\bar{\lambda}_{c, 1}} = 0.10\)). Here the variance of the prior of the cross-loadings was large enough that the cross-loadings are estimated closer to their large population value, e.g.~\(\bar{\lambda}_{c, 1} = 0.40\).
 
-Next, also in the main loadings of factor 1 on item 3 (\(\bar{\lambda}_{m, 3}\)) and of factor 2 on item 4 (\(\bar{\lambda}_{m, 4}\)) substantial bias arose when the true cross-loadings were 0.5 and \(\sigma^2 = 0.001\) (e.g.~\(Bias_{\bar{\lambda}_{m, 3}} = 0.39\)). The two loadings showed much higher bias than the other four main-loadings as these are the two main-loadings that load onto the same two items on which the truly non-zero cross-loadings load (see Figure 2). As these cross-loadings were shrunken to zero, these main loadings now also had to account for the variance in the items that should be accounted for by the cross-loadings. Consequently, these main-loadings were over-estimated, e.g.~under the above configuration \(\bar{\lambda}_{m, 3} = 1.14\).
+Next, also in the main loadings of factor 1 on item 3 (\(\bar{\lambda}_{m, 3}\)) and of factor 2 on item 4 (\(\bar{\lambda}_{m, 4}\)) substantial bias arose when the true cross-loadings were 0.5 and \(\sigma^2 = 0.001\) (e.g.~\(\bar{Bias}_{\bar{\lambda}_{m, 3}} = 0.39\)). The two loadings showed much higher bias than the other four main-loadings as these are the two main-loadings that load onto the same two items on which the truly non-zero cross-loadings load (see Figure 2). As these cross-loadings were shrunken to zero, these main loadings now also had to account for the variance in the items that should be accounted for by the cross-loadings. Consequently, these main-loadings were over-estimated, e.g.~under the above configuration \(\bar{\lambda}_{m, 3} = 1.14\).
 
-Also in the factor correlation the bias was relatively small and approximately the same for the different values of \(\sigma^2\) when the truly non-zero cross-loadings were 0.2, but it became more pronounced when they were 0.5, particularly when \(\sigma^2 = 0.001\) (\(Bias_{\bar{r}} = 0.35\)). The underlying pattern becomes clear when considering the posterior mean estimates of the factor correlation. When \(\sigma^2 = 0.001\) and the non-zero cross-loadings were 0.5, the factor correlation was heavily over-estimated (\(\bar{r} = 0.85\)). This is because the covariance between item 3 and 4 that arose from the two cross-loadings, was mis-attributed to the factor-correlation, as the cross-loadings were shrunken to zero.
+Also in the factor correlation the bias was relatively small and approximately the same for the different values of \(\sigma^2\) when the truly non-zero cross-loadings were 0.2, but it became more pronounced when they were 0.5, particularly when \(\sigma^2 = 0.001\) (\(\bar{Bias}_{\bar{r}} = 0.35\)). The underlying pattern becomes clear when considering the posterior mean estimates of the factor correlation. When \(\sigma^2 = 0.001\) and the non-zero cross-loadings were 0.5, the factor correlation was heavily over-estimated (\(\bar{r} = 0.85\)). This is because the covariance between item 3 and 4 that arose from the two cross-loadings, was mis-attributed to the factor-correlation, as the cross-loadings were shrunken to zero.
 
 The bias in the estimates of the residual variances \(\bar{\theta}_{1-6}\) was not substantial across different conditions, although also here a noticeable increase occurs between cross-loadings of 0.2 and 0.5, with \(\sigma^2 = 0.001\).
 
@@ -291,9 +293,9 @@ In sum, a clear pattern arose. The SVNP performs well in situations where the tr
 
 Bias occurred much less with \(\sigma^2 = 0.1\). Such relatively large variance still allowed for enough deviations from zero in the cross-loadings to yield relatively accurate estimates of the non-zero cross-loadings itself and consequently the other model parameters. However, this does not mean that one can simply use larger values of \(\sigma^2\) to keep using the SVNP while avoiding bias. In practice, models may include more structural parameters, even more cross-loadings, or a number of residual co-variances. Under these circumstances, large values of \(\sigma^2\) may lead to identification issues. Moreover, the larger \(\sigma^2\), the more cross-loadings will be selected as non-zero, which may ultimately lead to over-fitting.
 
-Of course, the large amount of bias in the SVNP is not surprising, as it is clearly noted that the method requires a 2-step approach to avoid bias. However, this approach heavily depends on a successful selection of non-zero cross-loadings. Muthen and Asparouhov (2012) advise a power (true positive rate) in selecting non-zero cross-loadings of at least .80. However, only under a single set of conditions (N = 200, sigma = 0.01, cross-loading = 0.5) this power was reached in our study, which suggests that even a 2-step approach would in practice be no ideal solution. This serves to illustrate the need for more advanced priors such as the RHSP, although different selection rules (see Zhang, Pan, \& Ip, 2021) may show a better performance than the 95\% credible intervals suggested by Muthen and Asparouhov (2012).
+The high bias of the SVNP under large true cross-loadings is not surprising, as it is clearly noted that the method requires a 2-step approach to avoid bias. However, this approach depends on a successful selection of non-zero cross-loadings. Muthen and Asparouhov (2012) advise a Power (true positive rate) in selecting non-zero cross-loadings of at least .80. However, only under a single set of conditions (N = 200, sigma = 0.01, cross-loading = 0.5) this power was reached in our study, which suggests that even a 2-step approach is no practical solution. This serves to illustrate the need for more advanced priors such as the RHSP, although different selection rules (see Zhang, Pan, \& Ip, 2021) may show a better performance than the 95\% credible intervals suggested by Muthen and Asparouhov (2012).
 
-The RHSP is expected to generally perform better with large non-zero cross-loadings of 0.5, with estimates of these cross-loadings being able to escape the shrinkage. While some hyper-parameter configurations of the RHSP are likely to show much worse performance in terms of identification, other configurations should allow for regularizing cross-loadings without risking substantial bias nor identification issues.
+The RHSP is expected to show less bias in the parameter estimates of the model within a single step, even with true cross-loadings of 0.5. Estimates of these larger cross-loadings are expected to escape the shrinkage, which consquently also prevents bias in other parameter estimates.
 
 \clearpage
 
