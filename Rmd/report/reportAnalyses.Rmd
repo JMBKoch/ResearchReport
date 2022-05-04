@@ -129,7 +129,7 @@ convSVNP %>%
 ```{r}
 crossLoadingsLowBias <- 
 resultsSVNP %>%
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(biasCrossMean_2, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -149,7 +149,7 @@ resultsSVNP %>%
 ```{r}
 crossLoadingHighBias <- 
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(N, biasCrossMean_1, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -169,7 +169,7 @@ resultsSVNP %>%
 ```{r}
 mainLoadingsLowBias <- 
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(biasMainMean_1, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -187,7 +187,7 @@ resultsSVNP %>%
 ```{r}
 mainLoadingsHighBias <- 
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(biasMainMean_3, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -205,7 +205,7 @@ resultsSVNP %>%
 ```{r}
 factCorr <- 
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(biasFactCorrMean, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -223,7 +223,7 @@ resultsSVNP %>%
 ```{r}
 thetas <- 
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(biasThetaMean_1, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(cross, label) %>% 
@@ -257,7 +257,7 @@ dev.off()
 
 ```{r}
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(N, biasCrossMean_2, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(N,  cross, label) %>% 
@@ -266,7 +266,7 @@ resultsSVNP %>%
 
 ```{r}
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(N, crossEstMean_2, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(N,  cross, label) %>% 
@@ -278,7 +278,7 @@ resultsSVNP %>%
 
 ```{r}
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(N, biasCrossMean_1, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(N, cross, label) %>% 
@@ -287,7 +287,7 @@ resultsSVNP %>%
 
 ```{r}
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(N, crossEstMean_1, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(N, cross, label) %>% 
@@ -298,7 +298,7 @@ resultsSVNP %>%
 
 ```{r}
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100)%>% 
   select(N, biasMainMean_3, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(N, cross, label) %>% 
@@ -307,7 +307,7 @@ resultsSVNP %>%
 
 ```{r}
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(N, mainEstMean_3, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(N,cross, label) %>% 
@@ -318,7 +318,7 @@ resultsSVNP %>%
 
 ```{r}
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(N, biasFactCorrMean, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(N, cross, label) %>% 
@@ -327,7 +327,7 @@ resultsSVNP %>%
 
 ```{r}
 resultsSVNP %>% 
-  filter(N == 200) %>% 
+  filter(N == 100) %>% 
   select(N, factCorrEstMean, cross, sigmaSqu) %>%
   mutate(label = as.factor(paste0("\u03c3\u00B2 = ", sigmaSqu))) %>% 
   group_by(#N, 
