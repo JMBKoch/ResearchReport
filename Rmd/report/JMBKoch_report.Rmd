@@ -201,7 +201,6 @@ The RHSP is expected to show less bias in the parameter estimates of the model w
 
 \endgroup
 
-\clearpage
 
 
 
