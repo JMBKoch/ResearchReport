@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/Arch Linux) (preloaded format=xelatex 2022.4.18)  3 MAY 2022 20:01
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/Arch Linux) (preloaded format=xelatex 2022.4.18)  4 MAY 2022 08:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -973,7 +973,10 @@ Package fancyhdr Warning: \headheight is too small (15.2pt):
 (fancyhdr)                \addtolength{\topmargin}{-12.21803pt}.
 
 LaTeX Info: Completed page discarded.
-[0] [1
+[0]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[1
 
 ]
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
@@ -1044,12 +1047,12 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 File: JMBKoch_report_files/figure-latex/unnamed-chunk-1-1.pdf Graphic file (typ
 e pdf)
 <use JMBKoch_report_files/figure-latex/unnamed-chunk-1-1.pdf>
-[4]
-Underfull \vbox (badness 5203) has occurred while \output is active []
-
-[5]
+[4] [5]
 File: ~/1vs2StepBayesianRegSEM/Rmd/figures/model.png Graphic file (type bmp)
 <~/1vs2StepBayesianRegSEM/Rmd/figures/model.png>
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
 [6]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 

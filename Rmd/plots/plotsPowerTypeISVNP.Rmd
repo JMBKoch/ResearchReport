@@ -132,8 +132,8 @@ resultsSVNP <-
         cross = mean(cross),
         sigmaSqu = mean(sigmaSqu), 
         X2.5._1 = mean(X2.5._1),
-        X97.5._1 = mean(X97.5._1)) %>% 
-  select(N, sigmaSqu, cross, powerCI95Mean_6, X2.5._1, X97.5._1)
+        X97.5._1 = mean(X97.5._1)) #%>% 
+ # select(N, sigmaSqu, cross, powerTres0Mean_1)
   
 ```
 
