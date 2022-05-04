@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/Arch Linux) (preloaded format=xelatex 2022.4.18)  4 MAY 2022 16:56
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/Arch Linux) (preloaded format=xelatex 2022.4.18)  4 MAY 2022 17:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -974,50 +974,50 @@ Package fancyhdr Warning: \headheight is too small (15.2pt):
 
 LaTeX Info: Completed page discarded.
 [0]
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Underfull \vbox (badness 2689) has occurred while \output is active []
 
 [1
 
 ]
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 8.4pt on input line 205.
+(Font)              scaled to size 8.4pt on input line 208.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 6.0pt on input line 205.
+(Font)              scaled to size 6.0pt on input line 208.
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 2
-05.
+08.
 (/usr/share/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 12.0011pt on input line 205.
+(Font)              scaled to size 12.0011pt on input line 208.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 8.40076pt on input line 205.
+(Font)              scaled to size 8.40076pt on input line 208.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 6.00055pt on input line 205.
+(Font)              scaled to size 6.00055pt on input line 208.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 11.99872pt on input line 205.
+(Font)              scaled to size 11.99872pt on input line 208.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 8.3991pt on input line 205.
+(Font)              scaled to size 8.3991pt on input line 208.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 5.99936pt on input line 205.
+(Font)              scaled to size 5.99936pt on input line 208.
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 2
-05.
+08.
 (/usr/share/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-205.
+208.
 (/usr/share/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 205
+LaTeX Font Info:    Trying to load font information for U+msa on input line 208
 .
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (/usr/share/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 205
+LaTeX Font Info:    Trying to load font information for U+msb on input line 208
 .
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -1027,23 +1027,23 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 File: mt-eur.cfg 2006/07/31 v1.1 microtype config. file: AMS Euler Roman (RS)
 ) [2]
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 10.0pt on input line 212.
+(Font)              scaled to size 10.0pt on input line 215.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 7.0pt on input line 212.
+(Font)              scaled to size 7.0pt on input line 215.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 5.0pt on input line 212.
+(Font)              scaled to size 5.0pt on input line 215.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 10.00092pt on input line 212.
+(Font)              scaled to size 10.00092pt on input line 215.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 7.00064pt on input line 212.
+(Font)              scaled to size 7.00064pt on input line 215.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 5.00046pt on input line 212.
+(Font)              scaled to size 5.00046pt on input line 215.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 9.99893pt on input line 212.
+(Font)              scaled to size 9.99893pt on input line 215.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 6.99925pt on input line 212.
+(Font)              scaled to size 6.99925pt on input line 215.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 4.99947pt on input line 212.
+(Font)              scaled to size 4.99947pt on input line 215.
 [3]
 File: JMBKoch_report_files/figure-latex/unnamed-chunk-1-1.pdf Graphic file (typ
 e pdf)
@@ -1074,10 +1074,10 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 ] (./JMBKoch_report.aux) ) 
 Here is how much of TeX's memory you used:
- 23711 strings out of 476180
- 433103 string characters out of 5815297
- 945907 words of memory out of 5000000
- 44065 multiletter control sequences out of 15000+600000
+ 23713 strings out of 476180
+ 433123 string characters out of 5815297
+ 945942 words of memory out of 5000000
+ 44067 multiletter control sequences out of 15000+600000
  501966 words of font info for 102 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  86i,12n,121p,2253b,627s stack positions out of 5000i,500n,10000p,200000b,80000s
