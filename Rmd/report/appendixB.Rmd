@@ -57,13 +57,17 @@ PowerSVNP <-
   select(N, sigmaSqu, cross, powerCI95Mean_1, powerCI95Mean_6) %>% 
   arrange(N, cross)
 colnames(PowerSVNP)[2] <- "$\\sigma^2$"
+colnames(PowerSVNP)[3] <- "size $\\lambda_{c1 , 6}$"
 colnames(PowerSVNP)[4] <- "Power $\\lambda_{c1}$"
 colnames(PowerSVNP)[5] <- "Power $\\lambda_{c6}$"
 
 ```
 
-```{r}
+```{r, fig.cap="test"}
 # knit table
-papaja::apa_table(PowerSVNP, escape = F, placement = "H")
+papaja::apa_table(PowerSVNP, escape = F, placement = "H",
+                  caption = "Power in selecting non-zero cross-loadings.",
+                  note = "Selection based on 95\\% credible intervals."
+                  )
 ```
 

@@ -291,7 +291,7 @@ The results show a clear and consistent pattern. The SVNP performs well when the
 
 Bias occurs much less when \(\sigma^2 = 0.1\). Such relatively large variance still allows for enough deviations from zero in the cross-loadings to yield relatively accurate estimates of the non-zero cross-loadings itself and consequently the other model parameters. However, simply using larger values of \(\sigma^2\) is no general solution. In practice, models may include more structural parameters, even more cross-loadings, or a number of residual co-variances. Under these circumstances, large values of \(\sigma^2\) may lead to identification issues. Moreover, the larger \(\sigma^2\), the more cross-loadings will be selected as non-zero, which may ultimately lead to over-fitting.
 
-The high bias of the SVNP under large true cross-loadings and low values of \(\sigma^2\) is not surprising, as it is clearly noted that the method requires a 2-step approach to avoid bias. However, this approach depends on a successful selection of non-zero cross-loadings. Muthen and Asparouhov (2012) advise a Power (true positive rate) in selecting non-zero cross-loadings of at least .80. However, only under a single set of conditions (N = 200, \(\sigma^2\) = 0.01, cross-loadings = 0.5) this power was reached in our study (see Table B2), which suggests that even a 2-step approach is no robust solution. This serves to illustrate the need for more advanced priors such as the RHSP, although different selection rules (see Zhang et al., 2021) may show a better performance than the 95\% credible intervals suggested by Muthen and Asparouhov (2012).\footnote{We will assess differences between a broad variety of selection rules in the upcoming main study.}
+The high bias of the SVNP under large true cross-loadings and low values of \(\sigma^2\) is not surprising, as it is clearly noted that the method requires a 2-step approach to avoid bias. However, this approach depends on a successful selection of non-zero cross-loadings. Muthen and Asparouhov (2012) advise a Power (true positive rate) in selecting non-zero cross-loadings of at least .80. However, only under a single set of conditions (N = 200, \(\sigma^2\) = 0.01, cross-loadings = 0.5) this power was reached in our study (see Table B1), which suggests that also the 2-step approach is no robust solution. This serves to illustrate the need for more advanced priors such as the RHSP, although different selection rules (see Zhang et al., 2021) may show a better performance than the 95\% credible intervals suggested by Muthen and Asparouhov (2012).\footnote{We will assess differences between a broad variety of selection rules in the upcoming main study.}
 
 The RHSP is expected to show less bias in the parameter estimates of the model within a single estimation step, even with true cross-loadings of 0.5. Estimates of these larger cross-loadings are expected to escape the shrinkage, which also prevents bias in other parameter estimates.
 
@@ -408,11 +408,11 @@ For every individual i in i = 1,\ldots, N:
 \begin{center}
 \begin{threeparttable}
 
-\caption{\label{tab:unnamed-chunk-6}}
+\caption{\label{tab:unnamed-chunk-6}Power in selecting non-zero cross-loadings.}
 
 \begin{tabular}{lllll}
 \toprule
-N & \multicolumn{1}{c}{$\sigma^2$} & \multicolumn{1}{c}{cross} & \multicolumn{1}{c}{Power $\lambda_{c1}$} & \multicolumn{1}{c}{Power $\lambda_{c6}$}\\
+N & \multicolumn{1}{c}{$\sigma^2$} & \multicolumn{1}{c}{size $\lambda_{c1 , 6}$} & \multicolumn{1}{c}{Power $\lambda_{c1}$} & \multicolumn{1}{c}{Power $\lambda_{c6}$}\\
 \midrule
 100 & 0.00 & 0.20 & 0.00 & 0.00\\
 100 & 0.01 & 0.20 & 0.01 & 0.01\\
@@ -427,7 +427,12 @@ N & \multicolumn{1}{c}{$\sigma^2$} & \multicolumn{1}{c}{cross} & \multicolumn{1}
 200 & 0.01 & 0.50 & 0.92 & 0.91\\
 200 & 0.10 & 0.50 & 0.60 & 0.52\\
 \bottomrule
+\addlinespace
 \end{tabular}
+
+\begin{tablenotes}[para]
+\normalsize{\textit{Note.} Selection based on 95\% credible intervals}
+\end{tablenotes}
 
 \end{threeparttable}
 \end{center}
