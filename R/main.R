@@ -25,8 +25,8 @@ load("~/1vs2StepBayesianRegSEM/data/dataStanSVNP.Rds")
 
 ## Execute simulation for SVNP ---------------------------------------------
 ### Make sure output is deleted such that no appendation takes place (BE CAREFUL!)
-file.remove(c("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv",
-              "~/1vs2StepBayesianRegSEM/output/convSVNP.csv"))
+#file.remove(c("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv",
+#              "~/1vs2StepBayesianRegSEM/output/convSVNP.csv"))
 
 # do the sampling where every available core (nWorkers in condtions.R) does 
 #    one unique combination of conditions

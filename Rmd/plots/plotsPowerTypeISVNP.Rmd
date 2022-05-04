@@ -22,10 +22,10 @@ source('~/OneDrive/ms/thesis/R/parameters.R')
 
 ```{r}
 # load results
-resultsSVNP <- read.csv("~/OneDrive/ms/thesis/output/resultsSVNP.csv", 
+resultsSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv", 
                         sep = " ", 
                         header = TRUE)
-convSVNP <- read.csv("~/OneDrive/ms/thesis/output/convSVNP.csv",
+convSVNP <- read.csv("~~/1vs2StepBayesianRegSEM/output/convSVNP.csv",
                      sep = " ",
                      header = TRUE)
 ```
@@ -109,7 +109,7 @@ resultsSVNP <-
 ```{r}
 # For Tresholdvariables: 1 = nonZero, 0 = zero
 # For CI variables: 0 = nonZero, 1 = zero
-#PowerSVNP <- 
+PowerSVNP <- 
  resultsSVNP %>% 
   group_by(N, sigmaSqu, cross) %>% 
   summarise(powerTres0.15Mean_1 = mean(isZeroTres0.15Mean_1), 
@@ -134,7 +134,7 @@ resultsSVNP <-
         X2.5._1 = mean(X2.5._1),
         X97.5._1 = mean(X97.5._1)) %>% 
   select(N, sigmaSqu, cross, powerCI95Mean_1, powerCI95Mean_6)
-  
+papaja::apa_table(PowerSVNP)
 ```
 
 

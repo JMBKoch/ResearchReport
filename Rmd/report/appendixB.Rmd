@@ -1,0 +1,69 @@
+---
+title: 'Appendix B: Power in selecting non-zero cross-loadings'
+author: "Koch, J.M.B. (Michael)"
+date: '2022-05-04'
+output: html_document
+---
+
+
+```{r, echo=F}
+library(tidyverse)
+library(papaja)
+resultsSVNP <- read.csv("~/1vs2StepBayesianRegSEM/output/resultsSVNP.csv", 
+                        sep = " ", 
+                        header = TRUE)
+source('~/1vs2StepBayesianRegSEM/R/parameters.R')
+
+
+# post process
+resultsSVNP <- 
+  resultsSVNP %>% 
+  arrange(sigma, N, cross, iteration) %>% 
+  mutate(sigmaSqu = sigma^2,
+         biasCrossMean_1 = abs(crossEstMean_1 - cross),
+         biasCrossMean_2 = abs(crossEstMean_2 - 0),
+         biasCrossMean_3 = abs(crossEstMean_3 - 0),
+         biasCrossMean_4 = abs(crossEstMean_4 - 0),
+         biasCrossMean_5 = abs(crossEstMean_5 - 0),
+         biasCrossMean_6 = abs(crossEstMean_6 - cross),
+         condID = rep(1:(nrow(condPop)*nrow(condSVNP)), each = nIter) 
+) 
+
+# compute power & subset relevant ones for now
+PowerSVNP <- 
+ resultsSVNP %>% 
+  group_by(N, sigmaSqu, cross) %>% 
+  summarise(powerTres0.15Mean_1 = mean(isZeroTres0.15Mean_1), 
+            powerTres0.15Mean_6 = mean(isZeroTres0.15Mean_6), 
+            powerTres0.10Mean_1 = mean(isZeroTres0.10Mean_1), 
+            powerTres0.10Mean_6 = mean(isZeroTres0.10Mean_6), 
+            powerTres0.05Mean_1 = mean(isZeroTres0.05Mean_1), 
+            powerTres0.05Mean_6 = mean(isZeroTres0.05Mean_6),
+            powerTres0Mean_1 = mean(isZeroTres0Mean_1), 
+            powerTres0Mean_6 = mean(isZeroTres0Mean_6),
+            powerCI95Mean_1 = mean(isZero95CI_1 == 0),
+            powerCI95Mean_6 = mean(isZero95CI_6 == 0),
+            powerCI90Mean_1 = mean(isZero90CI_1 == 0),
+            powerCI90Mean_6 = mean(isZero90CI_6 == 0),
+            powerCI80Mean_1 = mean(isZero80CI_1 == 0),
+            powerCI80Mean_6 = mean(isZero80CI_6 == 0),
+            powerCI50Mean_1 = mean(isZero50CI_1 == 0),
+            powerCI50Mean_6 = mean(isZero50CI_6 == 0),
+        N = as.integer(mean(N)),
+        `size cross-loading` = mean(cross),
+        `sigmaSqu` = mean(sigmaSqu), 
+        X2.5._1 = mean(X2.5._1),
+        X97.5._1 = mean(X97.5._1)) %>% 
+  select(N, sigmaSqu, cross, powerCI95Mean_1, powerCI95Mean_6) %>% 
+  arrange(N, cross)
+colnames(PowerSVNP)[2] <- "$\\sigma^2$"
+colnames(PowerSVNP)[4] <- "Power $\\lambda_{c1}$"
+colnames(PowerSVNP)[5] <- "Power $\\lambda_{c6}$"
+
+```
+
+```{r}
+# knit table
+papaja::apa_table(PowerSVNP, escape = F, placement = "H")
+```
+

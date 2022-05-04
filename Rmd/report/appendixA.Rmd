@@ -1,0 +1,30 @@
+---
+title: "Appendix A: True Model"
+author: "Koch, J.M.B. (Michael)"
+date: '2022-05-04'
+output: html_document
+---
+
+
+For every individual i in i = 1,..., N:
+$$Y_i \sim \mathcal{N}(\mathbf{0}, \Sigma),$$ where
+$$\Sigma = \Lambda\Psi\Lambda',$$
+$$\Lambda = 
+    \begin{bmatrix}
+    0.75 & 0 \\
+    0.75 & 0 \\
+    0.75 & 0.2/0.5 \\
+    0.2/0.5 & 0.75 \\
+    0 & 0.75 \\
+    0 & 0.75
+    \end{bmatrix},$$
+$$\Psi =
+    \begin{bmatrix}
+     1 & 0.5 \\
+     0.5 & 1
+    \end{bmatrix}
+,$$ and
+$$\Theta = diag[0.3, 0.3, 0.3, 0.3, 0.3, 0.3].$$
+
+
+
