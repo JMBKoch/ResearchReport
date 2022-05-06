@@ -226,7 +226,7 @@ saveResults <- function(rstanObj, condPrior, condPop, modelPars){
                biasMainMean,
                biasMainMed,
                crossEstMean,
-               crossEstMed,e
+               crossEstMed,
                crossEstVar,
                biasCrossMean,
                biasCrossMed,
@@ -402,42 +402,6 @@ sampling <- function(pos, prior, dataStan, modelPars, samplePars){
               convergence = conv))
   
 }
-################################################################################################
-# Part 2: Postprocessing Output of Simulation
-################################################################################################
-# selectConv -------------------------------------------------------------
-# function takes whole output and trims dataset such that only converged iterations are included
-#selectConv <- function(results){}
-### Opsplitsen in Strict en niet zo strict? Doe maar eerst gwn strict
 
-# computeOutcomes ---------------------------------------------------------
-# Takes as input the results of a study (minus non converged) and computes all main outcomes
-#computeOutcomes <- function(resultsTrimmed, modelPars){
-#  
-# 
-#  # cbind conditions into output
-#  out <- cbind(out, select(resultsTrimmed, prior:iteration))
-#  # return output
-#  return(out)
-#  
-#}
-
-# Plots -----------------------------------------------------------------
-# makes all required plots (generally? for AN outcome?) and saves them
-#### start with bias for now,ff litertuur weer induiken & Sara spreken over wat handig is
-#
-#plotsMeanBias <- function(output, parameterName, condition){
-#
-#      name <- paste0("mean", parameterName)
-#  
-#      out %>% 
-#        group_by(condition) %>% 
-#        summarise(name = mean(parameterName)) %>% 
-#        ggplot(mapping = aes(x = condition, y = name))+
-#        geom_point()
-#
-#}       
-        
-#plotsMeanBias(out, "biasFactCorr", condition= sigma)
 
 
