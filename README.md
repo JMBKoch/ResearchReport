@@ -18,7 +18,7 @@ You can clone the repository by running:
 
 - In order for `cmdstanr` to work, it is required to run `cmdstanr::install_cmdstan()` a single time. 
 
-- The model and all other study parameters (e.g. number of iterations) are specified in [`R/parameters.R`](R/parameters.R). Note that if the model is adjusted, the code in `stan` needs to be adjusted accordingly as well. 
+- The model and all other study parameters (e.g. number of iterations) are specified in [`R/parameters.R`](R/parameters.R). Note that if the model is adjusted, the code in [`stan`](stan) needs to be adjusted accordingly as well. 
 
 
 - [`data`](data) contains the raw datasets that were simulated based on the population conditions. It will be simulated and saved again when running `R/main.R` [`R/main.R`](/R/main.R).
