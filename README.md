@@ -2,7 +2,7 @@
 
 This repository contains the code of my Research Report, a paper preceding my Master's Thesis in Methodology & Statistics at Utrecht University (September '21 - June '22). 
 
-This repository is a down-sized version of `https://github.com/JMBKoch/1vs2StepBayesianRegSEM/`, where parts that are not required for the research report are removed. 
+This repository is a down-sized version of [`https://github.com/JMBKoch/1vs2StepBayesianRegSEM/`](https://github.com/JMBKoch/1vs2StepBayesianRegSEM/), where parts that are not required for the research report are removed. 
 
 You can clone the repository by running:
 
